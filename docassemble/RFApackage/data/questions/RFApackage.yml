@@ -1,0 +1,2283 @@
+---
+include:
+  - docassemble.AssemblyLine:assembly_line.yml
+---
+metadata:
+  title: |
+    RFApackage
+  short title: |
+    RFA package
+  tags:
+    - FA-07-00-00-00
+  authors:
+    - VTCourtForms by Legal Services Vermont
+---
+mandatory: True
+comment: |
+  Global interview metadata
+variable name: interview_metadata["RFApackage"]
+data:
+  al_weaver_version: "1.9.0"
+  generated on: "2023-03-22"
+  title: >-
+    RFApackage
+  short title: >-
+    RFA package
+  description: |-
+    Ask the court for a Relief from Abuse (RFA) order with this package of forms
+  original_form: >-
+    https://vtlawhelp.org/roadmap/relief-from-abuse/step-3
+  allowed courts: 
+    - "Probate and Family Court"
+  categories:
+    - "FA-07-00-00-00"
+  typical role: "plaintiff"
+  generate download screen: True
+---
+code: |
+  interview_metadata['main_interview_key'] =  'RFApackage'
+---
+code: |
+  # This controls the default country and list of states in address field questions
+  AL_DEFAULT_COUNTRY = "US"
+---
+code: |
+  # This controls the default state in address field questions
+  AL_DEFAULT_STATE = "VT"
+---
+code: |
+  github_repo_name =  'docassemble-Rfapackage'
+---
+code: |
+  interview_short_title = "Ask the court for a Relief from Abuse (RFA) order"
+---
+code: |
+  al_form_type = "starts_case" 
+---
+objects:
+  - users: ALPeopleList.using(ask_number=True,target_number=1)
+---
+sections:
+  - review_RFApackage: Review your answers
+---
+#################### Interview order #####################
+comment: |
+  Controls order and branching logic for questions specific to this form
+id: interview_order_RFApackage
+code: |
+  # Set the allowed courts for this interview
+  allowed_courts = interview_metadata["RFApackage"]["allowed courts"]
+  nav.set_section("review_RFApackage")
+  user_role = "plaintiff"
+  user_ask_role = "plaintiff"
+  Initial_screening_questions
+  docket_number
+  trial_court.address.address
+  About_you
+  users.gather()
+  set_parts(subtitle=str(users))
+  set_progress(8)
+  users[0].birthdate
+  users[0].address.address
+  set_progress(16)
+  users[0].phone_number
+  users[0].email
+  set_progress(24)
+  ex_spouse
+  spouses.gather()
+  other_parties1_aliases
+  other_parties.gather()
+  set_progress(32)
+  other_parties[0].birthdate
+  other_parties[0].address.address
+  set_progress(40)
+  other_parties[0].phone_number
+  other_parties[0].mobile_number
+  recent_incident_yes
+  children.gather()
+  set_progress(48)
+  children[0].birthdate
+  children[1].birthdate
+  children[2].birthdate
+  set_progress(56)
+  recent_incident_most_serious
+  other_incident_description
+  danger_more_abuse
+  other_parties1_weapon
+  request_not_abuse
+  set_progress(64)
+  existing_order_divorce
+  users1_no_shelter
+  spouse_or_ex_spouse
+  employer
+  house2
+  set_progress(72)
+  sex_female
+  hair_brown
+  notify_served
+  users1_address_mailing
+  printed_signature
+  set_progress(80)
+  signature_date
+  affidavit_signature
+  interview_order_RFApackage = True
+---
+###################### Main order ######################
+comment: |
+  This block includes the logic for standalone interviews.
+  Delete mandatory: True to include in another interview
+mandatory: True
+code: |
+  al_intro_screen
+  RFApackage_intro
+  interview_order_RFApackage
+  signature_date
+  # Store anonymous data for analytics / statistics
+  store_variables_snapshot(
+      persistent=True,
+      data={
+          "zip": showifdef("users[0].address.zip"),
+          "reached_interview_end": True,
+      },
+  )
+  RFApackage_download
+---
+comment: |
+  This question is used to introduce your interview. Please customize
+id: RFApackage
+continue button field: RFApackage_intro
+question: |
+  RFApackage
+subquestion: |
+  Here are some important things to know about asking the court for a Relief from Abuse order (RFA):
+  
+  •	There is no charge for an RFA order. It is free. 
+  •	For details on the whole RFA process, visit the RFA Roadmap on the VTLawHelp.org website. 
+  •	Even when the courts are closed, it’s after hours, or it’s a weekend or holiday, you can start a Relief from Abuse case. You may be able to get a temporary order right away to help keep you safe. At these times, you can email these forms or simply call and ask for help. Contact local police for help or call the Vermont courts’ answering service at 1-800-540-9990. Say that you need help applying for a Relief from Abuse order over the phone. If you call the answering service, you need to leave a message with a number where they can call you back within an hour.
+  •	Applying for an RFA order can be a very dangerous time. Work with an advocate from the Vermont Network to create a safety plan — whether you end up asking for an RFA or not.
+  
+  About using this guided interview:
+  •	Make sure you are in a safe place. It takes time to work through this interview. It may take 1 hour or more.
+  •	If you are in danger right now, dial 911.
+  •	Consider creating an account and saving your work along the way. You could even share a link with an advocate. Look in the upper-right corner of the screen to create an account.
+  •	Use this guided interview if you are asking for an RFA order for you, or both you and your children. (There are different forms for asking for an RFA only on behalf of a child or children.)
+  •	The forms you make with this interview can only be used in Vermont.
+  •	To complete this interview, you will need to know the date or dates when the abuse occurred and give a detailed description of the abuse. This includes the most recent incident and the most serious incident. You will need to fully describe the incidents and make it clear how severe or how frequent the abuse has been.
+  •	You will need to give a safe address and telephone number where the court can reach you. If you don’t have one, ask an advocate from the Vermont Network.
+  •	You will see important questions about weapons that are in the home. If you list what they are and where they are located, the court can order law enforcement to collect them to help keep you safe. 
+  •	At the end you will get a chance to preview your forms and make changes if you need to. 
+  •	Then you can download, print and/or save a PDF of your completed forms.
+  •	You will also get an instruction sheet about how to get the completed forms to the court – this includes emailing them or dropping them off at your local family court.
+  
+  First, let’s make sure this is the right interview for your situation.
+  
+  NEXT: ADD SCREENING QUESTIONS AT START OF GUIDED INTERVIEW
+---
+id: Initial screening questions
+question: |
+  Initial screening questions
+subquestion: |
+  (to be created)
+continue button field: Initial_screening_questions
+---
+id: About you
+question: |
+  About you
+subquestion: |
+  As the person filling out these forms, you are called the "plaintiff."
+continue button field: About_you
+---
+id: Relationship to defendant
+question: |
+  Relationship to defendant
+subquestion: |
+  Choose the best description of your relationship to the person who is the abuser. That person is called the "defendant."
+fields:
+  - "Is the defendant an ex-spouse (former spouse)?": ex_spouse
+    datatype: yesno
+  - "Is the defendant someone you have been living with or sharing occupancy?": live_together
+    datatype: yesno
+  - "Is the defendant someone with whom you have had a sexual relationship?": sexual_relationship
+    datatype: yesno
+  - "Is the defendant someone you have dated?": dating
+    datatype: yesno
+  - "Is the defendant a member of your family?": family_member
+    datatype: yesno
+  - "In a word, what is your relationship to this family member": family_member_description
+    maxlength: 16
+  - "Does the defendant have a different relationship to you?": other_relationship
+    datatype: yesno
+  - "In a word, what is that relationship?": other_relationship_description
+    maxlength: 16
+---
+id: About the defendant
+question: |
+  About the defendant
+fields:
+  - "List other names the defendant uses (aliases)": other_parties1_aliases
+    maxlength: 85
+  - "Is the defendant a current member of the military?": other_parties1_military
+    datatype: yesno
+  - "Is the defendant incarcerated and has been convicted of one of the crimes specified in 15 V.S.A. 1103 (c)(1)(B)?": incarcerated
+    datatype: yesno
+  - "Does the defendant get Reach Up benefits?": reach_up_OP
+    datatype: yesno
+---
+id: What has happened most recently
+question: |
+  What has happened -- most recently
+subquestion: |
+  Describe the most recent incident of abuse. Be as detailed as possible. The judge needs to know exactly what happened.
+fields:
+  - "Has there been a recent incident of abuse?": recent_incident_yes
+    datatype: yesno
+  - "What was the date of the most recent incident?": recent_incident_date
+    datatype: date
+  - "What was the time of the most recent incident?": recent_incident_time
+    maxlength: 13
+  - "In what town was the most recent incident?": recent_incident_town
+    maxlength: 26
+  - "In what state was the most recent incident?": recent_incident_state
+    maxlength: 15
+  - "Please describe the most recent incident with as much detail as possible.": recent_incident_description
+    input type: area
+  - "Were you the target of the recent abuse?": recent_incident_users1
+    datatype: yesno
+  - "Were your children the target of the recent abuse? Check both if they both apply.": recent_incident_children
+    datatype: yesno
+  - "What are the names of the children who were the target of the recent abuse? List their names with commas in between.": recent_incident_children_names
+    maxlength: 63
+  - "Did the defendant cause or attempt to cause physical harm?": recent_incident_harm
+    datatype: yesno
+  - "Did the defendant place you and/or them in fear of imminent serious physical harm?": recent_incident_fear
+    datatype: yesno
+  - "Did the defendant abuse the child/children -- physically injured or otherwise treated the child(ren) in a manner which placed their life, health, development or welfare in jeopardy?": recent_incident_abused
+    datatype: yesno
+  - "Did the defendant stalk you?": recent_incident_stalked
+    datatype: yesno
+  - "Did the defendant stalk you or the child/children?": recent_incident_stalked_users1
+    datatype: yesno
+  - "Did the defendant stalk the child/children?": recent_incident_stalked_children
+    datatype: yesno
+  - "What was the second date that they stalked you?": recent_incident_stalked_date1
+    maxlength: 8
+  - "On what date did they first stalk you?": recent_incident_stalked_date2
+    maxlength: 8
+  - "Did the defendant sexually assault you and/or the child/children?": recent_incident_assault_
+    datatype: yesno
+  - "Did the defendant sexually assault you?": recent_incident_assault_users1
+    datatype: yesno
+  - "Did the defendant sexually assault the child/children?": recent_incident_assault_children
+    datatype: yesno
+---
+id: What happened most serious
+question: |
+  What happened -- most serious
+subquestion: |
+  Describe the most serious incident of abuse. Again, be as detailed as possible. The judge needs to know exactly what happened.
+fields:
+  - "Was that recent incident the most serious incident that happened?": recent_incident_most_serious
+    datatype: yesno
+  - "What was the date of the most serious incident?": serious_incident_date
+    datatype: date
+  - "What was the time of the most serious incident?": serious_incident_time
+    maxlength: 13
+  - "In what town was the most serious incident?": serious_incident_town
+    maxlength: 26
+  - "In what state was the most serious incident?": serious_incident_state
+    maxlength: 11
+  - "Please describe the most serious incident with as much detail as possible.": serious_incident_description
+    input type: area
+---
+id: What happened other incidents
+question: |
+  What happened -- other incidents
+subquestion: |
+  Were there other incidents of abuse? You can describe them here.
+fields:
+  - "Please describe the any other incident(s) with as much detail as possible.": other_incident_description
+    input type: area
+---
+id: Danger of more abuse
+question: |
+  Danger of more abuse
+fields:
+  - "Is there danger of more abuse?": danger_more_abuse
+    datatype: yesno
+  - "Is there danger of more abuse to you?": danger_more_abuse_users1
+    datatype: yesno
+  - "Is there danger of more abuse to the child/children?": danger_more_abuse_children
+    datatype: yesno
+  - "Explain why you think there is danger of more abuse. Be as specific as possible.": danger_more_abuse_why
+    input type: area
+---
+id: Weapons
+question: |
+  Weapons
+subquestion: |
+  Weapons can make this a dangerous time for you and/or your children. If you let the court know about weapons, they may be able to collect them from the defendant as part of the court order. This can help keep you safe.
+fields:
+  - "Does the defendant have guns/firearms or weapons?": other_parties1_weapon
+    datatype: yesno
+  - "Do you not know if the defendant has guns/firearms or weapons?": other_parties1_weapon_DK
+    datatype: yesno
+  - "Has the defendant used or threatened to use a gun/firearm or weapon against you?": used_firearm
+    datatype: yesno
+  - "Describe in detail how they used or threatened to use it?": used_firearm_how
+    input type: area
+  - "Description of the 1st weapon": weapon1
+    maxlength: 76
+  - "Location of the 1st weapon": weapon1_location
+    maxlength: 76
+  - "Description of the 2nd weapon": weapon2
+    maxlength: 76
+  - "Location of the 2nd weapon": weapon2_location
+    maxlength: 76
+  - "Description of the 3rd weapon": weapon3
+    maxlength: 76
+  - "Location of the 3rd weapon": weapon3_location
+    maxlength: 76
+  - "Description of the 4th weapon": weapon4
+    maxlength: 76
+  - "Location of the 4th weapon": weapon4_location
+    maxlength: 76
+  - "Description of the 5th weapon": weapon5
+    maxlength: 76
+  - "Location of the 5th weapon": weapon5_location
+    maxlength: 76
+  - "Description of the 6th weapon": weapon6
+    maxlength: 76
+  - "Location of the 6th weapon": weapon6_location
+    maxlength: 76
+  - "Description of the 7th weapon": weapon7
+    maxlength: 76
+  - "Location of the 7th weapon": weapon7_location
+    maxlength: 76
+  - "Description of the 8th weapon": weapon8
+    maxlength: 76
+  - "Location of the 8th weapon": weapon8_location
+    maxlength: 76
+  - "Are you attaching extra sheets with more weapons listed?": extra_sheets_attached
+    maxlength: 7
+---
+id: What you want to ask for in the RFA order
+question: |
+  What you want to ask for in the RFA order
+subquestion: |
+  Choose all that apply. This is a list of things that you can ask the court for. If approved, they will be part of the Relief from Abuse order.
+fields:
+  - "Do you want the court to order the defendant to not abuse you or the children, and not interfere with your personal liberty?": request_not_abuse
+    datatype: yesno
+  - "Do you want the court order to protect you from this?": request_not_abuse_users1
+    datatype: yesno
+  - "Do you want the court order to protect the child/children from this?": request_not_abuse_children
+    datatype: yesno
+  - "Do you want the court to order the defendant to not stalk or sexually assault you or the child/children?": request_no_stalking_assault
+    datatype: yesno
+  - "Do you want the order to stop stalking?": request_no_stalking
+    datatype: yesno
+  - "Do you want the order to stop sexual assault?": request_no_assault
+    datatype: yesno
+  - "Do you want the court order to protect you from this?": request_no_assault_users1
+    datatype: yesno
+  - "Do you want the court order to protect the child/children from this?": request_no_assault_children
+    datatype: yesno
+  - "Do you want the court to order the defendant to immediately leave the residence, and to order sole possession to you?": request_leave
+    datatype: yesno
+  - "Do you want the court to order the defendant not to possess or purchase firearms for the duration of the order?": request_no_firearms
+    datatype: yesno
+  - "Do you want the court to order the defendant to surrender immediately to law enforcement all guns/firearms that they own, possess or control?": request_surrender_firearms
+    datatype: yesno
+  - "Do you want the court to order the defendant?? to pay your temporary living expenses?": request_living_expenses
+    datatype: yesno
+  - "Do you want the court to order the defendant to pay temporary child support?": request_child_support
+    datatype: yesno
+  - "Do you want the court to order the defendant to stop cruelly treating pets?": request_no_pet_harm
+    datatype: yesno
+  - "Do you want the court order to protect the pets owned by you or the defendant?": request_no_pet_users1
+    datatype: yesno
+  - "Do you want the court order to protect the pets owned by the child/children?": request_no_pet_children
+    datatype: yesno
+  - "Do you want the court to order you to have temporary possession and control of any pets?": request_control_of_pet
+    datatype: yesno
+  - "Do you want the court to order the defendant to stay a certain distance away from you (measured in feet)?": request_stay_away
+    datatype: yesno
+  - "How many feet away do you want the defendant to stay?": request_stay_away_feet
+    maxlength: 5
+  - "Do you want the court order to protect you from this?": request_stay_away_users1
+    datatype: yesno
+  - "Do you want the court order to protect the child/children from this?": request_stay_away_children
+    datatype: yesno
+  - "Do you want the court to order the defendant to not contact you or the child/children in any way?": request_no_contact
+    datatype: yesno
+  - "Do you want the court order to protect you from this?": request_no_contact_users1
+    datatype: yesno
+  - "Do you want the court order to protect the child/children from this?": request_no_contact_children
+    datatype: yesno
+  - "Do you want the court to award temporary Parental Rights and Responsibilities of the child/children to you or someone else? (Child(ren) of you and the defendant)": request_temp_PRR
+    datatype: yesno
+  - "This child's relationship to you?": children1_relationship_users1
+    maxlength: 19
+  - "This child's relationship to the defendant?": children1_relationship_OP
+    maxlength: 21
+  - "This child's relationship to you?": children2_relationship_users1
+    maxlength: 19
+  - "This child's relationship to the defendant?": children2_relationship_OP
+    maxlength: 21
+  - "This child's relationship to you?": children3_relationship_users1
+    maxlength: 19
+  - "This child's relationship to the defendant?": children3_relationship_OP
+    maxlength: 21
+  - "PRR other?": request_other
+    datatype: yesno
+  - "PRR other description": request_other_description
+    maxlength: 74
+  - "Do you want all of the previous requests to be put in place now -- in an emergency order? (Most people choose this to get protection right away.)": request_all_emergency
+    datatype: yesno
+---
+id: Existing orders or court proceedings
+question: |
+  Existing orders or court proceedings
+subquestion: |
+  Is there an existing order or a pending court proceeding involving you, the defendant, and/or the child/children?
+fields:
+  - "Is there an existing order or a pending court proceeding for divorce or separation?": existing_order_divorce
+    datatype: yesno
+  - "Is there an existing order or a pending court proceeding for a civil union dissolution?": dissolution
+    datatype: yesno
+  - "Is there an existing order or a pending court proceeding for Relief from Abuse?": existing_order_RFA
+    datatype: yesno
+  - "Is there an existing order or a pending court proceeding for a criminal matter?": criminal_proceeding
+    datatype: yesno
+  - "Is there an existing order or a pending court proceeding for parentage?": parentage_order
+    datatype: yesno
+  - "Is there an existing order or a pending court proceeding for guardianship?": guardianship_order
+    datatype: yesno
+  - "Is there an existing order or a pending court proceeding for a juvenile (DCF) matter?": juvenile_order
+    datatype: yesno
+  - "Is there an existing order or a pending court proceeding for child support?": child_support_order
+    datatype: yesno
+  - "In what state is the existing order or a pending court proceeding?": existing_order_state
+    maxlength: 34
+  - "In what county is the existing order or a pending court proceeding?": existing_order_county
+    maxlength: 36
+  - "What is the name of your attorney for the existing order or a pending court proceeding -- if you have one?": existing_order_users_attorney
+    maxlength: 25
+  - "What is the name of the other attorney for the existing order or a pending court proceeding -- if the defendant has one?": existing_order_OP_attorney
+    maxlength: 25
+---
+id: About the defendant s home and vehicle
+question: |
+  About the defendant's home and vehicle
+fields:
+  - "Will you be forced from your home and be without shelter -- unless the defendant is ordered to leave your home?": users1_no_shelter
+    datatype: yesno
+  - "Does one or both of you own your home?": residence_owned
+    datatype: yesno
+  - "Does one or both of you rent your home?": residence_rented
+    datatype: yesno
+  - "What is your shared home address (street address, town and state)?": residence_of_users1
+    datatype: yesno
+  - "Is it owned or rented in the defendant's name?": residence_of_OP
+    datatype: yesno
+  - "Is it owned or rented in both of your names?": residence_of_both
+    datatype: yesno
+  - "Is it owned or rented by someone else?": residence_of_other
+    datatype: yesno
+  - "The house or building number on the street (Example: Enter 10 if it's 10 Main Street.)": house
+    maxlength: 16
+  - "If you don't have a street address, describe the location of the home.": location_of_home
+    input type: area
+  - "Describe what the defendant's home looks like.": description_of_home
+    input type: area
+    maxlength: 255
+  - "Best days and times to contact the defendant at home.": best_contact_time
+    input type: area
+  - "Vehicle plate number": vehicle_plate
+    maxlength: 14
+  - "Vehicle year": vehicle_year
+    maxlength: 6
+  - "What brand car or truck do they drive? (Ford, Honda, etc.)": vehicle_make
+    maxlength: 19
+  - "What model car or truck? (F-150, Civic)": vehicle_model
+    maxlength: 17
+  - "Color of car or truck": vehicle_color
+    maxlength: 13
+  - "Defendant's work phone number FIX NAME OF FIELD": other_parties1_word_phone_number
+    maxlength: 18
+  - "Defendant's other phone number": other_parties1_other_phone_number
+    maxlength: 18
+---
+id: More on your relationship to defendant
+question: |
+  More on your relationship to defendant
+subquestion: |
+  Law enforcement asks these specific questions on their confidential form.
+fields:
+  - "I am the spouse or ex-spouse (former spouse) of the defendant.": spouse_or_ex_spouse
+    datatype: yesno
+  - "The defendant and I have lived together while having a sexual relationship together.": lived_together
+    datatype: yesno
+  - "The defendant and I have a child or children in common.": had_kids_together
+    datatype: yesno
+  - "I am the defendant’s child or step-child, or I am filing on behalf of that child or step-child.": defendants_child
+    datatype: yesno
+  - "I am the child of the plaintiff who currently or has in the past lived with the defendant while having a sexual relationship together, or I am filing on behalf of that child.": plaintiffs_child
+    datatype: yesno
+---
+id: Defendant s work information
+question: |
+  Defendant's work information
+subquestion: |
+  Tell us about the defendant's workplace and work hours. Law enforcement may serve the order there if they cannot find the defendant at home.
+fields:
+  - "Defendant's employer": employer
+    maxlength: 36
+  - "Their employers street address": employers_street_address
+    maxlength: 29
+  - "Employers city and state": employers_city_state
+    maxlength: 36
+  - "Work hours on Mondays": work_mondays
+    maxlength: 11
+  - "Work hours on Tuesdays": work_tues
+    maxlength: 11
+  - "Work hours on Wednesdays": work_weds
+    maxlength: 11
+  - "Work hours on Thursdays": work_thurs
+    maxlength: 11
+  - "Work hours on Fridays": work_fri
+    maxlength: 11
+  - "Work hours on Saturdays": work_sat
+    maxlength: 11
+  - "Work hours on Sundays": work_sun
+    maxlength: 11
+---
+id: Other places the defendant might be
+question: |
+  Other places the defendant might be
+subquestion: |
+  Where else might the defendant spend time? This can help law enforcement find the defendant.
+fields:
+  - "House or building number on the street": house2
+  - "Where would they be if not at home or work? List the street address of another location. NEED TO ADD FIELD FOR HOUSE NUMBER AND RENAME ON PDF TO house2.": other_location_street_address
+    maxlength: 28
+  - "Town / city": other_location_city
+    maxlength: 23
+  - "State": other_location_state
+    maxlength: 5
+  - "Phone number at that location": other_location_phone
+    maxlength: 13
+  - "House or building number on the street": house3
+  - "List another street address if there is another location. NEED TO ADD FIELD FOR HOUSE NUMBER AND RENAME ON PDF TO house3.": other_location2_street_address
+    maxlength: 27
+  - "Town / city": other_location2_city
+    maxlength: 23
+  - "State": other_location2_state
+    maxlength: 5
+  - "Phone number at that location": other_location2_phone
+    maxlength: 13
+---
+id: What the defendant looks like
+question: |
+  What the defendant looks like
+subquestion: |
+  What follows are questions that will help law enforcement identify the defendant so they can serve the RFA order.
+fields:
+  - "Female": sex_female
+    datatype: yesno
+  - "Male": sex_male
+    datatype: yesno
+  - "White": race_white
+    datatype: yesno
+  - "African-American": race_black
+    datatype: yesno
+  - "Native American": race_native
+    datatype: yesno
+  - "Asian": race_asian
+    datatype: yesno
+  - "Other": race_other
+    datatype: yesno
+  - "Light": skin_light
+    datatype: yesno
+  - "Medium": skin_medium
+    datatype: yesno
+  - "Dark": skin_dark
+    datatype: yesno
+  - "Other": skin_other
+    datatype: yesno
+  - "Height -- feet": other_parties1_height_ft
+    maxlength: 5
+  - "Height -- inches": other_parties1_height_in
+    maxlength: 5
+  - "Weight -- in pounds": other_parties1_weight_lbs
+    maxlength: 5
+  - "Brown": eyes_brown
+    datatype: yesno
+  - "Blue": eyes_blue
+    datatype: yesno
+  - "Gray": eyes_gray
+    datatype: yesno
+  - "Green": eyes_green
+    datatype: yesno
+  - "Hazel": eyes_hazel
+    datatype: yesno
+  - "Other": eyes_other
+    datatype: yesno
+  - "Glasses": lenses_glasses
+    datatype: yesno
+  - "Contacts": lenses_contacts
+    datatype: yesno
+---
+id: More about what the defendant looks like
+question: |
+  More about what the defendant looks like
+fields:
+  - "Brown": hair_brown
+    datatype: yesno
+  - "Blond": hair_blond
+    datatype: yesno
+  - "Black": hair_black
+    datatype: yesno
+  - "Red": hair_red
+    datatype: yesno
+  - "Gray / white": hair_gray
+    datatype: yesno
+  - "Bald": hair_bald
+    datatype: yesno
+  - "Other": hair_other
+    datatype: yesno
+  - "Short": hair_short
+    datatype: yesno
+  - "Medium": hair_medium
+    datatype: yesno
+  - "Long": hair_long
+    datatype: yesno
+  - "Beard": hair_beard
+    datatype: yesno
+  - "Mustache": hair_mustache
+    datatype: yesno
+  - "Tattoos": tattoos
+    datatype: yesno
+  - "Where are the tattoos located?": tattoos_location
+    maxlength: 74
+  - "Scars or marks": scars
+    datatype: yesno
+  - "Where are the scars located?": scars_location
+    maxlength: 74
+  - "Body piercing / earrings": piercing
+    datatype: yesno
+  - "Where are the piercings located?": piercing_location
+    maxlength: 74
+  - "Other identifying marks": other_marks
+    datatype: yesno
+  - "Where are the marks located?": marks_location
+    maxlength: 74
+---
+id: When law enforcement serves the order to the defendant
+question: |
+  When law enforcement serves the order to the defendant
+fields:
+  - "Notify served": notify_served
+    datatype: yesno
+  - "Users1 notify phone number": users1_notify_phone_number
+    maxlength: 45
+  - "y.) Will the defendant try to avoid being served this order?": avoid_served
+    datatype: yesno
+  - "Does the defendant have guard dogs or vicious dogs?": guard_dog
+    datatype: yesno
+  - "Is the defendant likely to be under the influence of drugs or alcohol?": under_infl
+    datatype: yesno
+  - "Will the officer who serves this order be in any danger?": danger_for_officer
+    datatype: yesno
+  - "Why will the officer be in danger?": danger_for_officer_why
+    input type: area
+---
+id: Misc that I need to put in the right spots
+question: |
+  Misc that I need to put in the right spots
+fields:
+  - "If you have a PO Box, or your mailing address is different than your street address, enter it here. (Example: P.O. Box 111)": users1_address_mailing
+    maxlength: 42
+  - "What is your work phone number?": users1_work_phone_number
+    maxlength: 24
+  - "Do you want to share your contact information. THIS SHOULD BE ANSWERED NO IF YOU WANT TO KEEP YOUR INFORMATION CONFIDENTIAL -- EXCEPT FOR LAW ENFORCEMENT?": share_contact
+    datatype: yesno
+  - "Did the defendant use, display or threaten to use a gun/ firearm against you or against a family member?": used_firearm_yes
+    datatype: yesno
+  - "Do you get Reach Up benefits?": reach_up_users1
+    datatype: yesno
+  - "Defendant's first_last name FIX THIS FIELD NAME": other_parties1_first_last
+    maxlength: 17
+  - "Defendant's middle_last name": other_parties1_middle_last
+    maxlength: 11
+  - "Sr.": suffix_sr
+    datatype: yesno
+  - "Jr.": suffix_jr
+    datatype: yesno
+  - "1st": suffix_first
+    datatype: yesno
+  - "2nd": suffix_second
+    datatype: yesno
+  - "3rd": suffix_third
+    datatype: yesno
+---
+id: Signing some but not all of your forms
+question: |
+  Signing some -- but not all -- of your forms
+fields:
+  - "Please type your name. This will appear under your signature.": printed_signature
+    maxlength: 34
+  - "Date of signature of complaint form": date
+    maxlength: 24
+---
+id: These fields are not needed
+question: |
+  These fields are not needed
+fields:
+  - "Affidavit signature DO NOT OFFER THIS": affidavit_signature
+    maxlength: 39
+  - "Date of affidavit signature DO NOT OFFER THIS": affidavit_signature_date
+    datatype: date
+  - "Date of notary signature DO NOT OFFER THIS": notary_signature_date
+    datatype: date
+  - "Date of notary expiration DO NOT OFFER THIS": notary_expiration_date
+    datatype: date
+  - "Notary signature DO NOT OFFER THIS": notary_signature
+    maxlength: 32
+  - "Is there an existing order or a pending court proceeding? I DON'T THINK THIS IS NEEDED": Is_there_an_existing_order_or_a_pending_court_proceeding_involving_you_the_Defendant_andor_the_children_in_this
+    datatype: yesno
+  - "Civil union dissolution I DON'T THINK THIS IS NEEDED": Civil_Union_Dissolution
+    datatype: yesno
+---
+id: preview RFApackage
+question: |
+  Preview your form before you sign it
+subquestion: |
+  Here is a preview of the form you will sign on the next page.   
+  
+  ${ al_court_bundle.as_pdf(key='preview') }
+
+  Click the image to open it in a new tab. Click the "Edit answers" button
+  to edit your answers.
+
+  ${ action_button_html(url_action('review_RFApackage'), label='Edit answers', color='info') }
+  
+  Remember to come back to this window to continue and sign your form.
+continue button field: RFApackage_preview_question    
+---
+code: |
+  signature_fields = ['users[0].signature']
+---
+code: |
+  # This is a placeholder for the addresses that will be searched
+  # for matching address to court. Edit if court venue is based on 
+  # a different address than the user's
+  [user.address.address for user in users.complete_elements()]
+  addresses_to_search = [user.address for user in users.complete_elements()]
+---
+id: RFApackage review screen
+event: review_RFApackage
+question: |
+  Review your answers
+review:
+  - Edit: docket_number
+    button: |
+      **Docket number**:
+      ${ docket_number }
+  - Edit: trial_court
+    button: |
+      **Trial court**
+  
+      % if defined("trial_court.address.county"):
+      * address: ${ trial_court.address.block() }
+      % endif
+  - Edit: users.revisit
+    button: |
+      **Users**
+
+      % for item in users:
+        * ${ item }
+      % endfor
+  - Edit: other_parties.revisit
+    button: |
+      **Other parties**
+
+      % for item in other_parties:
+        * ${ item }
+      % endfor
+  - Edit: other_parties1_weapon
+    button: |
+      **Does the defendant have guns/firearms or weapons?**:
+      ${ word(yesno(other_parties1_weapon)) }
+  - Edit: other_parties1_weapon_DK
+    button: |
+      **Do you not know if the defendant has guns/firearms or weapons?**:
+      ${ word(yesno(other_parties1_weapon_DK)) }
+  - Edit: recent_incident_date
+    button: |
+      **What was the date of the most recent incident?**:
+      ${ recent_incident_date }
+  - Edit: recent_incident_time
+    button: |
+      **What was the time of the most recent incident?**:
+      ${ recent_incident_time }
+  - Edit: recent_incident_town
+    button: |
+      **In what town was the most recent incident?**:
+      ${ recent_incident_town }
+  - Edit: recent_incident_state
+    button: |
+      **In what state was the most recent incident?**:
+      ${ recent_incident_state }
+  - Edit: recent_incident_description
+    button: |
+      **Please describe the most recent incident with as much detail as possible.**:
+      > ${ single_paragraph(recent_incident_description) }
+  - Edit: recent_incident_most_serious
+    button: |
+      **Was that recent incident the most serious incident that happened?**:
+      ${ word(yesno(recent_incident_most_serious)) }
+  - Edit: serious_incident_date
+    button: |
+      **What was the date of the most serious incident?**:
+      ${ serious_incident_date }
+  - Edit: serious_incident_time
+    button: |
+      **What was the time of the most serious incident?**:
+      ${ serious_incident_time }
+  - Edit: serious_incident_town
+    button: |
+      **In what town was the most serious incident?**:
+      ${ serious_incident_town }
+  - Edit: serious_incident_state
+    button: |
+      **In what state was the most serious incident?**:
+      ${ serious_incident_state }
+  - Edit: serious_incident_description
+    button: |
+      **Please describe the most serious incident with as much detail as possible.**:
+      > ${ single_paragraph(serious_incident_description) }
+  - Edit: other_incident_description
+    button: |
+      **Please describe the any other incident(s) with as much detail as possible.**:
+      > ${ single_paragraph(other_incident_description) }
+  - Edit: weapon1
+    button: |
+      **Description of the 1st weapon**:
+      ${ weapon1 }
+  - Edit: weapon1_location
+    button: |
+      **Location of the 1st weapon**:
+      ${ weapon1_location }
+  - Edit: weapon2
+    button: |
+      **Description of the 2nd weapon**:
+      ${ weapon2 }
+  - Edit: weapon2_location
+    button: |
+      **Location of the 2nd weapon**:
+      ${ weapon2_location }
+  - Edit: weapon3_location
+    button: |
+      **Location of the 3rd weapon**:
+      ${ weapon3_location }
+  - Edit: weapon3
+    button: |
+      **Description of the 3rd weapon**:
+      ${ weapon3 }
+  - Edit: weapon4_location
+    button: |
+      **Location of the 4th weapon**:
+      ${ weapon4_location }
+  - Edit: weapon4
+    button: |
+      **Description of the 4th weapon**:
+      ${ weapon4 }
+  - Edit: weapon5_location
+    button: |
+      **Location of the 5th weapon**:
+      ${ weapon5_location }
+  - Edit: weapon5
+    button: |
+      **Description of the 5th weapon**:
+      ${ weapon5 }
+  - Edit: weapon6_location
+    button: |
+      **Location of the 6th weapon**:
+      ${ weapon6_location }
+  - Edit: weapon6
+    button: |
+      **Description of the 6th weapon**:
+      ${ weapon6 }
+  - Edit: weapon7
+    button: |
+      **Description of the 7th weapon**:
+      ${ weapon7 }
+  - Edit: weapon7_location
+    button: |
+      **Location of the 7th weapon**:
+      ${ weapon7_location }
+  - Edit: weapon8
+    button: |
+      **Description of the 8th weapon**:
+      ${ weapon8 }
+  - Edit: weapon8_location
+    button: |
+      **Location of the 8th weapon**:
+      ${ weapon8_location }
+  - Edit: extra_sheets_attached
+    button: |
+      **Are you attaching extra sheets with more weapons listed?**:
+      ${ extra_sheets_attached }
+  - Edit: used_firearm
+    button: |
+      **Has the defendant used or threatened to use a gun/firearm or weapon against you?**:
+      ${ word(yesno(used_firearm)) }
+  - Edit: used_firearm_how
+    button: |
+      **Describe in detail how they used or threatened to use it?**:
+      > ${ single_paragraph(used_firearm_how) }
+  - Edit: danger_more_abuse
+    button: |
+      **Is there danger of more abuse?**:
+      ${ word(yesno(danger_more_abuse)) }
+  - Edit: danger_more_abuse_why
+    button: |
+      **Explain why you think there is danger of more abuse. Be as specific as possible.**:
+      > ${ single_paragraph(danger_more_abuse_why) }
+  - Edit: other_parties1_military
+    button: |
+      **Is the defendant a current member of the military?**:
+      ${ word(yesno(other_parties1_military)) }
+  - Edit: affidavit_signature
+    button: |
+      **Affidavit signature DO NOT OFFER THIS**:
+      ${ affidavit_signature }
+  - Edit: affidavit_signature_date
+    button: |
+      **Date of affidavit signature DO NOT OFFER THIS**:
+      ${ affidavit_signature_date }
+  - Edit: printed_signature
+    button: |
+      **Please type your name. This will appear under your signature.**:
+      ${ printed_signature }
+  - Edit: notary_signature_date
+    button: |
+      **Date of notary signature DO NOT OFFER THIS**:
+      ${ notary_signature_date }
+  - Edit: notary_expiration_date
+    button: |
+      **Date of notary expiration DO NOT OFFER THIS**:
+      ${ notary_expiration_date }
+  - Edit: notary_signature
+    button: |
+      **Notary signature DO NOT OFFER THIS**:
+      ${ notary_signature }
+  - Edit: users1_address_mailing
+    button: |
+      **If you have a PO Box, or your mailing address is different than your street address, enter it here. (Example: P.O. Box 111)**:
+      ${ users1_address_mailing }
+  - Edit: users1_work_phone_number
+    button: |
+      **What is your work phone number?**:
+      ${ users1_work_phone_number }
+  - Edit: share_contact
+    button: |
+      **Do you want to share your contact information. THIS SHOULD BE ANSWERED NO IF YOU WANT TO KEEP YOUR INFORMATION CONFIDENTIAL -- EXCEPT FOR LAW ENFORCEMENT?**:
+      ${ word(yesno(share_contact)) }
+  - Edit: signature_date
+    button: |
+      **Date of signature**:
+      ${ signature_date }
+  - Edit: family_member_description
+    button: |
+      **In a word, what is your relationship to this family member**:
+      ${ family_member_description }
+  - Edit: family_member
+    button: |
+      **Is the defendant a member of your family?**:
+      ${ word(yesno(family_member)) }
+  - Edit: spouses.revisit
+    button: |
+      **Spouses**
+
+      % for item in spouses:
+        * ${ item }
+      % endfor
+  - Edit: other_relationship_description
+    button: |
+      **In a word, what is that relationship?**:
+      ${ other_relationship_description }
+  - Edit: ex_spouse
+    button: |
+      **Is the defendant an ex-spouse (former spouse)?**:
+      ${ word(yesno(ex_spouse)) }
+  - Edit: other_relationship
+    button: |
+      **Does the defendant have a different relationship to you?**:
+      ${ word(yesno(other_relationship)) }
+  - Edit: live_together
+    button: |
+      **Is the defendant someone you have been living with or sharing occupancy?**:
+      ${ word(yesno(live_together)) }
+  - Edit: sexual_relationship
+    button: |
+      **Is the defendant someone with whom you have had a sexual relationship?**:
+      ${ word(yesno(sexual_relationship)) }
+  - Edit: dating
+    button: |
+      **Is the defendant someone you have dated?**:
+      ${ word(yesno(dating)) }
+  - Edit: existing_order_divorce
+    button: |
+      **Is there an existing order or a pending court proceeding for divorce or separation?**:
+      ${ word(yesno(existing_order_divorce)) }
+  - Edit: dissolution
+    button: |
+      **Is there an existing order or a pending court proceeding for a civil union dissolution?**:
+      ${ word(yesno(dissolution)) }
+  - Edit: existing_order_RFA
+    button: |
+      **Is there an existing order or a pending court proceeding for Relief from Abuse?**:
+      ${ word(yesno(existing_order_RFA)) }
+  - Edit: criminal_proceeding
+    button: |
+      **Is there an existing order or a pending court proceeding for a criminal matter?**:
+      ${ word(yesno(criminal_proceeding)) }
+  - Edit: parentage_order
+    button: |
+      **Is there an existing order or a pending court proceeding for parentage?**:
+      ${ word(yesno(parentage_order)) }
+  - Edit: guardianship_order
+    button: |
+      **Is there an existing order or a pending court proceeding for guardianship?**:
+      ${ word(yesno(guardianship_order)) }
+  - Edit: juvenile_order
+    button: |
+      **Is there an existing order or a pending court proceeding for a juvenile (DCF) matter?**:
+      ${ word(yesno(juvenile_order)) }
+  - Edit: child_support_order
+    button: |
+      **Is there an existing order or a pending court proceeding for child support?**:
+      ${ word(yesno(child_support_order)) }
+  - Edit: existing_order_state
+    button: |
+      **In what state is the existing order or a pending court proceeding?**:
+      ${ existing_order_state }
+  - Edit: existing_order_county
+    button: |
+      **In what county is the existing order or a pending court proceeding?**:
+      ${ existing_order_county }
+  - Edit: existing_order_users_attorney
+    button: |
+      **What is the name of your attorney for the existing order or a pending court proceeding -- if you have one?**:
+      ${ existing_order_users_attorney }
+  - Edit: existing_order_OP_attorney
+    button: |
+      **What is the name of the other attorney for the existing order or a pending court proceeding -- if the defendant has one?**:
+      ${ existing_order_OP_attorney }
+  - Edit: recent_incident_yes
+    button: |
+      **Has there been a recent incident of abuse?**:
+      ${ word(yesno(recent_incident_yes)) }
+  - Edit: recent_incident_users1
+    button: |
+      **Were you the target of the recent abuse?**:
+      ${ word(yesno(recent_incident_users1)) }
+  - Edit: recent_incident_children
+    button: |
+      **Were your children the target of the recent abuse? Check both if they both apply.**:
+      ${ word(yesno(recent_incident_children)) }
+  - Edit: recent_incident_children_names
+    button: |
+      **What are the names of the children who were the target of the recent abuse? List their names with commas in between.**:
+      ${ recent_incident_children_names }
+  - Edit: recent_incident_harm
+    button: |
+      **Did the defendant cause or attempt to cause physical harm?**:
+      ${ word(yesno(recent_incident_harm)) }
+  - Edit: recent_incident_fear
+    button: |
+      **Did the defendant place you and/or them in fear of imminent serious physical harm?**:
+      ${ word(yesno(recent_incident_fear)) }
+  - Edit: recent_incident_abused
+    button: |
+      **Did the defendant abuse the child/children -- physically injured or otherwise treated the child(ren) in a manner which placed their life, health, development or welfare in jeopardy?**:
+      ${ word(yesno(recent_incident_abused)) }
+  - Edit: recent_incident_stalked_users1
+    button: |
+      **Did the defendant stalk you or the child/children?**:
+      ${ word(yesno(recent_incident_stalked_users1)) }
+  - Edit: recent_incident_stalked_children
+    button: |
+      **Did the defendant stalk the child/children?**:
+      ${ word(yesno(recent_incident_stalked_children)) }
+  - Edit: recent_incident_stalked
+    button: |
+      **Did the defendant stalk you?**:
+      ${ word(yesno(recent_incident_stalked)) }
+  - Edit: recent_incident_stalked_date2
+    button: |
+      **On what date did they first stalk you?**:
+      ${ recent_incident_stalked_date2 }
+  - Edit: recent_incident_stalked_date1
+    button: |
+      **What was the second date that they stalked you?**:
+      ${ recent_incident_stalked_date1 }
+  - Edit: recent_incident_assault_children
+    button: |
+      **Did the defendant sexually assault the child/children?**:
+      ${ word(yesno(recent_incident_assault_children)) }
+  - Edit: recent_incident_assault_
+    button: |
+      **Did the defendant sexually assault you and/or the child/children?**:
+      ${ word(yesno(recent_incident_assault_)) }
+  - Edit: recent_incident_assault_users1
+    button: |
+      **Did the defendant sexually assault you?**:
+      ${ word(yesno(recent_incident_assault_users1)) }
+  - Edit: danger_more_abuse_children
+    button: |
+      **Is there danger of more abuse to the child/children?**:
+      ${ word(yesno(danger_more_abuse_children)) }
+  - Edit: danger_more_abuse_users1
+    button: |
+      **Is there danger of more abuse to you?**:
+      ${ word(yesno(danger_more_abuse_users1)) }
+  - Edit: used_firearm_yes
+    button: |
+      **Did the defendant use, display or threaten to use a gun/ firearm against you or against a family member?**:
+      ${ word(yesno(used_firearm_yes)) }
+  - Edit: incarcerated
+    button: |
+      **Is the defendant incarcerated and has been convicted of one of the crimes specified in 15 V.S.A. 1103 (c)(1)(B)?**:
+      ${ word(yesno(incarcerated)) }
+  - Edit: users1_no_shelter
+    button: |
+      **Will you be forced from your home and be without shelter -- unless the defendant is ordered to leave your home?**:
+      ${ word(yesno(users1_no_shelter)) }
+  - Edit: residence_of_users1
+    button: |
+      **What is your shared home address (street address, town and state)?**:
+      ${ word(yesno(residence_of_users1)) }
+  - Edit: residence_owned
+    button: |
+      **Does one or both of you own your home?**:
+      ${ word(yesno(residence_owned)) }
+  - Edit: residence_rented
+    button: |
+      **Does one or both of you rent your home?**:
+      ${ word(yesno(residence_rented)) }
+  - Edit: residence_of_OP
+    button: |
+      **Is it owned or rented in the defendant's name?**:
+      ${ word(yesno(residence_of_OP)) }
+  - Edit: residence_of_other
+    button: |
+      **Is it owned or rented by someone else?**:
+      ${ word(yesno(residence_of_other)) }
+  - Edit: residence_of_both
+    button: |
+      **Is it owned or rented in both of your names?**:
+      ${ word(yesno(residence_of_both)) }
+  - Edit: reach_up_users1
+    button: |
+      **Do you get Reach Up benefits?**:
+      ${ word(yesno(reach_up_users1)) }
+  - Edit: reach_up_OP
+    button: |
+      **Does the defendant get Reach Up benefits?**:
+      ${ word(yesno(reach_up_OP)) }
+  - Edit: Is_there_an_existing_order_or_a_pending_court_proceeding_involving_you_the_Defendant_andor_the_children_in_this
+    button: |
+      **Is there an existing order or a pending court proceeding? I DON'T THINK THIS IS NEEDED**:
+      ${ word(yesno(Is_there_an_existing_order_or_a_pending_court_proceeding_involving_you_the_Defendant_andor_the_children_in_this)) }
+  - Edit: Civil_Union_Dissolution
+    button: |
+      **Civil union dissolution I DON'T THINK THIS IS NEEDED**:
+      ${ word(yesno(Civil_Union_Dissolution)) }
+  - Edit: request_not_abuse_children
+    button: |
+      **Do you want the court order to protect the child/children from this?**:
+      ${ word(yesno(request_not_abuse_children)) }
+  - Edit: request_not_abuse_users1
+    button: |
+      **Do you want the court order to protect you from this?**:
+      ${ word(yesno(request_not_abuse_users1)) }
+  - Edit: request_not_abuse
+    button: |
+      **Do you want the court to order the defendant to not abuse you or the children, and not interfere with your personal liberty?**:
+      ${ word(yesno(request_not_abuse)) }
+  - Edit: request_no_stalking_assault
+    button: |
+      **Do you want the court to order the defendant to not stalk or sexually assault you or the child/children?**:
+      ${ word(yesno(request_no_stalking_assault)) }
+  - Edit: request_no_stalking
+    button: |
+      **Do you want the order to stop stalking?**:
+      ${ word(yesno(request_no_stalking)) }
+  - Edit: request_no_assault
+    button: |
+      **Do you want the order to stop sexual assault?**:
+      ${ word(yesno(request_no_assault)) }
+  - Edit: request_no_assault_users1
+    button: |
+      **Do you want the court order to protect you from this?**:
+      ${ word(yesno(request_no_assault_users1)) }
+  - Edit: request_no_assault_children
+    button: |
+      **Do you want the court order to protect the child/children from this?**:
+      ${ word(yesno(request_no_assault_children)) }
+  - Edit: request_leave
+    button: |
+      **Do you want the court to order the defendant to immediately leave the residence, and to order sole possession to you?**:
+      ${ word(yesno(request_leave)) }
+  - Edit: request_no_firearms
+    button: |
+      **Do you want the court to order the defendant not to possess or purchase firearms for the duration of the order?**:
+      ${ word(yesno(request_no_firearms)) }
+  - Edit: request_surrender_firearms
+    button: |
+      **Do you want the court to order the defendant to surrender immediately to law enforcement all guns/firearms that they own, possess or control?**:
+      ${ word(yesno(request_surrender_firearms)) }
+  - Edit: request_living_expenses
+    button: |
+      **Do you want the court to order the defendant?? to pay your temporary living expenses?**:
+      ${ word(yesno(request_living_expenses)) }
+  - Edit: request_child_support
+    button: |
+      **Do you want the court to order the defendant to pay temporary child support?**:
+      ${ word(yesno(request_child_support)) }
+  - Edit: request_no_pet_children
+    button: |
+      **Do you want the court order to protect the pets owned by the child/children?**:
+      ${ word(yesno(request_no_pet_children)) }
+  - Edit: request_no_pet_harm
+    button: |
+      **Do you want the court to order the defendant to stop cruelly treating pets?**:
+      ${ word(yesno(request_no_pet_harm)) }
+  - Edit: request_no_pet_users1
+    button: |
+      **Do you want the court order to protect the pets owned by you or the defendant?**:
+      ${ word(yesno(request_no_pet_users1)) }
+  - Edit: request_control_of_pet
+    button: |
+      **Do you want the court to order you to have temporary possession and control of any pets?**:
+      ${ word(yesno(request_control_of_pet)) }
+  - Edit: request_stay_away_children
+    button: |
+      **Do you want the court order to protect the child/children from this?**:
+      ${ word(yesno(request_stay_away_children)) }
+  - Edit: request_stay_away_feet
+    button: |
+      **How many feet away do you want the defendant to stay?**:
+      ${ request_stay_away_feet }
+  - Edit: request_stay_away_users1
+    button: |
+      **Do you want the court order to protect you from this?**:
+      ${ word(yesno(request_stay_away_users1)) }
+  - Edit: request_stay_away
+    button: |
+      **Do you want the court to order the defendant to stay a certain distance away from you (measured in feet)?**:
+      ${ word(yesno(request_stay_away)) }
+  - Edit: request_no_contact_users1
+    button: |
+      **Do you want the court order to protect you from this?**:
+      ${ word(yesno(request_no_contact_users1)) }
+  - Edit: request_no_contact_children
+    button: |
+      **Do you want the court order to protect the child/children from this?**:
+      ${ word(yesno(request_no_contact_children)) }
+  - Edit: request_no_contact
+    button: |
+      **Do you want the court to order the defendant to not contact you or the child/children in any way?**:
+      ${ word(yesno(request_no_contact)) }
+  - Edit: request_temp_PRR
+    button: |
+      **Do you want the court to award temporary Parental Rights and Responsibilities of the child/children to you or someone else? (Child(ren) of you and the defendant)**:
+      ${ word(yesno(request_temp_PRR)) }
+  - Edit: children.revisit
+    button: |
+      **Children**
+
+      % for item in children:
+        * ${ item }
+      % endfor
+  - Edit: children1_relationship_users1
+    button: |
+      **This child's relationship to you?**:
+      ${ children1_relationship_users1 }
+  - Edit: children1_relationship_OP
+    button: |
+      **This child's relationship to the defendant?**:
+      ${ children1_relationship_OP }
+  - Edit: children2_relationship_users1
+    button: |
+      **This child's relationship to you?**:
+      ${ children2_relationship_users1 }
+  - Edit: children2_relationship_OP
+    button: |
+      **This child's relationship to the defendant?**:
+      ${ children2_relationship_OP }
+  - Edit: children3_relationship_users1
+    button: |
+      **This child's relationship to you?**:
+      ${ children3_relationship_users1 }
+  - Edit: children3_relationship_OP
+    button: |
+      **This child's relationship to the defendant?**:
+      ${ children3_relationship_OP }
+  - Edit: request_other_description
+    button: |
+      **PRR other description**:
+      ${ request_other_description }
+  - Edit: request_other
+    button: |
+      **PRR other?**:
+      ${ word(yesno(request_other)) }
+  - Edit: request_all_emergency
+    button: |
+      **Do you want all of the previous requests to be put in place now -- in an emergency order? (Most people choose this to get protection right away.)**:
+      ${ word(yesno(request_all_emergency)) }
+  - Edit: date
+    button: |
+      **Date of signature of complaint form**:
+      ${ date }
+  - Edit: users1_notify_phone_number
+    button: |
+      **Users1 notify phone number**:
+      ${ users1_notify_phone_number }
+  - Edit: notify_served
+    button: |
+      **Notify served**:
+      ${ word(yesno(notify_served)) }
+  - Edit: spouse_or_ex_spouse
+    button: |
+      **I am the spouse or ex-spouse (former spouse) of the defendant.**:
+      ${ word(yesno(spouse_or_ex_spouse)) }
+  - Edit: lived_together
+    button: |
+      **The defendant and I have lived together while having a sexual relationship together.**:
+      ${ word(yesno(lived_together)) }
+  - Edit: had_kids_together
+    button: |
+      **The defendant and I have a child or children in common.**:
+      ${ word(yesno(had_kids_together)) }
+  - Edit: defendants_child
+    button: |
+      **I am the defendant’s child or step-child, or I am filing on behalf of that child or step-child.**:
+      ${ word(yesno(defendants_child)) }
+  - Edit: plaintiffs_child
+    button: |
+      **I am the child of the plaintiff who currently or has in the past lived with the defendant while having a sexual relationship together, or I am filing on behalf of that child.**:
+      ${ word(yesno(plaintiffs_child)) }
+  - Edit: suffix_sr
+    button: |
+      **Sr.**:
+      ${ word(yesno(suffix_sr)) }
+  - Edit: suffix_jr
+    button: |
+      **Jr.**:
+      ${ word(yesno(suffix_jr)) }
+  - Edit: suffix_first
+    button: |
+      **1st**:
+      ${ word(yesno(suffix_first)) }
+  - Edit: suffix_second
+    button: |
+      **2nd**:
+      ${ word(yesno(suffix_second)) }
+  - Edit: suffix_third
+    button: |
+      **3rd**:
+      ${ word(yesno(suffix_third)) }
+  - Edit: other_parties1_first_last
+    button: |
+      **Defendant's first_last name FIX THIS FIELD NAME**:
+      ${ other_parties1_first_last }
+  - Edit: other_parties1_middle_last
+    button: |
+      **Defendant's middle_last name**:
+      ${ other_parties1_middle_last }
+  - Edit: other_parties1_aliases
+    button: |
+      **List other names the defendant uses (aliases)**:
+      ${ other_parties1_aliases }
+  - Edit: sex_female
+    button: |
+      **Female**:
+      ${ word(yesno(sex_female)) }
+  - Edit: sex_male
+    button: |
+      **Male**:
+      ${ word(yesno(sex_male)) }
+  - Edit: race_white
+    button: |
+      **White**:
+      ${ word(yesno(race_white)) }
+  - Edit: race_black
+    button: |
+      **African-American**:
+      ${ word(yesno(race_black)) }
+  - Edit: race_native
+    button: |
+      **Native American**:
+      ${ word(yesno(race_native)) }
+  - Edit: race_asian
+    button: |
+      **Asian**:
+      ${ word(yesno(race_asian)) }
+  - Edit: race_other
+    button: |
+      **Other**:
+      ${ word(yesno(race_other)) }
+  - Edit: skin_light
+    button: |
+      **Light**:
+      ${ word(yesno(skin_light)) }
+  - Edit: skin_medium
+    button: |
+      **Medium**:
+      ${ word(yesno(skin_medium)) }
+  - Edit: skin_dark
+    button: |
+      **Dark**:
+      ${ word(yesno(skin_dark)) }
+  - Edit: skin_other
+    button: |
+      **Other**:
+      ${ word(yesno(skin_other)) }
+  - Edit: other_parties1_height_ft
+    button: |
+      **Height -- feet**:
+      ${ other_parties1_height_ft }
+  - Edit: other_parties1_height_in
+    button: |
+      **Height -- inches**:
+      ${ other_parties1_height_in }
+  - Edit: other_parties1_weight_lbs
+    button: |
+      **Weight -- in pounds**:
+      ${ other_parties1_weight_lbs }
+  - Edit: eyes_brown
+    button: |
+      **Brown**:
+      ${ word(yesno(eyes_brown)) }
+  - Edit: eyes_blue
+    button: |
+      **Blue**:
+      ${ word(yesno(eyes_blue)) }
+  - Edit: eyes_gray
+    button: |
+      **Gray**:
+      ${ word(yesno(eyes_gray)) }
+  - Edit: eyes_green
+    button: |
+      **Green**:
+      ${ word(yesno(eyes_green)) }
+  - Edit: eyes_hazel
+    button: |
+      **Hazel**:
+      ${ word(yesno(eyes_hazel)) }
+  - Edit: eyes_other
+    button: |
+      **Other**:
+      ${ word(yesno(eyes_other)) }
+  - Edit: lenses_glasses
+    button: |
+      **Glasses**:
+      ${ word(yesno(lenses_glasses)) }
+  - Edit: lenses_contacts
+    button: |
+      **Contacts**:
+      ${ word(yesno(lenses_contacts)) }
+  - Edit: hair_brown
+    button: |
+      **Brown**:
+      ${ word(yesno(hair_brown)) }
+  - Edit: hair_blond
+    button: |
+      **Blond**:
+      ${ word(yesno(hair_blond)) }
+  - Edit: hair_black
+    button: |
+      **Black**:
+      ${ word(yesno(hair_black)) }
+  - Edit: hair_red
+    button: |
+      **Red**:
+      ${ word(yesno(hair_red)) }
+  - Edit: hair_gray
+    button: |
+      **Gray / white**:
+      ${ word(yesno(hair_gray)) }
+  - Edit: hair_bald
+    button: |
+      **Bald**:
+      ${ word(yesno(hair_bald)) }
+  - Edit: hair_other
+    button: |
+      **Other**:
+      ${ word(yesno(hair_other)) }
+  - Edit: hair_short
+    button: |
+      **Short**:
+      ${ word(yesno(hair_short)) }
+  - Edit: hair_medium
+    button: |
+      **Medium**:
+      ${ word(yesno(hair_medium)) }
+  - Edit: hair_long
+    button: |
+      **Long**:
+      ${ word(yesno(hair_long)) }
+  - Edit: hair_beard
+    button: |
+      **Beard**:
+      ${ word(yesno(hair_beard)) }
+  - Edit: hair_mustache
+    button: |
+      **Mustache**:
+      ${ word(yesno(hair_mustache)) }
+  - Edit: tattoos
+    button: |
+      **Tattoos**:
+      ${ word(yesno(tattoos)) }
+  - Edit: tattoos_location
+    button: |
+      **Where are the tattoos located?**:
+      ${ tattoos_location }
+  - Edit: scars
+    button: |
+      **Scars or marks**:
+      ${ word(yesno(scars)) }
+  - Edit: scars_location
+    button: |
+      **Where are the scars located?**:
+      ${ scars_location }
+  - Edit: piercing
+    button: |
+      **Body piercing / earrings**:
+      ${ word(yesno(piercing)) }
+  - Edit: piercing_location
+    button: |
+      **Where are the piercings located?**:
+      ${ piercing_location }
+  - Edit: other_marks
+    button: |
+      **Other identifying marks**:
+      ${ word(yesno(other_marks)) }
+  - Edit: marks_location
+    button: |
+      **Where are the marks located?**:
+      ${ marks_location }
+  - Edit: other_parties1_word_phone_number
+    button: |
+      **Defendant's work phone number FIX NAME OF FIELD**:
+      ${ other_parties1_word_phone_number }
+  - Edit: other_parties1_other_phone_number
+    button: |
+      **Defendant's other phone number**:
+      ${ other_parties1_other_phone_number }
+  - Edit: house
+    button: |
+      **The house or building number on the street (Example: Enter 10 if it's 10 Main Street.)**:
+      ${ house }
+  - Edit: location_of_home
+    button: |
+      **If you don't have a street address, describe the location of the home.**:
+      > ${ single_paragraph(location_of_home) }
+  - Edit: description_of_home
+    button: |
+      **Describe what the defendant's home looks like.**:
+      > ${ single_paragraph(description_of_home) }
+  - Edit: best_contact_time
+    button: |
+      **Best days and times to contact the defendant at home.**:
+      > ${ single_paragraph(best_contact_time) }
+  - Edit: employers_street_address
+    button: |
+      **Their employers street address**:
+      ${ employers_street_address }
+  - Edit: employer
+    button: |
+      **Defendant's employer**:
+      ${ employer }
+  - Edit: employers_city_state
+    button: |
+      **Employers city and state**:
+      ${ employers_city_state }
+  - Edit: work_mondays
+    button: |
+      **Work hours on Mondays**:
+      ${ work_mondays }
+  - Edit: work_tues
+    button: |
+      **Work hours on Tuesdays**:
+      ${ work_tues }
+  - Edit: work_weds
+    button: |
+      **Work hours on Wednesdays**:
+      ${ work_weds }
+  - Edit: work_thurs
+    button: |
+      **Work hours on Thursdays**:
+      ${ work_thurs }
+  - Edit: work_fri
+    button: |
+      **Work hours on Fridays**:
+      ${ work_fri }
+  - Edit: work_sat
+    button: |
+      **Work hours on Saturdays**:
+      ${ work_sat }
+  - Edit: work_sun
+    button: |
+      **Work hours on Sundays**:
+      ${ work_sun }
+  - Edit: other_location_street_address
+    button: |
+      **Where would they be if not at home or work? List the street address of another location. NEED TO ADD FIELD FOR HOUSE NUMBER AND RENAME ON PDF TO house2.**:
+      ${ other_location_street_address }
+  - Edit: other_location_city
+    button: |
+      **Town / city**:
+      ${ other_location_city }
+  - Edit: other_location_state
+    button: |
+      **State**:
+      ${ other_location_state }
+  - Edit: other_location_phone
+    button: |
+      **Phone number at that location**:
+      ${ other_location_phone }
+  - Edit: other_location2_street_address
+    button: |
+      **List another street address if there is another location. NEED TO ADD FIELD FOR HOUSE NUMBER AND RENAME ON PDF TO house3.**:
+      ${ other_location2_street_address }
+  - Edit: other_location2_city
+    button: |
+      **Town / city**:
+      ${ other_location2_city }
+  - Edit: other_location2_state
+    button: |
+      **State**:
+      ${ other_location2_state }
+  - Edit: other_location2_phone
+    button: |
+      **Phone number at that location**:
+      ${ other_location2_phone }
+  - Edit: vehicle_plate
+    button: |
+      **Vehicle plate number**:
+      ${ vehicle_plate }
+  - Edit: vehicle_year
+    button: |
+      **Vehicle year**:
+      ${ vehicle_year }
+  - Edit: vehicle_make
+    button: |
+      **What brand car or truck do they drive? (Ford, Honda, etc.)**:
+      ${ vehicle_make }
+  - Edit: vehicle_model
+    button: |
+      **What model car or truck? (F-150, Civic)**:
+      ${ vehicle_model }
+  - Edit: vehicle_color
+    button: |
+      **Color of car or truck**:
+      ${ vehicle_color }
+  - Edit: avoid_served
+    button: |
+      **y.) Will the defendant try to avoid being served this order?**:
+      ${ word(yesno(avoid_served)) }
+  - Edit: guard_dog
+    button: |
+      **Does the defendant have guard dogs or vicious dogs?**:
+      ${ word(yesno(guard_dog)) }
+  - Edit: under_infl
+    button: |
+      **Is the defendant likely to be under the influence of drugs or alcohol?**:
+      ${ word(yesno(under_infl)) }
+  - Edit: danger_for_officer
+    button: |
+      **Will the officer who serves this order be in any danger?**:
+      ${ word(yesno(danger_for_officer)) }
+  - Edit: danger_for_officer_why
+    button: |
+      **Why will the officer be in danger?**:
+      > ${ single_paragraph(danger_for_officer_why) }
+  - Edit: house2
+    button: |
+      **House or building number on the street**:
+      ${ house2 }
+  - Edit: house3
+    button: |
+      **House or building number on the street**:
+      ${ house3 }
+---
+continue button field: users.revisit
+question: |
+  Edit users
+subquestion: |
+  ${ users.table }
+
+  ${ users.add_action() }
+---
+table: users.table
+rows: users
+columns:
+  - Name: |
+      row_item.name.full() if defined("row_item.name.middle") else ""
+  - Birthdate: |
+      row_item.birthdate if defined("row_item.birthdate") else ""
+  - Address: |
+      row_item.address.block() if defined("row_item.address.zip") else ""
+  - Phone number: |
+      row_item.phone_number if defined("row_item.phone_number") else ""
+  - Email: |
+      row_item.email if defined("row_item.email") else ""
+  - Signature: |
+      row_item.signature if defined("row_item.signature") else ""
+edit:
+  - name.middle
+  - birthdate
+  - address.zip
+  - phone_number
+  - email
+  - signature
+confirm: True
+
+---
+continue button field: other_parties.revisit
+question: |
+  Edit other_parties
+subquestion: |
+  ${ other_parties.table }
+
+  ${ other_parties.add_action() }
+---
+table: other_parties.table
+rows: other_parties
+columns:
+  - Name: |
+      row_item.name.full() if defined("row_item.name.last") else ""
+  - Birthdate: |
+      row_item.birthdate if defined("row_item.birthdate") else ""
+  - Address: |
+      row_item.address.block() if defined("row_item.address.zip") else ""
+  - Phone number: |
+      row_item.phone_number if defined("row_item.phone_number") else ""
+  - Mobile number: |
+      row_item.mobile_number if defined("row_item.mobile_number") else ""
+edit:
+  - name.last
+  - birthdate
+  - address.zip
+  - phone_number
+  - mobile_number
+confirm: True
+
+---
+continue button field: spouses.revisit
+question: |
+  Edit spouses
+subquestion: |
+  ${ spouses.table }
+
+  ${ spouses.add_action() }
+---
+table: spouses.table
+rows: spouses
+columns:
+  - Name: |
+      row_item.name.full() if defined("row_item.name.first") else ""
+edit:
+  - name.first
+confirm: True
+
+---
+continue button field: children.revisit
+question: |
+  Edit children
+subquestion: |
+  ${ children.table }
+
+  ${ children.add_action() }
+---
+table: children.table
+rows: children
+columns:
+  - Name: |
+      row_item.name.full() if defined("row_item.name.first") else ""
+  - Birthdate: |
+      row_item.birthdate if defined("row_item.birthdate") else ""
+edit:
+  - name.first
+  - birthdate
+confirm: True
+
+---
+id: download RFApackage
+event: RFApackage_download
+question: |
+  All done
+subquestion: |
+  Thank you ${users}. Your form is ready to download and deliver.
+  
+  View, download and send your form below. Click the "Edit answers" button to fix any mistakes.
+
+  ${ action_button_html(url_action('review_RFApackage'), label='Edit answers', color='info') }
+  
+  
+  ${ al_user_bundle.download_list_html() }
+  
+
+  ${ al_user_bundle.send_button_html(show_editable_checkbox=False) }
+
+progress: 100
+---
+# ALDocument objects specify the metadata for each template
+objects:
+  - RFApackage_Post_interview_instructions: ALDocument.using(title="Instructions", filename="RFApackage_next_steps.docx", enabled=True, has_addendum=False)
+  - _RFAaffidavit: ALDocument.using(title="3 rfa-affidavit", filename="3_RFA-affidavit", enabled=True, has_addendum=True, default_overflow_message=AL_DEFAULT_OVERFLOW_MESSAGE)
+  - _RFAconfidentialcontactinfo: ALDocument.using(title="4 rfa-confidential-contact-info", filename="4_RFA-confidential-contact-info", enabled=True, has_addendum=True, default_overflow_message=AL_DEFAULT_OVERFLOW_MESSAGE)
+  - _RFAcomplaint: ALDocument.using(title="1 rfa-complaint", filename="1_RFA-complaint", enabled=True, has_addendum=True, default_overflow_message=AL_DEFAULT_OVERFLOW_MESSAGE)
+  - _RFAserviceinfo: ALDocument.using(title="2 rfa-service-info", filename="2_RFA-service-info", enabled=True, has_addendum=True, default_overflow_message=AL_DEFAULT_OVERFLOW_MESSAGE)
+---
+# Bundles group the ALDocuments into separate downloads, such as for court and for the user
+objects:
+  - al_user_bundle: ALDocumentBundle.using(elements=[RFApackage_Post_interview_instructions, _RFAaffidavit, _RFAconfidentialcontactinfo, _RFAcomplaint, _RFAserviceinfo], filename="RFApackage", title="All forms to download for your records", enabled=True)
+  - al_court_bundle: ALDocumentBundle.using(elements=[_RFAaffidavit, _RFAconfidentialcontactinfo, _RFAcomplaint, _RFAserviceinfo],  filename="RFApackage", title="All forms to deliver to court", enabled=True)
+---
+# Each attachment defines a key in an ALDocument. We use `i` as the placeholder here so the same template is 
+# used for "preview" and "final" keys, and logic in the template checks the value of 
+# `i` to show or hide the user's signature
+attachment:
+  name: Post-interview-Instructions
+  filename: RFApackage_next_steps
+  docx template file: RFApackage_next_steps.docx
+  variable name: RFApackage_Post_interview_instructions[i]
+  skip undefined: True
+---
+attachment:
+  name: 3 RFA-affidavit
+  filename: 3_RFA-affidavit
+  variable name: _RFAaffidavit[i]
+  skip undefined: True
+  pdf template file: 3_RFA-affidavit.pdf
+  fields:
+      - "docket_number__1": ${ docket_number }
+      - "docket_number__2": ${ docket_number }
+      - "docket_number": ${ docket_number }
+      - "trial_court_county__1": ${ trial_court.address.county }
+      - "trial_court_county__2": ${ trial_court.address.county }
+      - "trial_court_county": ${ trial_court.address.county }
+      - "users1_name__1": ${ users[0] }
+      - "users1_name__2": ${ users[0] }
+      - "users1_name": ${ users[0] }
+      - "users1_birthdate__1": ${ users[0].birthdate.format() }
+      - "users1_birthdate": ${ users[0].birthdate.format() }
+      - "users1_birthdate__2": ${ users[0].birthdate.format() }
+      - "other_parties1_name__1": ${ other_parties[0] }
+      - "other_parties1_name__2": ${ other_parties[0] }
+      - "other_parties1_name": ${ other_parties[0] }
+      - "other_parties1_birthdate__1": ${ other_parties[0].birthdate.format() }
+      - "other_parties1_birthdate": ${ other_parties[0].birthdate.format() }
+      - "other_parties1_birthdate__2": ${ other_parties[0].birthdate.format() }
+      - "other_parties1_address_address__1": ${ other_parties[0].address.address }
+      - "other_parties1_address_address": ${ other_parties[0].address.address }
+      - "other_parties1_address_address__2": ${ other_parties[0].address.address }
+      - "other_parties1_address_city__1": ${ other_parties[0].address.city }
+      - "other_parties1_address_city": ${ other_parties[0].address.city }
+      - "other_parties1_address_city__2": ${ other_parties[0].address.city }
+      - "other_parties1_address_state__1": ${ other_parties[0].address.state }
+      - "other_parties1_address_state": ${ other_parties[0].address.state }
+      - "other_parties1_address_state__2": ${ other_parties[0].address.state }
+      - "other_parties1_address_zip__1": ${ other_parties[0].address.zip }
+      - "other_parties1_address_zip": ${ other_parties[0].address.zip }
+      - "other_parties1_weapon_yes": ${ other_parties1_weapon }
+      - "other_parties1_weapon_no": ${ not other_parties1_weapon }
+      - "other_parties1_weapon_DK": ${ other_parties1_weapon_DK }
+      - "recent_incident_date__1": ${ recent_incident_date.format() }
+      - "recent_incident_date": ${ recent_incident_date.format() }
+      - "recent_incident_time": ${ recent_incident_time }
+      - "recent_incident_town": ${ recent_incident_town }
+      - "recent_incident_state": ${ recent_incident_state }
+      - "recent_incident_description": ${ _RFAaffidavit.safe_value("recent_incident_description") }
+      - "recent_incident_most_serious_yes": ${ recent_incident_most_serious }
+      - "recent_incident_most_serious_no": ${ not recent_incident_most_serious }
+      - "serious_incident_date": ${ serious_incident_date.format() }
+      - "serious_incident_time": ${ serious_incident_time }
+      - "serious_incident_town": ${ serious_incident_town }
+      - "serious_incident_state": ${ serious_incident_state }
+      - "serious_incident_description": ${ _RFAaffidavit.safe_value("serious_incident_description") }
+      - "other_incident_description": ${ _RFAaffidavit.safe_value("other_incident_description") }
+      - "weapon1": ${ weapon1 }
+      - "weapon1_location": ${ weapon1_location }
+      - "weapon2": ${ weapon2 }
+      - "weapon2_location": ${ weapon2_location }
+      - "weapon3_location": ${ weapon3_location }
+      - "weapon3": ${ weapon3 }
+      - "weapon4_location": ${ weapon4_location }
+      - "weapon4": ${ weapon4 }
+      - "weapon5_location": ${ weapon5_location }
+      - "weapon5": ${ weapon5 }
+      - "weapon6_location": ${ weapon6_location }
+      - "weapon6": ${ weapon6 }
+      - "weapon7": ${ weapon7 }
+      - "weapon7_location": ${ weapon7_location }
+      - "weapon8": ${ weapon8 }
+      - "weapon8_location": ${ weapon8_location }
+      - "extra_sheets_attached": ${ extra_sheets_attached }
+      - "used_firearm_yes": ${ used_firearm }
+      - "used_firearm_no": ${ not used_firearm }
+      - "used_firearm_how": ${ _RFAaffidavit.safe_value("used_firearm_how") }
+      - "danger_more_abuse_yes": ${ danger_more_abuse }
+      - "danger_more_abuse_no": ${ not danger_more_abuse }
+      - "danger_more_abuse": ${ not danger_more_abuse }
+      - "danger_more_abuse_why": ${ _RFAaffidavit.safe_value("danger_more_abuse_why") }
+      - "other_parties1_military_yes": ${ other_parties1_military }
+      - "other_parties1_military_no": ${ not other_parties1_military }
+      - "affidavit_signature": ${ affidavit_signature }
+      - "affidavit_signature_date": ${ affidavit_signature_date.format() }
+      - "printed_signature": ${ printed_signature }
+      - "notary_signature_date": ${ notary_signature_date.format() }
+      - "notary_expiration_date": ${ notary_expiration_date.format() }
+      - "notary_signature": ${ notary_signature }
+---
+attachment:
+  name: 4 RFA-confidential-contact-info
+  filename: 4_RFA-confidential-contact-info
+  variable name: _RFAconfidentialcontactinfo[i]
+  skip undefined: True
+  pdf template file: 4_RFA-confidential-contact-info.pdf
+  fields:
+      - "docket_number__1": ${ docket_number }
+      - "docket_number__2": ${ docket_number }
+      - "docket_number": ${ docket_number }
+      - "trial_court_county__1": ${ trial_court.address.county }
+      - "trial_court_county__2": ${ trial_court.address.county }
+      - "trial_court_county": ${ trial_court.address.county }
+      - "users1_name__1": ${ users[0] }
+      - "users1_name__2": ${ users[0] }
+      - "users1_name": ${ users[0] }
+      - "users1_address_address__1": ${ users[0].address.address }
+      - "users1_address_address": ${ users[0].address.address }
+      - "users1_address_mailing": ${ users1_address_mailing }
+      - "users1_address_city__1": ${ users[0].address.city }
+      - "users1_address_city": ${ users[0].address.city }
+      - "users1_address_state__1": ${ users[0].address.state }
+      - "users1_address_state": ${ users[0].address.state }
+      - "users1_address_zip__1": ${ users[0].address.zip }
+      - "users1_phone_number": ${ users[0].phone_number }
+      - "users1_work_phone_number": ${ users1_work_phone_number }
+      - "users1_email": ${ users[0].email }
+      - "share_contact_yes": ${ share_contact }
+      - "share_contact_no": ${ not share_contact }
+      - "signature_date__1": ${ signature_date }
+      - "signature_date": ${ signature_date }
+      - "users1_signature__1": ${ users[0].signature_if_final(i) }
+      - "users1_signature": ${ users[0].signature_if_final(i) }
+---
+attachment:
+  name: 1 RFA-complaint
+  filename: 1_RFA-complaint
+  variable name: _RFAcomplaint[i]
+  skip undefined: True
+  pdf template file: 1_RFA-complaint.pdf
+  fields:
+      - "docket_number__1": ${ docket_number }
+      - "docket_number__2": ${ docket_number }
+      - "docket_number": ${ docket_number }
+      - "trial_court_county__1": ${ trial_court.address.county }
+      - "trial_court_county__2": ${ trial_court.address.county }
+      - "trial_court_county": ${ trial_court.address.county }
+      - "users1_name__1": ${ users[0] }
+      - "users1_name__2": ${ users[0] }
+      - "users1_name": ${ users[0] }
+      - "users1_birthdate__1": ${ users[0].birthdate.format() }
+      - "users1_birthdate": ${ users[0].birthdate.format() }
+      - "users1_birthdate__2": ${ users[0].birthdate.format() }
+      - "other_parties1_name__1": ${ other_parties[0] }
+      - "other_parties1_name__2": ${ other_parties[0] }
+      - "other_parties1_name": ${ other_parties[0] }
+      - "other_parties1_birthdate__1": ${ other_parties[0].birthdate.format() }
+      - "other_parties1_birthdate": ${ other_parties[0].birthdate.format() }
+      - "other_parties1_birthdate__2": ${ other_parties[0].birthdate.format() }
+      - "other_parties1_address_address__1": ${ other_parties[0].address.address }
+      - "other_parties1_address_address": ${ other_parties[0].address.address }
+      - "other_parties1_address_address__2": ${ other_parties[0].address.address }
+      - "other_parties1_address_city__1": ${ other_parties[0].address.city }
+      - "other_parties1_address_city": ${ other_parties[0].address.city }
+      - "other_parties1_address_city__2": ${ other_parties[0].address.city }
+      - "other_parties1_address_state__1": ${ other_parties[0].address.state }
+      - "other_parties1_address_state": ${ other_parties[0].address.state }
+      - "other_parties1_address_state__2": ${ other_parties[0].address.state }
+      - "other_parties1_address_zip__1": ${ other_parties[0].address.zip }
+      - "other_parties1_address_zip": ${ other_parties[0].address.zip }
+      - "recent_incident_date__1": ${ recent_incident_date.format() }
+      - "recent_incident_date": ${ recent_incident_date.format() }
+      - "danger_more_abuse_yes": ${ danger_more_abuse }
+      - "danger_more_abuse_no": ${ not danger_more_abuse }
+      - "danger_more_abuse": ${ not danger_more_abuse }
+      - "users1_address_address__1": ${ users[0].address.address }
+      - "users1_address_address": ${ users[0].address.address }
+      - "users1_address_city__1": ${ users[0].address.city }
+      - "users1_address_city": ${ users[0].address.city }
+      - "users1_address_state__1": ${ users[0].address.state }
+      - "users1_address_state": ${ users[0].address.state }
+      - "signature_date__1": ${ signature_date }
+      - "signature_date": ${ signature_date }
+      - "users1_signature__1": ${ users[0].signature_if_final(i) }
+      - "users1_signature": ${ users[0].signature_if_final(i) }
+      - "family_member_description": ${ family_member_description }
+      - "family_member": ${ family_member }
+      - "spouse": ${ spouses[0] }
+      - "other_relationship_description": ${ other_relationship_description }
+      - "ex_spouse": ${ ex_spouse }
+      - "other_relationship": ${ other_relationship }
+      - "live_together": ${ live_together }
+      - "sexual_relationship": ${ sexual_relationship }
+      - "dating": ${ dating }
+      - "existing_order_divorce_yes": ${ existing_order_divorce }
+      - "existing_order_divorce_no": ${ not existing_order_divorce }
+      - "dissolution_yes": ${ dissolution }
+      - "dissolution_no": ${ not dissolution }
+      - "existing_order_RFA_yes": ${ existing_order_RFA }
+      - "existing_order_RFA_no": ${ not existing_order_RFA }
+      - "criminal_proceeding_yes": ${ criminal_proceeding }
+      - "criminal_proceeding_no": ${ not criminal_proceeding }
+      - "parentage_order_yes": ${ parentage_order }
+      - "parentage_order_no": ${ not parentage_order }
+      - "guardianship_order_yes": ${ guardianship_order }
+      - "guardianship_order_no": ${ not guardianship_order }
+      - "juvenile_order_yes": ${ juvenile_order }
+      - "juvenile_order_no": ${ not juvenile_order }
+      - "child_support_order_yes": ${ child_support_order }
+      - "child_support_order_no": ${ not child_support_order }
+      - "existing_order_state": ${ existing_order_state }
+      - "existing_order_county": ${ existing_order_county }
+      - "existing_order_users_attorney": ${ existing_order_users_attorney }
+      - "existing_order_OP_attorney": ${ existing_order_OP_attorney }
+      - "recent_incident_yes": ${ recent_incident_yes }
+      - "recent_incident_users1": ${ recent_incident_users1 }
+      - "recent_incident_children": ${ recent_incident_children }
+      - "recent_incident_children_names": ${ recent_incident_children_names }
+      - "recent_incident_harm": ${ recent_incident_harm }
+      - "recent_incident_fear": ${ recent_incident_fear }
+      - "recent_incident_abused": ${ recent_incident_abused }
+      - "recent_incident_stalked_users1": ${ recent_incident_stalked_users1 }
+      - "recent_incident_stalked_children": ${ recent_incident_stalked_children }
+      - "recent_incident_stalked": ${ recent_incident_stalked }
+      - "recent_incident_stalked_date2": ${ recent_incident_stalked_date2 }
+      - "recent_incident_stalked_date1": ${ recent_incident_stalked_date1 }
+      - "recent_incident_assault_children": ${ recent_incident_assault_children }
+      - "recent_incident_assault_": ${ recent_incident_assault_ }
+      - "recent_incident_assault_users1": ${ recent_incident_assault_users1 }
+      - "danger_more_abuse_children": ${ danger_more_abuse_children }
+      - "danger_more_abuse_users1": ${ danger_more_abuse_users1 }
+      - "used_firearm_yes__1": ${ used_firearm_yes }
+      - "incarcerated": ${ incarcerated }
+      - "users1_no_shelter": ${ users1_no_shelter }
+      - "residence_of_users1": ${ residence_of_users1 }
+      - "residence_owned": ${ residence_owned }
+      - "residence_rented": ${ residence_rented }
+      - "residence_of_OP": ${ residence_of_OP }
+      - "residence_of_other": ${ residence_of_other }
+      - "residence_of_both": ${ residence_of_both }
+      - "reach_up_users1": ${ reach_up_users1 }
+      - "reach_up_OP": ${ reach_up_OP }
+      - "Is there an existing order or a pending court proceeding involving you the Defendant andor the children in this": ${ Is_there_an_existing_order_or_a_pending_court_proceeding_involving_you_the_Defendant_andor_the_children_in_this }
+      - "Civil Union Dissolution": ${ Civil_Union_Dissolution }
+      - "request_not_abuse_children": ${ request_not_abuse_children }
+      - "request_not_abuse_users1": ${ request_not_abuse_users1 }
+      - "request_not_abuse": ${ request_not_abuse }
+      - "request_no_stalking_assault": ${ request_no_stalking_assault }
+      - "request_no_stalking": ${ request_no_stalking }
+      - "request_no_assault": ${ request_no_assault }
+      - "request_no_assault_users1": ${ request_no_assault_users1 }
+      - "request_no_assault_children": ${ request_no_assault_children }
+      - "request_leave": ${ request_leave }
+      - "request_no_firearms": ${ request_no_firearms }
+      - "request_surrender_firearms": ${ request_surrender_firearms }
+      - "request_living_expenses": ${ request_living_expenses }
+      - "request_child_support": ${ request_child_support }
+      - "request_no_pet_children": ${ request_no_pet_children }
+      - "request_no_pet_harm": ${ request_no_pet_harm }
+      - "request_no_pet_users1": ${ request_no_pet_users1 }
+      - "request_control_of_pet": ${ request_control_of_pet }
+      - "request_stay_away_children": ${ request_stay_away_children }
+      - "request_stay_away_feet": ${ request_stay_away_feet }
+      - "request_stay_away_users1": ${ request_stay_away_users1 }
+      - "request_stay_away": ${ request_stay_away }
+      - "request_no_contact_users1": ${ request_no_contact_users1 }
+      - "request_no_contact_children": ${ request_no_contact_children }
+      - "request_no_contact": ${ request_no_contact }
+      - "request_temp_PRR": ${ request_temp_PRR }
+      - "children1_name": ${ children[0] }
+      - "children1_birthdate": ${ children[0].birthdate.format() }
+      - "children1_relationship_users1": ${ children1_relationship_users1 }
+      - "children1_relationship_OP": ${ children1_relationship_OP }
+      - "children2_name": ${ children[1] }
+      - "children2_birthdate": ${ children[1].birthdate.format() }
+      - "children2_relationship_users1": ${ children2_relationship_users1 }
+      - "children2_relationship_OP": ${ children2_relationship_OP }
+      - "children3_name": ${ children[2] }
+      - "children3_birthdate": ${ children[2].birthdate.format() }
+      - "children3_relationship_users1": ${ children3_relationship_users1 }
+      - "children3_relationship_OP": ${ children3_relationship_OP }
+      - "request_other_description": ${ request_other_description }
+      - "request_other": ${ request_other }
+      - "request_all_emergency": ${ request_all_emergency }
+---
+attachment:
+  name: 2 RFA-service-info
+  filename: 2_RFA-service-info
+  variable name: _RFAserviceinfo[i]
+  skip undefined: True
+  pdf template file: 2_RFA-service-info.pdf
+  fields:
+      - "users1_birthdate__1": ${ users[0].birthdate.format() }
+      - "users1_birthdate": ${ users[0].birthdate.format() }
+      - "users1_birthdate__2": ${ users[0].birthdate.format() }
+      - "other_parties1_birthdate__1": ${ other_parties[0].birthdate.format() }
+      - "other_parties1_birthdate": ${ other_parties[0].birthdate.format() }
+      - "other_parties1_birthdate__2": ${ other_parties[0].birthdate.format() }
+      - "other_parties1_address_address__1": ${ other_parties[0].address.address }
+      - "other_parties1_address_address": ${ other_parties[0].address.address }
+      - "other_parties1_address_address__2": ${ other_parties[0].address.address }
+      - "other_parties1_address_city__1": ${ other_parties[0].address.city }
+      - "other_parties1_address_city": ${ other_parties[0].address.city }
+      - "other_parties1_address_city__2": ${ other_parties[0].address.city }
+      - "other_parties1_address_state__1": ${ other_parties[0].address.state }
+      - "other_parties1_address_state": ${ other_parties[0].address.state }
+      - "other_parties1_address_state__2": ${ other_parties[0].address.state }
+      - "date": ${ date }
+      - "users1_name_last": ${ users[0].name.last }
+      - "users1_name_first": ${ users[0].name.first }
+      - "users1_name_middle": ${ users[0].name.middle }
+      - "users1_notify_phone_number": ${ users1_notify_phone_number }
+      - "notify_served_yes": ${ notify_served }
+      - "notify_served_no": ${ not notify_served }
+      - "spouse_or_ex_spouse": ${ spouse_or_ex_spouse }
+      - "lived_together": ${ lived_together }
+      - "had_kids_together": ${ had_kids_together }
+      - "defendants_child": ${ defendants_child }
+      - "plaintiffs_child": ${ plaintiffs_child }
+      - "suffix_sr": ${ suffix_sr }
+      - "suffix_jr": ${ suffix_jr }
+      - "suffix_first": ${ suffix_first }
+      - "suffix_second": ${ suffix_second }
+      - "suffix_third": ${ suffix_third }
+      - "other_parties1_name_last": ${ other_parties[0].name.last }
+      - "other_parties1_first_last": ${ other_parties1_first_last }
+      - "other_parties1_middle_last": ${ other_parties1_middle_last }
+      - "other_parties1_age": ${ other_parties[0].age_in_years() }
+      - "other_parties1_aliases": ${ other_parties1_aliases }
+      - "sex_female": ${ sex_female }
+      - "sex_male": ${ sex_male }
+      - "race_white": ${ race_white }
+      - "race_black": ${ race_black }
+      - "race_native": ${ race_native }
+      - "race_asian": ${ race_asian }
+      - "race_other": ${ race_other }
+      - "skin_light": ${ skin_light }
+      - "skin_medium": ${ skin_medium }
+      - "skin_dark": ${ skin_dark }
+      - "skin_other": ${ skin_other }
+      - "other_parties1_height_ft": ${ other_parties1_height_ft }
+      - "other_parties1_height_in": ${ other_parties1_height_in }
+      - "other_parties1_weight_lbs": ${ other_parties1_weight_lbs }
+      - "eyes_brown": ${ eyes_brown }
+      - "eyes_blue": ${ eyes_blue }
+      - "eyes_gray": ${ eyes_gray }
+      - "eyes_green": ${ eyes_green }
+      - "eyes_hazel": ${ eyes_hazel }
+      - "eyes_other": ${ eyes_other }
+      - "lenses_glasses": ${ lenses_glasses }
+      - "lenses_contacts": ${ lenses_contacts }
+      - "hair_brown": ${ hair_brown }
+      - "hair_blond": ${ hair_blond }
+      - "hair_black": ${ hair_black }
+      - "hair_red": ${ hair_red }
+      - "hair_gray": ${ hair_gray }
+      - "hair_bald": ${ hair_bald }
+      - "hair_bald__1": ${ hair_bald }
+      - "hair_other": ${ hair_other }
+      - "hair_short": ${ hair_short }
+      - "hair_medium": ${ hair_medium }
+      - "hair_long": ${ hair_long }
+      - "hair_beard": ${ hair_beard }
+      - "hair_mustache": ${ hair_mustache }
+      - "tattoos": ${ tattoos }
+      - "tattoos_location": ${ tattoos_location }
+      - "scars": ${ scars }
+      - "scars_location": ${ scars_location }
+      - "piercing": ${ piercing }
+      - "piercing_location": ${ piercing_location }
+      - "other_marks": ${ other_marks }
+      - "marks_location": ${ marks_location }
+      - "other_parties1_phone_number": ${ other_parties[0].phone_number }
+      - "other_parties1_mobile_number": ${ other_parties[0].mobile_number }
+      - "other_parties1_word_phone_number": ${ other_parties1_word_phone_number }
+      - "other_parties1_other_phone_number": ${ other_parties1_other_phone_number }
+      - "house": ${ house }
+      - "house__1": ${ house }
+      - "house__2": ${ house }
+      - "location_of_home": ${ _RFAserviceinfo.safe_value("location_of_home") }
+      - "description_of_home": ${ description_of_home }
+      - "best_contact_time": ${ _RFAserviceinfo.safe_value("best_contact_time") }
+      - "employers_street_address": ${ employers_street_address }
+      - "employer": ${ employer }
+      - "employers_city_state": ${ employers_city_state }
+      - "work_mondays": ${ work_mondays }
+      - "work_tues": ${ work_tues }
+      - "work_weds": ${ work_weds }
+      - "work_thurs": ${ work_thurs }
+      - "work_fri": ${ work_fri }
+      - "work_sat": ${ work_sat }
+      - "work_sun": ${ work_sun }
+      - "other_location_street_address": ${ other_location_street_address }
+      - "other_location_city": ${ other_location_city }
+      - "other_location_state": ${ other_location_state }
+      - "other_location_phone": ${ other_location_phone }
+      - "other_location2_street_address": ${ other_location2_street_address }
+      - "other_location2_city": ${ other_location2_city }
+      - "other_location2_state": ${ other_location2_state }
+      - "other_location2_phone": ${ other_location2_phone }
+      - "vehicle_plate": ${ vehicle_plate }
+      - "vehicle_year": ${ vehicle_year }
+      - "vehicle_make": ${ vehicle_make }
+      - "vehicle_model": ${ vehicle_model }
+      - "vehicle_color": ${ vehicle_color }
+      - "avoid_served_yes": ${ avoid_served }
+      - "avoid_served_no": ${ not avoid_served }
+      - "guard_dog_yes": ${ guard_dog }
+      - "guard_dog_no": ${ not guard_dog }
+      - "under_infl_yes": ${ under_infl }
+      - "under_infl_no": ${ not under_infl }
+      - "danger_for_officer_yes": ${ danger_for_officer }
+      - "danger_for_officer_no": ${ not danger_for_officer }
+      - "danger_for_officer_why": ${ _RFAserviceinfo.safe_value("danger_for_officer_why") }
+---
+code: |
+  RFApackage_attachment.overflow_fields["recent_incident_description"].overflow_trigger = 1246
+  RFApackage_attachment.overflow_fields["recent_incident_description"].label = "Please describe the most recent incident with as much detail as possible."
+  RFApackage_attachment.overflow_fields["serious_incident_description"].overflow_trigger = 870
+  RFApackage_attachment.overflow_fields["serious_incident_description"].label = "Please describe the most serious incident with as much detail as possible."
+  RFApackage_attachment.overflow_fields["other_incident_description"].overflow_trigger = 2262
+  RFApackage_attachment.overflow_fields["other_incident_description"].label = "Please describe the any other incident(s) with as much detail as possible."
+  RFApackage_attachment.overflow_fields["used_firearm_how"].overflow_trigger = 602
+  RFApackage_attachment.overflow_fields["used_firearm_how"].label = "Describe in detail how they used or threatened to use it?"
+  RFApackage_attachment.overflow_fields["danger_more_abuse_why"].overflow_trigger = 258
+  RFApackage_attachment.overflow_fields["danger_more_abuse_why"].label = "Explain why you think there is danger of more abuse. Be as specific as possible."
+  RFApackage_attachment.overflow_fields["location_of_home"].overflow_trigger = 850
+  RFApackage_attachment.overflow_fields["location_of_home"].label = "If you don't have a street address, describe the location of the home."
+  RFApackage_attachment.overflow_fields["best_contact_time"].overflow_trigger = 170
+  RFApackage_attachment.overflow_fields["best_contact_time"].label = "Best days and times to contact the defendant at home."
+  RFApackage_attachment.overflow_fields["danger_for_officer_why"].overflow_trigger = 255
+  RFApackage_attachment.overflow_fields["danger_for_officer_why"].label = "Why will the officer be in danger?"
+  RFApackage_attachment.overflow_fields.gathered = True
+
+
