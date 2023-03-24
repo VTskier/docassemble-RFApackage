@@ -1882,15 +1882,15 @@ progress: 100
 # ALDocument objects specify the metadata for each template
 objects:
   - RFApackage_Post_interview_instructions: ALDocument.using(title="Instructions", filename="RFApackage_next_steps.docx", enabled=True, has_addendum=False)
-  - _RFAaffidavit: ALDocument.using(title="3 rfa-affidavit", filename="3_RFA-affidavit", enabled=True, has_addendum=True, default_overflow_message=AL_DEFAULT_OVERFLOW_MESSAGE)
-  - _RFAconfidentialcontactinfo: ALDocument.using(title="4 rfa-confidential-contact-info", filename="4_RFA-confidential-contact-info", enabled=True, has_addendum=True, default_overflow_message=AL_DEFAULT_OVERFLOW_MESSAGE)
-  - _RFAcomplaint: ALDocument.using(title="1 rfa-complaint", filename="1_RFA-complaint", enabled=True, has_addendum=True, default_overflow_message=AL_DEFAULT_OVERFLOW_MESSAGE)
-  - _RFAserviceinfo: ALDocument.using(title="2 rfa-service-info", filename="2_RFA-service-info", enabled=True, has_addendum=True, default_overflow_message=AL_DEFAULT_OVERFLOW_MESSAGE)
+  - RFAaffidavit: ALDocument.using(title="3 rfa-affidavit", filename="3_RFA-affidavit", enabled=True, has_addendum=True, default_overflow_message=AL_DEFAULT_OVERFLOW_MESSAGE)
+  - RFAconfidentialcontactinfo: ALDocument.using(title="4 rfa-confidential-contact-info", filename="4_RFA-confidential-contact-info", enabled=True, has_addendum=True, default_overflow_message=AL_DEFAULT_OVERFLOW_MESSAGE)
+  - RFAcomplaint: ALDocument.using(title="1 rfa-complaint", filename="1_RFA-complaint", enabled=True, has_addendum=True, default_overflow_message=AL_DEFAULT_OVERFLOW_MESSAGE)
+  - RFAserviceinfo: ALDocument.using(title="2 rfa-service-info", filename="2_RFA-service-info", enabled=True, has_addendum=True, default_overflow_message=AL_DEFAULT_OVERFLOW_MESSAGE)
 ---
 # Bundles group the ALDocuments into separate downloads, such as for court and for the user
 objects:
-  - al_user_bundle: ALDocumentBundle.using(elements=[RFApackage_Post_interview_instructions, _RFAaffidavit, _RFAconfidentialcontactinfo, _RFAcomplaint, _RFAserviceinfo], filename="RFApackage", title="All forms to download for your records", enabled=True)
-  - al_court_bundle: ALDocumentBundle.using(elements=[_RFAaffidavit, _RFAconfidentialcontactinfo, _RFAcomplaint, _RFAserviceinfo],  filename="RFApackage", title="All forms to deliver to court", enabled=True)
+  - al_user_bundle: ALDocumentBundle.using(elements=[RFApackage_Post_interview_instructions, RFAaffidavit, RFAconfidentialcontactinfo, RFAcomplaint, RFAserviceinfo], filename="RFApackage", title="All forms to download for your records", enabled=True)
+  - al_court_bundle: ALDocumentBundle.using(elements=[RFAaffidavit, RFAconfidentialcontactinfo, RFAcomplaint, RFAserviceinfo],  filename="RFApackage", title="All forms to deliver to court", enabled=True)
 ---
 
 
@@ -1909,7 +1909,7 @@ attachment:
 attachment:
   name: 3 RFA-affidavit
   filename: 3_RFA-affidavit
-  variable name: _RFAaffidavit[i]
+  variable name: RFAaffidavit[i]
   skip undefined: True
   pdf template file: 3_RFA-affidavit.pdf
   fields:
@@ -1950,15 +1950,15 @@ attachment:
       - "recent_incident_time": ${ recent_incident_time }
       - "recent_incident_town": ${ recent_incident_town }
       - "recent_incident_state": ${ recent_incident_state }
-      - "recent_incident_description": ${ _RFAaffidavit.safe_value("recent_incident_description") }
+      - "recent_incident_description": ${ RFAaffidavit.safe_value("recent_incident_description") }
       - "recent_incident_most_serious_yes": ${ recent_incident_most_serious }
       - "recent_incident_most_serious_no": ${ not recent_incident_most_serious }
       - "serious_incident_date": ${ serious_incident_date.format() }
       - "serious_incident_time": ${ serious_incident_time }
       - "serious_incident_town": ${ serious_incident_town }
       - "serious_incident_state": ${ serious_incident_state }
-      - "serious_incident_description": ${ _RFAaffidavit.safe_value("serious_incident_description") }
-      - "other_incident_description": ${ _RFAaffidavit.safe_value("other_incident_description") }
+      - "serious_incident_description": ${ RFAaffidavit.safe_value("serious_incident_description") }
+      - "other_incident_description": ${ RFAaffidavit.safe_value("other_incident_description") }
       - "weapon1": ${ weapon1 }
       - "weapon1_location": ${ weapon1_location }
       - "weapon2": ${ weapon2 }
@@ -1978,11 +1978,11 @@ attachment:
       - "extra_sheets_attached": ${ extra_sheets_attached }
       - "used_firearm_yes": ${ used_firearm }
       - "used_firearm_no": ${ not used_firearm }
-      - "used_firearm_how": ${ _RFAaffidavit.safe_value("used_firearm_how") }
+      - "used_firearm_how": ${ RFAaffidavit.safe_value("used_firearm_how") }
       - "danger_more_abuse_yes": ${ danger_more_abuse }
       - "danger_more_abuse_no": ${ not danger_more_abuse }
       - "danger_more_abuse": ${ not danger_more_abuse }
-      - "danger_more_abuse_why": ${ _RFAaffidavit.safe_value("danger_more_abuse_why") }
+      - "danger_more_abuse_why": ${ RFAaffidavit.safe_value("danger_more_abuse_why") }
       - "other_parties1_military_yes": ${ other_parties1_military }
       - "other_parties1_military_no": ${ not other_parties1_military }
       - "affidavit_signature": ${ affidavit_signature }
@@ -1995,7 +1995,7 @@ attachment:
 attachment:
   name: 4 RFA-confidential-contact-info
   filename: 4_RFA-confidential-contact-info
-  variable name: _RFAconfidentialcontactinfo[i]
+  variable name: RFAconfidentialcontactinfo[i]
   skip undefined: True
   pdf template file: 4_RFA-confidential-contact-info.pdf
   fields:
@@ -2029,7 +2029,7 @@ attachment:
 attachment:
   name: 1 RFA-complaint
   filename: 1_RFA-complaint
-  variable name: _RFAcomplaint[i]
+  variable name: RFAcomplaint[i]
   skip undefined: True
   pdf template file: 1_RFA-complaint.pdf
   fields:
@@ -2180,7 +2180,7 @@ attachment:
 attachment:
   name: 2 RFA-service-info
   filename: 2_RFA-service-info
-  variable name: _RFAserviceinfo[i]
+  variable name: RFAserviceinfo[i]
   skip undefined: True
   pdf template file: 2_RFA-service-info.pdf
   fields:
@@ -2271,9 +2271,9 @@ attachment:
       - "house": ${ house }
       - "house__1": ${ house }
       - "house__2": ${ house }
-      - "location_of_home": ${ _RFAserviceinfo.safe_value("location_of_home") }
+      - "location_of_home": ${ RFAserviceinfo.safe_value("location_of_home") }
       - "description_of_home": ${ description_of_home }
-      - "best_contact_time": ${ _RFAserviceinfo.safe_value("best_contact_time") }
+      - "best_contact_time": ${ RFAserviceinfo.safe_value("best_contact_time") }
       - "employers_street_address": ${ employers_street_address }
       - "employer": ${ employer }
       - "employers_city_state": ${ employers_city_state }
@@ -2305,25 +2305,31 @@ attachment:
       - "under_infl_no": ${ not under_infl }
       - "danger_for_officer_yes": ${ danger_for_officer }
       - "danger_for_officer_no": ${ not danger_for_officer }
-      - "danger_for_officer_why": ${ _RFAserviceinfo.safe_value("danger_for_officer_why") }
+      - "danger_for_officer_why": ${ RFAserviceinfo.safe_value("danger_for_officer_why") }
 ---
 code: |
-  RFApackage_attachment.overflow_fields["recent_incident_description"].overflow_trigger = 1246
-  RFApackage_attachment.overflow_fields["recent_incident_description"].label = "Please describe the most recent incident with as much detail as possible."
-  RFApackage_attachment.overflow_fields["serious_incident_description"].overflow_trigger = 870
-  RFApackage_attachment.overflow_fields["serious_incident_description"].label = "Please describe the most serious incident with as much detail as possible."
-  RFApackage_attachment.overflow_fields["other_incident_description"].overflow_trigger = 2262
-  RFApackage_attachment.overflow_fields["other_incident_description"].label = "Please describe the any other incident(s) with as much detail as possible."
-  RFApackage_attachment.overflow_fields["used_firearm_how"].overflow_trigger = 602
-  RFApackage_attachment.overflow_fields["used_firearm_how"].label = "Describe in detail how they used or threatened to use it?"
-  RFApackage_attachment.overflow_fields["danger_more_abuse_why"].overflow_trigger = 258
-  RFApackage_attachment.overflow_fields["danger_more_abuse_why"].label = "Explain why you think there is danger of more abuse. Be as specific as possible."
-  RFApackage_attachment.overflow_fields["location_of_home"].overflow_trigger = 850
-  RFApackage_attachment.overflow_fields["location_of_home"].label = "If you don't have a street address, describe the location of the home."
-  RFApackage_attachment.overflow_fields["best_contact_time"].overflow_trigger = 170
-  RFApackage_attachment.overflow_fields["best_contact_time"].label = "Best days and times to contact the defendant at home."
-  RFApackage_attachment.overflow_fields["danger_for_officer_why"].overflow_trigger = 255
-  RFApackage_attachment.overflow_fields["danger_for_officer_why"].label = "Why will the officer be in danger?"
-  RFApackage_attachment.overflow_fields.gathered = True
+  RFAaffidavit.overflow_fields["recent_incident_description"].overflow_trigger = 1246
+  RFAaffidavit.overflow_fields["recent_incident_description"].label = "Please describe the most recent incident with as much detail as possible."
+  RFAaffidavit.overflow_fields["serious_incident_description"].overflow_trigger = 870
+  RFAaffidavit.overflow_fields["serious_incident_description"].label = "Please describe the most serious incident with as much detail as possible."
+  RFAaffidavit.overflow_fields["other_incident_description"].overflow_trigger = 2262
+  RFAaffidavit.overflow_fields["other_incident_description"].label = "Please describe the any other incident(s) with as much detail as possible."
+  RFAaffidavit.overflow_fields["used_firearm_how"].overflow_trigger = 602
+  RFAaffidavit.overflow_fields["used_firearm_how"].label = "Describe in detail how they used or threatened to use it?"
+  RFAaffidavit.overflow_fields["danger_more_abuse_why"].overflow_trigger = 258
+  RFAaffidavit.overflow_fields["danger_more_abuse_why"].label = "Explain why you think there is danger of more abuse. Be as specific as possible."
+  RFAaffidavit.overflow_fields.gathered = True
 
+---
+code:  |
+  RFAserviceinfo.overflow_fields["location_of_home"].overflow_trigger = 850
+  RFAserviceinfo.overflow_fields["location_of_home"].label = "If you don't have a street address, describe the location of the home."
+  RFAserviceinfo.overflow_fields["best_contact_time"].overflow_trigger = 170
+  RFAserviceinfo.overflow_fields["best_contact_time"].label = "Best days and times to contact the defendant at home."
+  RFAserviceinfo.overflow_fields["danger_for_officer_why"].overflow_trigger = 255
+  RFAserviceinfo.overflow_fields["danger_for_officer_why"].label = "Why will the officer be in danger?"
+  RFAserviceinfo.overflow_fields.gathered = True
+  RFAconfidentialcontactinfo.overflow_fields.gathered = True
+  RFAcomplaint.overflow_fields.gathered = True
+---
 
