@@ -1,3 +1,17 @@
+#####################################################################
+####################### TO DO #######################
+#Re-do complaint PDF so it's a smaller size document
+#update is defendant your spouse question on complaint PDF to have this field name is_spouse
+#Add Spouse option to the relationship questions and remove AL's Spouse question block
+#Fix field name on PDF and in interview   other parties work phone (not word)
+#Get rid of AL's defendant questions and just ask simply for defendant's name
+#Customize address questions so apt. is on same line as street address, and also incorporate mailing address
+#Add show-if to the will you be forced from home question and those that follow it
+
+
+
+
+#####################################################################
 ---
 include:
   - docassemble.AssemblyLine:assembly_line.yml
@@ -6,7 +20,7 @@ metadata:
   title: |
     RFApackage
   short title: |
-    RFA package
+    Asking for a Relief from Abuse order (RFA) in Vermont
   tags:
     - FA-07-00-00-00
   authors:
@@ -24,7 +38,7 @@ data:
   short title: >-
     RFA package
   description: |-
-    Ask the court for a Relief from Abuse (RFA) order with this package of forms
+    Ask the court for a Relief from Abuse (RFA) order. This one interview will help you complete four required forms.
   original_form: >-
     https://vtlawhelp.org/roadmap/relief-from-abuse/step-3
   allowed courts: 
@@ -56,11 +70,14 @@ code: |
 ---
 objects:
   - users: ALPeopleList.using(ask_number=True,target_number=1)
+  - children: ALPeopleList.using(ask_number=True,complete_attribute="complete")
 ---
 sections:
   - review_RFApackage: Review your answers
 ---
-#################### Interview order #####################
+
+#####################################################################
+#################### INTERVIEW ORDER #####################
 comment: |
   Controls order and branching logic for questions specific to this form
 id: interview_order_RFApackage
@@ -79,12 +96,13 @@ code: |
   set_progress(8)
   users[0].birthdate
   users[0].address.address
+  users1_address_mailing
   set_progress(16)
   users[0].phone_number
   users[0].email
   set_progress(24)
   ex_spouse
-  spouses.gather()
+  #spouses.gather()
   other_parties1_aliases
   other_parties.gather()
   set_progress(32)
@@ -96,9 +114,6 @@ code: |
   recent_incident_yes
   children.gather()
   set_progress(48)
-  children[0].birthdate
-  children[1].birthdate
-  children[2].birthdate
   set_progress(56)
   recent_incident_most_serious
   other_incident_description
@@ -115,13 +130,23 @@ code: |
   sex_female
   hair_brown
   notify_served
-  users1_address_mailing
   printed_signature
   set_progress(80)
   signature_date
   affidavit_signature
   interview_order_RFApackage = True
 ---
+
+##################
+---
+code: |
+  children[i].name.first
+  children[i].birthdate
+  children[i].complete=True
+
+---
+
+#####################################################################
 ###################### Main order ######################
 comment: |
   This block includes the logic for standalone interviews.
@@ -147,27 +172,28 @@ comment: |
 id: RFApackage
 continue button field: RFApackage_intro
 question: |
-  RFApackage
+  What to know before you start
 subquestion: |
   Here are some important things to know about asking the court for a Relief from Abuse order (RFA):
   
-  •	There is no charge for an RFA order. It is free. 
-  •	For details on the whole RFA process, visit the RFA Roadmap on the VTLawHelp.org website. 
-  •	Even when the courts are closed, it’s after hours, or it’s a weekend or holiday, you can start a Relief from Abuse case. You may be able to get a temporary order right away to help keep you safe. At these times, you can email these forms or simply call and ask for help. Contact local police for help or call the Vermont courts’ answering service at 1-800-540-9990. Say that you need help applying for a Relief from Abuse order over the phone. If you call the answering service, you need to leave a message with a number where they can call you back within an hour.
-  •	Applying for an RFA order can be a very dangerous time. Work with an advocate from the Vermont Network to create a safety plan — whether you end up asking for an RFA or not.
+  * There is no charge for an RFA order. It is free. 
+  * For details on the whole RFA process, visit the RFA Roadmap on the VTLawHelp.org website. 
+  * Even when the courts are closed, it’s after hours, or it’s a weekend or holiday, you can start a Relief from Abuse case. You may be able to get a temporary order right away to help keep you safe. At these times, you can email these forms or simply call and ask for help. Contact local police for help or call the Vermont courts’ answering service at 1-800-540-9990. Say that you need help applying for a Relief from Abuse order over the phone. If you call the answering service, you need to leave a message with a number where they can call you back within an hour.
+  * Applying for an RFA order can be a very dangerous time. Work with an advocate from the Vermont Network to create a safety plan — whether you end up asking for an RFA or not.
   
   About using this guided interview:
-  •	Make sure you are in a safe place. It takes time to work through this interview. It may take 1 hour or more.
-  •	If you are in danger right now, dial 911.
-  •	Consider creating an account and saving your work along the way. You could even share a link with an advocate. Look in the upper-right corner of the screen to create an account.
-  •	Use this guided interview if you are asking for an RFA order for you, or both you and your children. (There are different forms for asking for an RFA only on behalf of a child or children.)
-  •	The forms you make with this interview can only be used in Vermont.
-  •	To complete this interview, you will need to know the date or dates when the abuse occurred and give a detailed description of the abuse. This includes the most recent incident and the most serious incident. You will need to fully describe the incidents and make it clear how severe or how frequent the abuse has been.
-  •	You will need to give a safe address and telephone number where the court can reach you. If you don’t have one, ask an advocate from the Vermont Network.
-  •	You will see important questions about weapons that are in the home. If you list what they are and where they are located, the court can order law enforcement to collect them to help keep you safe. 
-  •	At the end you will get a chance to preview your forms and make changes if you need to. 
-  •	Then you can download, print and/or save a PDF of your completed forms.
-  •	You will also get an instruction sheet about how to get the completed forms to the court – this includes emailing them or dropping them off at your local family court.
+  
+  * Make sure you are in a safe place. It takes time to work through this interview. It may take 1 hour or more.
+  * If you are in danger right now, dial 911.
+  * Consider creating an account and saving your work along the way. You could even share a link with an advocate. Look in the upper-right corner of the screen to create an account.
+  * Use this guided interview if you are asking for an RFA order for you, or both you and your children. (There are different forms for asking for an RFA only on behalf of a child or children.)
+  * The forms you make with this interview can only be used in Vermont.
+  * To complete this interview, you will need to know the date or dates when the abuse occurred and give a detailed description of the abuse. This includes the most recent incident and the most serious incident. You will need to fully describe the incidents and make it clear how severe or how frequent the abuse has been.
+  * You will need to give a safe address and telephone number where the court can reach you. If you don’t have one, ask an advocate from the Vermont Network.
+  * You will see important questions about weapons that are in the home. If you list what they are and where they are located, the court can order law enforcement to collect them to help keep you safe. 
+  * At the end you will get a chance to preview your forms and make changes if you need to. 
+  * Then you can download, print and/or save a PDF of your completed forms.
+  * You will also get an instruction sheet about how to get the completed forms to the court – this includes emailing them or dropping them off at your local family court.
   
   First, let’s make sure this is the right interview for your situation.
   
@@ -193,7 +219,9 @@ question: |
 subquestion: |
   Choose the best description of your relationship to the person who is the abuser. That person is called the "defendant."
 fields:
-  - "Is the defendant an ex-spouse (former spouse)?": ex_spouse
+  - "Is the defendant your spouse?": is_spouse
+    datatype: yesno
+  - "Is the defendant your ex-spouse (former spouse)?": ex_spouse
     datatype: yesno
   - "Is the defendant someone you have been living with or sharing occupancy?": live_together
     datatype: yesno
@@ -503,6 +531,8 @@ fields:
     maxlength: 17
   - "Color of car or truck": vehicle_color
     maxlength: 13
+  - "Defendant's cell phone number": other_parties[0].mobile_number
+    maxlength: 18    
   - "Defendant's work phone number FIX NAME OF FIELD": other_parties1_word_phone_number
     maxlength: 18
   - "Defendant's other phone number": other_parties1_other_phone_number
@@ -775,6 +805,10 @@ code: |
   [user.address.address for user in users.complete_elements()]
   addresses_to_search = [user.address for user in users.complete_elements()]
 ---
+
+
+#####################################################################
+######################### REVIEW SCREEN ######################
 id: RFApackage review screen
 event: review_RFApackage
 question: |
@@ -997,17 +1031,17 @@ review:
     button: |
       **Is the defendant a member of your family?**:
       ${ word(yesno(family_member)) }
-  - Edit: spouses.revisit
+#  - Edit: spouses.revisit
+#    button: |
+#      **Spouses**
+#
+#      % for item in spouses:
+#        * ${ item }
+#      % endfor
+  - Edit: is_spouse
     button: |
-      **Spouses**
-
-      % for item in spouses:
-        * ${ item }
-      % endfor
-  - Edit: other_relationship_description
-    button: |
-      **In a word, what is that relationship?**:
-      ${ other_relationship_description }
+      **Is the defendant your spouse?**:
+      ${ word(yesno(is_spouse)) }
   - Edit: ex_spouse
     button: |
       **Is the defendant an ex-spouse (former spouse)?**:
@@ -1016,6 +1050,10 @@ review:
     button: |
       **Does the defendant have a different relationship to you?**:
       ${ word(yesno(other_relationship)) }
+  - Edit: other_relationship_description
+    button: |
+      **In a word, what is that relationship?**:
+      ${ other_relationship_description }
   - Edit: live_together
     button: |
       **Is the defendant someone you have been living with or sharing occupancy?**:
@@ -1818,6 +1856,10 @@ edit:
 confirm: True
 
 ---
+
+
+#####################################################################
+####################### DOWNLOAD #######################
 id: download RFApackage
 event: RFApackage_download
 question: |
@@ -1850,6 +1892,10 @@ objects:
   - al_user_bundle: ALDocumentBundle.using(elements=[RFApackage_Post_interview_instructions, _RFAaffidavit, _RFAconfidentialcontactinfo, _RFAcomplaint, _RFAserviceinfo], filename="RFApackage", title="All forms to download for your records", enabled=True)
   - al_court_bundle: ALDocumentBundle.using(elements=[_RFAaffidavit, _RFAconfidentialcontactinfo, _RFAcomplaint, _RFAserviceinfo],  filename="RFApackage", title="All forms to deliver to court", enabled=True)
 ---
+
+
+#####################################################################
+######################### ATTACHMENTS ###########################
 # Each attachment defines a key in an ALDocument. We use `i` as the placeholder here so the same template is 
 # used for "preview" and "final" keys, and logic in the template checks the value of 
 # `i` to show or hide the user's signature
@@ -2033,7 +2079,7 @@ attachment:
       - "users1_signature": ${ users[0].signature_if_final(i) }
       - "family_member_description": ${ family_member_description }
       - "family_member": ${ family_member }
-      - "spouse": ${ spouses[0] }
+      - "is_spouse": ${ is_spouse }
       - "other_relationship_description": ${ other_relationship_description }
       - "ex_spouse": ${ ex_spouse }
       - "other_relationship": ${ other_relationship }
