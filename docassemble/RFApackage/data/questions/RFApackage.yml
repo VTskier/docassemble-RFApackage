@@ -1,6 +1,7 @@
 #####################################################################
 ####################### TO DO #######################
-#Re-do complaint PDF so it's a smaller size document
+#Re-do complaint PDF so it's a smaller size document. Should check marks look larger on PDF?
+#On complaint and affidavit, make the dates show like this mm/dd/yyy
 #update is defendant your spouse question on complaint PDF to have this field name is_spouse
 #Add Spouse option to the relationship questions and remove AL's Spouse question block
 #Fix field name on PDF and in interview   other parties work phone (not word)
@@ -18,7 +19,7 @@ include:
 ---
 metadata:
   title: |
-    RFApackage
+    Relief from Abuse order
   short title: |
     Asking for a Relief from Abuse order (RFA) in Vermont
   tags:
@@ -34,7 +35,7 @@ data:
   al_weaver_version: "1.9.0"
   generated on: "2023-03-22"
   title: >-
-    RFApackage
+    Relief from Abuse order
   short title: >-
     RFA package
   description: |-
@@ -47,6 +48,20 @@ data:
     - "FA-07-00-00-00"
   typical role: "plaintiff"
   generate download screen: True
+  
+---
+code: |
+  AL_ORGANIZATION_TITLE = "VTCourtForms"
+---
+code: |
+  AL_ORGANIZATION_HOMEPAGE = "https://vtlawhelp.org/"
+---
+objects:
+  - al_logo: DAStaticFile.using(filename="LSV_bug.png")
+---
+images:
+  big_logo: LSV_logo.png 
+
 ---
 code: |
   interview_metadata['main_interview_key'] =  'RFApackage'
