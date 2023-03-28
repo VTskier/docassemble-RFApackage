@@ -19,7 +19,7 @@ include:
 ---
 metadata:
   title: |
-    Relief from Abuse order
+    Relief from Abuse
   short title: |
     Asking for a Relief from Abuse order (RFA) in Vermont
   tags:
@@ -148,7 +148,6 @@ code: |
   printed_signature
   set_progress(80)
   signature_date
-  affidavit_signature
   interview_order_RFApackage = True
 ---
 
@@ -170,6 +169,7 @@ mandatory: True
 code: |
   al_intro_screen
   RFApackage_intro
+  RFApackage_intro_2
   interview_order_RFApackage
   signature_date
   # Store anonymous data for analytics / statistics
@@ -182,8 +182,6 @@ code: |
   )
   RFApackage_download
 ---
-comment: |
-  This question is used to introduce your interview. Please customize
 id: RFApackage
 continue button field: RFApackage_intro
 question: |
@@ -195,9 +193,12 @@ subquestion: |
   * For details on the whole RFA process, visit the RFA Roadmap on the VTLawHelp.org website. 
   * Even when the courts are closed, it’s after hours, or it’s a weekend or holiday, you can start a Relief from Abuse case. You may be able to get a temporary order right away to help keep you safe. At these times, you can email these forms or simply call and ask for help. Contact local police for help or call the Vermont courts’ answering service at 1-800-540-9990. Say that you need help applying for a Relief from Abuse order over the phone. If you call the answering service, you need to leave a message with a number where they can call you back within an hour.
   * Applying for an RFA order can be a very dangerous time. Work with an advocate from the Vermont Network to create a safety plan — whether you end up asking for an RFA or not.
-  
-  About using this guided interview:
-  
+---
+id: RFApackage2
+continue button field: RFApackage_intro_2
+question: |
+  About using this guided interview
+subquestion: |  
   * Make sure you are in a safe place. It takes time to work through this interview. It may take 1 hour or more.
   * If you are in danger right now, dial 911.
   * Consider creating an account and saving your work along the way. You could even share a link with an advocate. Look in the upper-right corner of the screen to create an account.
@@ -211,8 +212,6 @@ subquestion: |
   * You will also get an instruction sheet about how to get the completed forms to the court – this includes emailing them or dropping them off at your local family court.
   
   First, let’s make sure this is the right interview for your situation.
-  
-  NEXT: ADD SCREENING QUESTIONS AT START OF GUIDED INTERVIEW
 ---
 id: Initial screening questions
 question: |
@@ -775,25 +774,6 @@ fields:
   - "Date of signature of complaint form": date
     maxlength: 24
 ---
-id: These fields are not needed
-question: |
-  These fields are not needed
-fields:
-  - "Affidavit signature DO NOT OFFER THIS": affidavit_signature
-    maxlength: 39
-  - "Date of affidavit signature DO NOT OFFER THIS": affidavit_signature_date
-    datatype: date
-  - "Date of notary signature DO NOT OFFER THIS": notary_signature_date
-    datatype: date
-  - "Date of notary expiration DO NOT OFFER THIS": notary_expiration_date
-    datatype: date
-  - "Notary signature DO NOT OFFER THIS": notary_signature
-    maxlength: 32
-  - "Is there an existing order or a pending court proceeding? I DON'T THINK THIS IS NEEDED": Is_there_an_existing_order_or_a_pending_court_proceeding_involving_you_the_Defendant_andor_the_children_in_this
-    datatype: yesno
-  - "Civil union dissolution I DON'T THINK THIS IS NEEDED": Civil_Union_Dissolution
-    datatype: yesno
----
 id: preview RFApackage
 question: |
   Preview your form before you sign it
@@ -998,30 +978,10 @@ review:
     button: |
       **Is the defendant a current member of the military?**:
       ${ word(yesno(other_parties1_military)) }
-  - Edit: affidavit_signature
-    button: |
-      **Affidavit signature DO NOT OFFER THIS**:
-      ${ affidavit_signature }
-  - Edit: affidavit_signature_date
-    button: |
-      **Date of affidavit signature DO NOT OFFER THIS**:
-      ${ affidavit_signature_date }
   - Edit: printed_signature
     button: |
       **Please type your name. This will appear under your signature.**:
       ${ printed_signature }
-  - Edit: notary_signature_date
-    button: |
-      **Date of notary signature DO NOT OFFER THIS**:
-      ${ notary_signature_date }
-  - Edit: notary_expiration_date
-    button: |
-      **Date of notary expiration DO NOT OFFER THIS**:
-      ${ notary_expiration_date }
-  - Edit: notary_signature
-    button: |
-      **Notary signature DO NOT OFFER THIS**:
-      ${ notary_signature }
   - Edit: users1_address_mailing
     button: |
       **If you have a PO Box, or your mailing address is different than your street address, enter it here. (Example: P.O. Box 111)**:
@@ -1241,14 +1201,6 @@ review:
     button: |
       **Does the defendant get Reach Up benefits?**:
       ${ word(yesno(reach_up_OP)) }
-  - Edit: Is_there_an_existing_order_or_a_pending_court_proceeding_involving_you_the_Defendant_andor_the_children_in_this
-    button: |
-      **Is there an existing order or a pending court proceeding? I DON'T THINK THIS IS NEEDED**:
-      ${ word(yesno(Is_there_an_existing_order_or_a_pending_court_proceeding_involving_you_the_Defendant_andor_the_children_in_this)) }
-  - Edit: Civil_Union_Dissolution
-    button: |
-      **Civil union dissolution I DON'T THINK THIS IS NEEDED**:
-      ${ word(yesno(Civil_Union_Dissolution)) }
   - Edit: request_not_abuse_children
     button: |
       **Do you want the court order to protect the child/children from this?**:
@@ -2000,12 +1952,7 @@ attachment:
       - "danger_more_abuse_why": ${ RFAaffidavit.safe_value("danger_more_abuse_why") }
       - "other_parties1_military_yes": ${ other_parties1_military }
       - "other_parties1_military_no": ${ not other_parties1_military }
-      - "affidavit_signature": ${ affidavit_signature }
-      - "affidavit_signature_date": ${ affidavit_signature_date.format() }
       - "printed_signature": ${ printed_signature }
-      - "notary_signature_date": ${ notary_signature_date.format() }
-      - "notary_expiration_date": ${ notary_expiration_date.format() }
-      - "notary_signature": ${ notary_signature }
 ---
 attachment:
   name: 4 RFA-confidential-contact-info
@@ -2149,8 +2096,6 @@ attachment:
       - "residence_of_both": ${ residence_of_both }
       - "reach_up_users1": ${ reach_up_users1 }
       - "reach_up_OP": ${ reach_up_OP }
-      - "Is there an existing order or a pending court proceeding involving you the Defendant andor the children in this": ${ Is_there_an_existing_order_or_a_pending_court_proceeding_involving_you_the_Defendant_andor_the_children_in_this }
-      - "Civil Union Dissolution": ${ Civil_Union_Dissolution }
       - "request_not_abuse_children": ${ request_not_abuse_children }
       - "request_not_abuse_users1": ${ request_not_abuse_users1 }
       - "request_not_abuse": ${ request_not_abuse }
