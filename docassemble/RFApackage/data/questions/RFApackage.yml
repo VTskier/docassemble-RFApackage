@@ -110,13 +110,14 @@ code: |
   set_parts(subtitle=str(users))
   set_progress(8)
   users[0].birthdate
-  users[0].address.address
-  users1_address_mailing
-  set_progress(16)
   users[0].phone_number
   users[0].email
-  set_progress(24)
+  users[0].address.address
+  set_progress(16)
+  users1_address_mailing
+  share_contact
   ex_spouse
+  set_progress(24)
   #spouses.gather()
   other_parties1_aliases
   other_parties.gather()
@@ -224,7 +225,7 @@ id: About you
 question: |
   About you
 subquestion: |
-  As the person filling out these forms, you are called the "plaintiff."
+  As the person filling out these forms, you are called the "plaintiff." We'll start with some questions about you.
 continue button field: About_you
 ---
 id: Relationship to defendant
@@ -232,25 +233,28 @@ question: |
   Relationship to defendant
 subquestion: |
   Choose the best description of your relationship to the person who is the abuser. That person is called the "defendant."
+  Select one.
 fields:
-  - "Is the defendant your spouse?": is_spouse
+  - "Spouse": is_spouse
     datatype: yesno
-  - "Is the defendant your ex-spouse (former spouse)?": ex_spouse
+  - "Ex-spouse (former spouse)": ex_spouse
     datatype: yesno
-  - "Is the defendant someone you have been living with or sharing occupancy?": live_together
+  - "Someone you have been living with or sharing occupancy": live_together
     datatype: yesno
-  - "Is the defendant someone with whom you have had a sexual relationship?": sexual_relationship
+  - "Someone with whom you have had a sexual relationship": sexual_relationship
     datatype: yesno
-  - "Is the defendant someone you have dated?": dating
+  - "Someone you have dated": dating
     datatype: yesno
-  - "Is the defendant a member of your family?": family_member
+  - "A member of your family": family_member
     datatype: yesno
-  - "In a word, what is your relationship to this family member": family_member_description
+  - "A different relationship to you": other_relationship
+    datatype: yesno
+  - "In a word or two, what is your relationship to this family member": family_member_description
     maxlength: 16
-  - "Does the defendant have a different relationship to you?": other_relationship
-    datatype: yesno
-  - "In a word, what is that relationship?": other_relationship_description
+    show if: family_member
+  - "In a word or two, what is that other relationship?": other_relationship_description
     maxlength: 16
+    show if: other_relationship
 ---
 id: About the defendant
 question: |
@@ -363,7 +367,7 @@ fields:
     datatype: yesno
   - "Do you not know if the defendant has guns/firearms or weapons?": other_parties1_weapon_DK
     datatype: yesno
-  - "Has the defendant used or threatened to use a gun/firearm or weapon against you?": used_firearm
+  - "Has the defendant used or threatened to use a gun/firearm or another deadly weapon against you?": used_firearm
     datatype: yesno
   - "Describe in detail how they used or threatened to use it?": used_firearm_how
     input type: area
@@ -738,18 +742,19 @@ fields:
 ---
 id: Misc that I need to put in the right spots
 question: |
-  Misc that I need to put in the right spots
+  Extra details
 fields:
   - "If you have a PO Box, or your mailing address is different than your street address, enter it here. (Example: P.O. Box 111)": users1_address_mailing
     maxlength: 42
-  - "What is your work phone number?": users1_work_phone_number
+    required: False
+  - "If you have one, what is your work phone number?": users1_work_phone_number
     maxlength: 24
-  - "Do you want to share your contact information. THIS SHOULD BE ANSWERED NO IF YOU WANT TO KEEP YOUR INFORMATION CONFIDENTIAL -- EXCEPT FOR LAW ENFORCEMENT?": share_contact
+    required: False
+  - "Check this box if you get Reach Up benefits from the state": reach_up_users1
     datatype: yesno
-  - "Did the defendant use, display or threaten to use a gun/ firearm against you or against a family member?": used_firearm_yes
-    datatype: yesno
-  - "Do you get Reach Up benefits?": reach_up_users1
-    datatype: yesno
+
+
+
   - "Defendant's first_last name FIX THIS FIELD NAME": other_parties1_first_last
     maxlength: 17
   - "Defendant's middle_last name": other_parties1_middle_last
@@ -764,6 +769,17 @@ fields:
     datatype: yesno
   - "3rd": suffix_third
     datatype: yesno
+    
+    
+---
+id: Share contact info
+question: |
+  Keeping your contact information confidential
+subquestion: |
+  To keep your contact information confidential, select Yes. If you select Yes, only the court and law enforcement will see your address and contact information.
+fields:
+  - "I want to keep my contact confidential.": share_contact
+    datatype: yesnoradio
 ---
 id: Signing some but not all of your forms
 question: |
@@ -960,7 +976,7 @@ review:
       ${ extra_sheets_attached }
   - Edit: used_firearm
     button: |
-      **Has the defendant used or threatened to use a gun/firearm or weapon against you?**:
+      **Has the defendant used, displayed or threatened to use a gun/firearm or deadly weapon against you?**:
       ${ word(yesno(used_firearm)) }
   - Edit: used_firearm_how
     button: |
