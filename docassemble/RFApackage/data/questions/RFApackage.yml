@@ -3,11 +3,10 @@
 #Re-do complaint PDF so it's a smaller size document. Should check marks look larger on PDF?
 #On complaint and affidavit, make the dates show like this mm/dd/yyy
 #update is defendant your spouse question on complaint PDF to have this field name is_spouse
-#Add Spouse option to the relationship questions and remove AL's Spouse question block
 #Fix field name on PDF and in interview   other parties work phone (not word)
-#Get rid of AL's defendant questions and just ask simply for defendant's name
 #Customize address questions so apt. is on same line as street address, and also incorporate mailing address
-#Add show-if to the will you be forced from home question and those that follow it
+#Add show if to the will you be forced from home question and those that follow it
+#id: your address  sets:   How do I use sets? Dont want the unit number.
 
 
 
@@ -43,7 +42,7 @@ data:
   original_form: >-
     https://vtlawhelp.org/roadmap/relief-from-abuse/step-3
   allowed courts: 
-    - "Probate and Family Court"
+    - "Family Court"
   categories:
     - "FA-07-00-00-00"
   typical role: "plaintiff"
@@ -85,6 +84,7 @@ code: |
 ---
 objects:
   - users: ALPeopleList.using(ask_number=True,target_number=1)
+  - other_parties: ALPeopleList.using(ask_number=True,target_number=1)
   - children: ALPeopleList.using(ask_number=True,complete_attribute="complete")
 ---
 sections:
@@ -113,20 +113,19 @@ code: |
   users[0].phone_number
   users[0].email
   users[0].address.address
-  set_progress(16)
   users1_address_mailing
+  set_progress(16)
   share_contact
   ex_spouse
   set_progress(24)
   #spouses.gather()
-  other_parties1_aliases
   other_parties.gather()
   set_progress(32)
   other_parties[0].birthdate
   other_parties[0].address.address
-  set_progress(40)
   other_parties[0].phone_number
   other_parties[0].mobile_number
+  set_progress(40)
   recent_incident_yes
   children.gather()
   set_progress(48)
@@ -226,6 +225,23 @@ question: |
   About you
 subquestion: |
   As the person filling out these forms, you are called the "plaintiff." We'll start with some questions about you.
+---
+id: your address
+sets:
+  - users[0].address.address
+  - users[0].address.city
+  - users[0].address.zip
+  - users[0].address.state
+question: |
+  What is your address?
+subquestion: |
+  Use an address where it is safe for the court to contact you.
+fields:
+  - code: |
+      users[0].address_fields(default_state=AL_DEFAULT_STATE)  
+  - "If you have a PO Box, or your mailing address is different than your street address, enter it here. (Example: P.O. Box 111)": users1_address_mailing
+    maxlength: 42
+    required: False
 continue button field: About_you
 ---
 id: Relationship to defendant
@@ -256,17 +272,38 @@ fields:
     maxlength: 16
     show if: other_relationship
 ---
+id: Gather defendant
+sets:
+  - other_parties[i].name.first
+  - other_parties[i].name.middle
+  - other_parties[i].name.last
+question: |
+  Name of defendant
+fields:
+  - code: |
+      other_parties[i].name_fields(person_or_business='person')
+  - "Jr.": suffix_jr
+    datatype: yesno
+  - "Sr.": suffix_sr
+    datatype: yesno
+  - "I": suffix_first
+    datatype: yesno
+  - "II": suffix_second
+    datatype: yesno
+  - "III": suffix_third
+    datatype: yesno
+  - "List other names the defendant uses (aliases)": other_parties1_aliases
+    maxlength: 85
+---
 id: About the defendant
 question: |
   About the defendant
 fields:
-  - "List other names the defendant uses (aliases)": other_parties1_aliases
-    maxlength: 85
-  - "Is the defendant a current member of the military?": other_parties1_military
+  - "Check this box if the defendant gets Reach Up benefits": reach_up_OP
     datatype: yesno
-  - "Is the defendant incarcerated and has been convicted of one of the crimes specified in 15 V.S.A. 1103 (c)(1)(B)?": incarcerated
+  - "Check this box if defendant is a current member of the military": other_parties1_military
     datatype: yesno
-  - "Does the defendant get Reach Up benefits?": reach_up_OP
+  - "Check this box if the defendant is incarcerated and has been convicted of one of the crimes specified in 15 V.S.A. 1103 (c)(1)(B)?": incarcerated
     datatype: yesno
 ---
 id: What has happened most recently
@@ -512,7 +549,7 @@ fields:
   - "What is the name of the other attorney for the existing order or a pending court proceeding -- if the defendant has one?": existing_order_OP_attorney
     maxlength: 25
 ---
-id: About the defendant s home and vehicle
+id: About the defendants home and vehicle
 question: |
   About the defendant's home and vehicle
 fields:
@@ -744,41 +781,22 @@ id: Misc that I need to put in the right spots
 question: |
   Extra details
 fields:
-  - "If you have a PO Box, or your mailing address is different than your street address, enter it here. (Example: P.O. Box 111)": users1_address_mailing
-    maxlength: 42
-    required: False
   - "If you have one, what is your work phone number?": users1_work_phone_number
     maxlength: 24
     required: False
   - "Check this box if you get Reach Up benefits from the state": reach_up_users1
     datatype: yesno
-
-
-
-  - "Defendant's first_last name FIX THIS FIELD NAME": other_parties1_first_last
-    maxlength: 17
-  - "Defendant's middle_last name": other_parties1_middle_last
-    maxlength: 11
-  - "Sr.": suffix_sr
-    datatype: yesno
-  - "Jr.": suffix_jr
-    datatype: yesno
-  - "1st": suffix_first
-    datatype: yesno
-  - "2nd": suffix_second
-    datatype: yesno
-  - "3rd": suffix_third
-    datatype: yesno
-    
     
 ---
 id: Share contact info
 question: |
-  Keeping your contact information confidential
+  Sharing your contact information
 subquestion: |
-  To keep your contact information confidential, select Yes. If you select Yes, only the court and law enforcement will see your address and contact information.
+  To keep your contact information confidential, select **No**. Then only the court and law enforcement will see your address and contact information. 
+  
+  If you select Yes, other people can get your address and contact information.
 fields:
-  - "I want to keep my contact confidential.": share_contact
+  - "I consent to the release of my address and contact information.": share_contact
     datatype: yesnoradio
 ---
 id: Signing some but not all of your forms
@@ -1412,14 +1430,6 @@ review:
     button: |
       **3rd**:
       ${ word(yesno(suffix_third)) }
-  - Edit: other_parties1_first_last
-    button: |
-      **Defendant's first_last name FIX THIS FIELD NAME**:
-      ${ other_parties1_first_last }
-  - Edit: other_parties1_middle_last
-    button: |
-      **Defendant's middle_last name**:
-      ${ other_parties1_middle_last }
   - Edit: other_parties1_aliases
     button: |
       **List other names the defendant uses (aliases)**:
