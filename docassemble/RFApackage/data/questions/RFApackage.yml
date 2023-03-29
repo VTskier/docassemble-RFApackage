@@ -1,5 +1,7 @@
 #####################################################################
 ####################### TO DO #######################
+
+#Fix error: Collect   other_parties[0].phone_number in standard way not fancy way
 #Re-do complaint PDF so it's a smaller size document. Should check marks look larger on PDF?
 #On complaint and affidavit, make the dates show like this mm/dd/yyy
 #update is defendant your spouse question on complaint PDF to have this field name is_spouse
@@ -105,20 +107,19 @@ code: |
   Initial_screening_questions
   docket_number
   trial_court.address.address
-  About_you
   users.gather()
   set_parts(subtitle=str(users))
   set_progress(8)
+  users[0].name.first
   users[0].birthdate
+  users1_address_mailing
   users[0].phone_number
   users[0].email
-  users[0].address.address
-  users1_address_mailing
   set_progress(16)
   share_contact
   ex_spouse
   set_progress(24)
-  #spouses.gather()
+  set_parts(subtitle=str(other_parties))
   other_parties.gather()
   set_progress(32)
   other_parties[0].birthdate
@@ -129,8 +130,8 @@ code: |
   recent_incident_yes
   children.gather()
   set_progress(48)
-  set_progress(56)
   recent_incident_most_serious
+  set_progress(56)
   other_incident_description
   danger_more_abuse
   other_parties1_weapon
@@ -226,12 +227,12 @@ question: |
 subquestion: |
   As the person filling out these forms, you are called the "plaintiff." We'll start with some questions about you.
 ---
-id: your address
+id: Gather users address
 sets:
-  - users[0].address.address
-  - users[0].address.city
-  - users[0].address.zip
-  - users[0].address.state
+  - users[i].address.address
+  - users[i].address.city
+  - users[i].address.zip
+  - users[i].address.state
 question: |
   What is your address?
 subquestion: |
@@ -243,6 +244,29 @@ fields:
     maxlength: 42
     required: False
 continue button field: About_you
+---
+id: Gather users contact information
+question: |
+  What is your contact information?
+subquestion: |
+  Include at least **one safe way** to reach you other than by mail. You can use a friend's phone number, if that is the safest way to reach you.
+
+#  ${ collapse_template(why_contact_info_needed_template) }
+fields:  
+  - Phone number: users[0].phone_number
+    required: False
+  - Work phone number: users1_work_phone_number
+    required: False
+  - Email address: users[0].email    
+    datatype: email
+    required: False      
+validation code: |
+  if (not showifdef('users[0].phone_number') and \
+      (not showifdef('users[0].email')) and \
+      (not showifdef('users1_work_phone_number'))):
+    validation_error(word("You need to provide at least one contact method."), field="users[0].other_contact_method")
+
+
 ---
 id: Relationship to defendant
 question: |
@@ -272,7 +296,7 @@ fields:
     maxlength: 16
     show if: other_relationship
 ---
-id: Gather defendant
+id: Gather defendant name
 sets:
   - other_parties[i].name.first
   - other_parties[i].name.middle
@@ -281,7 +305,7 @@ question: |
   Name of defendant
 fields:
   - code: |
-      other_parties[i].name_fields(person_or_business='person')
+      other_parties[0].name_fields(person_or_business='person', show_suffix=False)
   - "Jr.": suffix_jr
     datatype: yesno
   - "Sr.": suffix_sr
@@ -305,6 +329,30 @@ fields:
     datatype: yesno
   - "Check this box if the defendant is incarcerated and has been convicted of one of the crimes specified in 15 V.S.A. 1103 (c)(1)(B)?": incarcerated
     datatype: yesno
+---
+id: Gather defendants address
+sets:
+  - other_parties[i].address.address
+  - other_parties[i].address.city
+  - other_parties[i].address.zip
+  - other_parties[i].address.state
+question: |
+  What is the defendants address?
+fields:
+  - code: |
+      other_parties[0].address_fields(default_state=AL_DEFAULT_STATE)  
+---
+id: Gather defendants contact info
+sets:
+  -  other_parties[i].phone_number
+  -  other_parties[i].work_phone_number
+question: |
+  Name of defendant
+fields:
+  - code: |
+      other_parties[0].phone_numbers()
+
+
 ---
 id: What has happened most recently
 question: |
@@ -2005,7 +2053,7 @@ attachment:
       - "users1_address_state": ${ users[0].address.state }
       - "users1_address_zip__1": ${ users[0].address.zip }
       - "users1_phone_number": ${ users[0].phone_number }
-      - "users1_work_phone_number": ${ users1_work_phone_number }
+      - "users1_work_phone_number": ${ users[0].work_phone_number }
       - "users1_email": ${ users[0].email }
       - "share_contact_yes": ${ share_contact }
       - "share_contact_no": ${ not share_contact }
