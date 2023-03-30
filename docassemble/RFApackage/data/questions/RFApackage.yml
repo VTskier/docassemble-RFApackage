@@ -142,7 +142,7 @@ code: |
   other_incident_description
   danger_more_abuse
   nav.set_section('weapons')
-  other_parties1_weapon
+  owns_weapons
   nav.set_section('order')
   request_not_abuse
   set_progress(64)
@@ -167,6 +167,7 @@ sections:
   - about: About you
   - defendant: About the defendant
   - incidents: What happened
+  - weapons: Weapons
   - order: What you want in the RFA order
   - service: Info for law enforcement
   - conclusion: Signature
@@ -499,20 +500,26 @@ question: |
 subquestion: |
   Weapons can make this a dangerous time for you and/or your children. If you let the court know about weapons, they may be able to collect them from the defendant as part of the court order. This can help keep you safe.
 fields:
-  - "Does the defendant have guns/firearms or weapons?": other_parties1_weapon
-    datatype: yesno
-  - "Do you not know if the defendant has guns/firearms or weapons?": other_parties1_weapon_DK
-    datatype: yesno
-  - "Has the defendant used or threatened to use a gun/firearm or another deadly weapon against you?": used_firearm
-    datatype: yesno
+  - "Does the defendant own or have access to guns/firearms or other deadly weapons?": owns_weapons
+    input type: radio
+    choices:
+      - Yes: other_parties1_weapon
+      - No: other_parties1_weapon_no
+      - Maybe: other_parties1_weapon_DK
+
+  - "Has the defendant used or threatened to use a gun/firearm or another deadly weapon against you or another family member?": used_firearm
+    datatype: yesnoradio
   - "Describe in detail how they used or threatened to use it?": used_firearm_how
     input type: area
+    show if: used_firearm
   - "Description of the 1st weapon": weapon1
     maxlength: 76
+    show if: other_parties1_weapon
   - "Location of the 1st weapon": weapon1_location
     maxlength: 76
   - "Description of the 2nd weapon": weapon2
     maxlength: 76
+    show if: other_parties1_weapon
   - "Location of the 2nd weapon": weapon2_location
     maxlength: 76
   - "Description of the 3rd weapon": weapon3
