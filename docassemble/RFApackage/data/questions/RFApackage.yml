@@ -1,14 +1,14 @@
 #####################################################################
 ####################### TO DO #######################
 
-#Fix error: Collect   other_parties[0].phone_number in standard way not fancy way
 #Re-do complaint PDF so it's a smaller size document. Should check marks look larger on PDF?
 #On complaint and affidavit, make the dates show like this mm/dd/yyy
 #update is defendant your spouse question on complaint PDF to have this field name is_spouse
 #Fix field name on PDF and in interview   other parties work phone (not word)
-#Customize address questions so apt. is on same line as street address, and also incorporate mailing address
+#Customize address questions so it doesn't ask for unit/apt. on separate line. id: your address  sets:   How do I use sets? Dont want the unit number.
 #Add show if to the will you be forced from home question and those that follow it
-#id: your address  sets:   How do I use sets? Dont want the unit number.
+#  if recent_incident_date is defined, then set recent_incident_yes to True  figure out this so that checkbox gets checked automatically
+
 
 
 
@@ -125,9 +125,9 @@ code: |
   other_parties[0].birthdate
   other_parties[0].address.address
   other_parties[0].phone_number
-  other_parties[0].mobile_number
   set_progress(40)
-  recent_incident_yes
+  recent_incident_date
+  #recent_incident_yes
   children.gather()
   set_progress(48)
   recent_incident_most_serious
@@ -342,17 +342,18 @@ fields:
   - code: |
       other_parties[0].address_fields(default_state=AL_DEFAULT_STATE)  
 ---
-id: Gather defendants contact info
-sets:
-  -  other_parties[i].phone_number
-  -  other_parties[i].work_phone_number
+id: Gather defendants phone numbers
 question: |
-  Name of defendant
-fields:
-  - code: |
-      other_parties[0].phone_numbers()
-
-
+  What are the defendants phone numbers?
+fields:  
+  - Home phone: other_parties[0].phone_number
+    required: False
+  - Cell phone: other_parties[0].mobile_number
+    required: False
+  - Work phone: other_parties1_word_phone_number
+    required: False
+  - Other phone: other_parties1_other_phone_number
+    required: False    
 ---
 id: What has happened most recently
 question: |
@@ -360,46 +361,54 @@ question: |
 subquestion: |
   Describe the most recent incident of abuse. Be as detailed as possible. The judge needs to know exactly what happened.
 fields:
-  - "Has there been a recent incident of abuse?": recent_incident_yes
-    datatype: yesno
   - "What was the date of the most recent incident?": recent_incident_date
     datatype: date
-  - "What was the time of the most recent incident?": recent_incident_time
-    maxlength: 13
+  - "What was the time of the most recent incident? You can estimate if you don't know for sure.": recent_incident_time
+    datatype: time
   - "In what town was the most recent incident?": recent_incident_town
     maxlength: 26
   - "In what state was the most recent incident?": recent_incident_state
-    maxlength: 15
+    code: states_list() 
+    default: Vermont
   - "Please describe the most recent incident with as much detail as possible.": recent_incident_description
     input type: area
-  - "Were you the target of the recent abuse?": recent_incident_users1
+    rows: 20
+  - note: Check all that apply to this incident
+  - You were the target of the recent abuse: recent_incident_users1
     datatype: yesno
-  - "Were your children the target of the recent abuse? Check both if they both apply.": recent_incident_children
+  - Your children were the target of the recent abuse: recent_incident_children
     datatype: yesno
   - "What are the names of the children who were the target of the recent abuse? List their names with commas in between.": recent_incident_children_names
     maxlength: 63
-  - "Did the defendant cause or attempt to cause physical harm?": recent_incident_harm
+    show if: recent_incident_children
+  - "The defendant caused or attempted to cause physical harm": recent_incident_harm
     datatype: yesno
-  - "Did the defendant place you and/or them in fear of imminent serious physical harm?": recent_incident_fear
+  - "The defendant placed you and/or them in fear of imminent serious physical harm": recent_incident_fear
     datatype: yesno
-  - "Did the defendant abuse the child/children -- physically injured or otherwise treated the child(ren) in a manner which placed their life, health, development or welfare in jeopardy?": recent_incident_abused
+  - "The defendant abused the child/children -- meaning they physically injured or otherwise treated the child(ren) in a manner which placed child(ren's) life, health, development or welfare in jeopardy.": recent_incident_abused
     datatype: yesno
-  - "Did the defendant stalk you?": recent_incident_stalked
+  - "The defendant stalked you and/or the child/children. Stalking is defined in Vermont law here: 12 V.S.A 5131(6)": recent_incident_stalked
     datatype: yesno
-  - "Did the defendant stalk you or the child/children?": recent_incident_stalked_users1
+  - "The defendant stalked you": recent_incident_stalked_users1
     datatype: yesno
-  - "Did the defendant stalk the child/children?": recent_incident_stalked_children
+    show if: recent_incident_stalked
+  - "The defendant stalked the child/children": recent_incident_stalked_children
     datatype: yesno
-  - "What was the second date that they stalked you?": recent_incident_stalked_date1
-    maxlength: 8
+    show if: recent_incident_stalked
   - "On what date did they first stalk you?": recent_incident_stalked_date2
-    maxlength: 8
-  - "Did the defendant sexually assault you and/or the child/children?": recent_incident_assault_
+    datatype: date
+    show if: recent_incident_stalked
+  - "What was the second date that they stalked you?": recent_incident_stalked_date1
+    datatype: date
+    show if: recent_incident_stalked
+  - "The defendant sexually assaulted you and/or the child/children. Sexual assault is defined in Vermont law here: 15 V.S.A 5131(5)": recent_incident_assault
     datatype: yesno
-  - "Did the defendant sexually assault you?": recent_incident_assault_users1
+  - "The defendant sexually assault you": recent_incident_assault_users1
     datatype: yesno
-  - "Did the defendant sexually assault the child/children?": recent_incident_assault_children
+    show if: recent_incident_assault
+  - "The defendant sexually assault the child/children": recent_incident_assault_children
     datatype: yesno
+    show if: recent_incident_assault
 ---
 id: What happened most serious
 question: |
@@ -412,13 +421,19 @@ fields:
   - "What was the date of the most serious incident?": serious_incident_date
     datatype: date
   - "What was the time of the most serious incident?": serious_incident_time
-    maxlength: 13
+    datatype: time
   - "In what town was the most serious incident?": serious_incident_town
     maxlength: 26
   - "In what state was the most serious incident?": serious_incident_state
-    maxlength: 11
+    code: states_list() 
+    default: Vermont
   - "Please describe the most serious incident with as much detail as possible.": serious_incident_description
     input type: area
+    rows: 20
+---
+#code: |
+#  if recent_incident_date is defined, then set recent_incident_yes to True
+
 ---
 id: What happened other incidents
 question: |
@@ -634,12 +649,6 @@ fields:
     maxlength: 17
   - "Color of car or truck": vehicle_color
     maxlength: 13
-  - "Defendant's cell phone number": other_parties[0].mobile_number
-    maxlength: 18    
-  - "Defendant's work phone number FIX NAME OF FIELD": other_parties1_word_phone_number
-    maxlength: 18
-  - "Defendant's other phone number": other_parties1_other_phone_number
-    maxlength: 18
 ---
 id: More on your relationship to defendant
 question: |
@@ -1223,10 +1232,10 @@ review:
     button: |
       **Did the defendant sexually assault the child/children?**:
       ${ word(yesno(recent_incident_assault_children)) }
-  - Edit: recent_incident_assault_
+  - Edit: recent_incident_assault
     button: |
       **Did the defendant sexually assault you and/or the child/children?**:
-      ${ word(yesno(recent_incident_assault_)) }
+      ${ word(yesno(recent_incident_assault)) }
   - Edit: recent_incident_assault_users1
     button: |
       **Did the defendant sexually assault you?**:
@@ -2155,7 +2164,7 @@ attachment:
       - "recent_incident_stalked_date2": ${ recent_incident_stalked_date2 }
       - "recent_incident_stalked_date1": ${ recent_incident_stalked_date1 }
       - "recent_incident_assault_children": ${ recent_incident_assault_children }
-      - "recent_incident_assault_": ${ recent_incident_assault_ }
+      - "recent_incident_assault_": ${ recent_incident_assault }
       - "recent_incident_assault_users1": ${ recent_incident_assault_users1 }
       - "danger_more_abuse_children": ${ danger_more_abuse_children }
       - "danger_more_abuse_users1": ${ danger_more_abuse_users1 }
