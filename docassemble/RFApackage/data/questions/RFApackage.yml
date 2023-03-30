@@ -139,8 +139,7 @@ code: |
   set_progress(48)
   if not recent_incident_most_serious:
     serious_incident_date
-  else:
-    other_incident_description
+  other_incident_description
   danger_more_abuse
   nav.set_section('weapons')
   other_parties1_weapon
@@ -457,29 +456,42 @@ fields:
 ---
 #code: |
 #  if recent_incident_date is defined, then set recent_incident_yes to True
-
+---
+---
+id: Other incidents or not
+question: |
+  Other incidents
+fields:
+  - "Were there other past incidents of serious violence or threats that you want to share with the judge?": recent_incident_most_serious
+    datatype: yesnoradio
 ---
 id: What happened other incidents
 question: |
   What happened -- other incidents
-subquestion: |
-  Were there other incidents of abuse? You can describe them here.
 fields:
+  - note: For each incident say when and where it happened; who else was there; and give details about any injuries resulting or any weapons used.
   - "Please describe the any other incident(s) with as much detail as possible.": other_incident_description
     input type: area
+    rows: 20
 ---
 id: Danger of more abuse
 question: |
   Danger of more abuse
+subquestion: |
+  It's important to answer **Yes** to this question if you want to get a court order that starts right away.
 fields:
-  - "Is there danger of more abuse?": danger_more_abuse
+  - "Is there immediate danger of more abuse from the defendant?": danger_more_abuse
+    datatype: yesnoradio
+  - "There is danger of more abuse to you": danger_more_abuse_users1
     datatype: yesno
-  - "Is there danger of more abuse to you?": danger_more_abuse_users1
+    show if: danger_more_abuse
+  - "There is danger of more abuse to the child/children": danger_more_abuse_children
     datatype: yesno
-  - "Is there danger of more abuse to the child/children?": danger_more_abuse_children
-    datatype: yesno
-  - "Explain why you think there is danger of more abuse. Be as specific as possible.": danger_more_abuse_why
+    show if: danger_more_abuse
+  - "If yes, please include any information not already described before. Be as specific as possible.": danger_more_abuse_why
     input type: area
+    show if: danger_more_abuse
+    required: False
 ---
 id: Weapons
 question: |
