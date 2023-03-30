@@ -10,6 +10,9 @@
 #Customize address questions so it doesn't ask for unit/apt. on separate line. id: your address  sets:   How do I use sets? Dont want the unit number.
 #Add show if to the will you be forced from home question and those that follow it
 #  if recent_incident_date is defined, then set recent_incident_yes to True  figure out this so that checkbox gets checked automatically
+# For weapons on line 515, figure out a loop with [i] or something to show list of all 8 weapons if the defendant does have weapons -- none of those should be required fields
+#For extra sheet of weapons, how do I   if extra_sheet_weapons:   then set  extra_sheets_attached = 1
+# Also need to add weapons_overflow  as an overflow attachment
 
 
 
@@ -143,6 +146,7 @@ code: |
   danger_more_abuse
   nav.set_section('weapons')
   owns_weapons
+  extra_sheet_weapons
   nav.set_section('order')
   request_not_abuse
   set_progress(64)
@@ -500,6 +504,11 @@ question: |
 subquestion: |
   Weapons can make this a dangerous time for you and/or your children. If you let the court know about weapons, they may be able to collect them from the defendant as part of the court order. This can help keep you safe.
 fields:
+  - "Has the defendant used or threatened to use a gun/firearm or another deadly weapon against you or another family member?": used_firearm
+    datatype: yesnoradio
+  - "Describe in detail how they used or threatened to use it?": used_firearm_how
+    input type: area
+    show if: used_firearm
   - "Does the defendant own or have access to guns/firearms or other deadly weapons?": owns_weapons
     input type: radio
     choices:
@@ -507,19 +516,12 @@ fields:
       - No: other_parties1_weapon_no
       - Maybe: other_parties1_weapon_DK
 
-  - "Has the defendant used or threatened to use a gun/firearm or another deadly weapon against you or another family member?": used_firearm
-    datatype: yesnoradio
-  - "Describe in detail how they used or threatened to use it?": used_firearm_how
-    input type: area
-    show if: used_firearm
   - "Description of the 1st weapon": weapon1
     maxlength: 76
-    show if: other_parties1_weapon
   - "Location of the 1st weapon": weapon1_location
     maxlength: 76
   - "Description of the 2nd weapon": weapon2
     maxlength: 76
-    show if: other_parties1_weapon
   - "Location of the 2nd weapon": weapon2_location
     maxlength: 76
   - "Description of the 3rd weapon": weapon3
@@ -546,8 +548,14 @@ fields:
     maxlength: 76
   - "Location of the 8th weapon": weapon8_location
     maxlength: 76
-  - "Are you attaching extra sheets with more weapons listed?": extra_sheets_attached
-    maxlength: 7
+  - "Check this box if you have more weapons to list. You can enter them here and it will be attached  as an extra sheet.": extra_sheet_weapons
+    datatype: yesno
+#  if extra_sheet_weapons: 
+#    extra_sheets_attached = 1 
+  - Other weapons: weapons_overflow
+    input type: area
+    rows: 4
+    show if: extra_sheet_weapons
 ---
 id: What you want to ask for in the RFA order
 question: |
@@ -968,6 +976,7 @@ review:
       % for item in other_parties:
         * ${ item }
       % endfor
+#Fix this weapon question edit section to be my custom yes no or maybe
   - Edit: other_parties1_weapon
     button: |
       **Does the defendant have guns/firearms or weapons?**:
@@ -2036,7 +2045,7 @@ attachment:
       - "other_parties1_address_zip__1": ${ other_parties[0].address.zip }
       - "other_parties1_address_zip": ${ other_parties[0].address.zip }
       - "other_parties1_weapon_yes": ${ other_parties1_weapon }
-      - "other_parties1_weapon_no": ${ not other_parties1_weapon }
+      - "other_parties1_weapon_no": ${ other_parties1_weapon_no }
       - "other_parties1_weapon_DK": ${ other_parties1_weapon_DK }
       - "recent_incident_date__1": ${ recent_incident_date.format() }
       - "recent_incident_date": ${ recent_incident_date.format() }
