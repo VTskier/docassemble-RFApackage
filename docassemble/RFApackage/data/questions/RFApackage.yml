@@ -1,8 +1,8 @@
 #####################################################################
 ####################### TO DO #######################
-#I got through This is what has happened most recently screen
+#I'm stuck on weapons screen. Can't advance. Could always comment it out and move one until I get help.
+#Use questions as asked by court, but also explain in plain language
 #I added nav but now my Review button is gone
-#Increase the font size of the body text
 #Re-do complaint PDF so it's a smaller size document. Should check marks look larger on PDF?
 #On complaint and affidavit, make the dates show like this mm/dd/yyy
 #update is defendant your spouse question on complaint PDF to have this field name is_spouse
@@ -10,7 +10,7 @@
 #Customize address questions so it doesn't ask for unit/apt. on separate line. id: your address  sets:   How do I use sets? Dont want the unit number.
 #Add show if to the will you be forced from home question and those that follow it
 #  if recent_incident_date is defined, then set recent_incident_yes to True  figure out this so that checkbox gets checked automatically
-# For weapons on line 515, figure out a loop with [i] or something to show list of all 8 weapons if the defendant does have weapons -- none of those should be required fields
+# For weapons screen, why does my show if not work for the list of 9 weapons?
 #For extra sheet of weapons, how do I   if extra_sheet_weapons:   then set  extra_sheets_attached = 1
 # Also need to add weapons_overflow  as an overflow attachment
 
@@ -137,16 +137,12 @@ code: |
   children.gather()
   nav.set_section('incidents')
   recent_incident_date
-  #recent_incident_yes
-  recent_incident_most_serious
-  set_progress(48)
   if not recent_incident_most_serious:
     serious_incident_date
   other_incident_description
   danger_more_abuse
   nav.set_section('weapons')
-  owns_weapons
-  extra_sheet_weapons
+  used_firearm
   nav.set_section('order')
   request_not_abuse
   set_progress(64)
@@ -174,7 +170,7 @@ sections:
   - weapons: Weapons
   - order: What you want in the RFA order
   - service: Info for law enforcement
-  - conclusion: Signature
+  - signature: Signature
 ##################
 ---
 code: |
@@ -378,9 +374,9 @@ fields:
   - Other phone: other_parties1_other_phone_number
     required: False    
 ---
-id: What has happened most recently
+id: What happened most recently
 question: |
-  What has happened -- most recently
+  What happened -- most recently
 subquestion: |
   Describe the most recent incident of abuse. Be as detailed as possible. The judge needs to know exactly what happened.
 fields:
@@ -462,22 +458,18 @@ fields:
 #code: |
 #  if recent_incident_date is defined, then set recent_incident_yes to True
 ---
----
-id: Other incidents or not
-question: |
-  Other incidents
-fields:
-  - "Were there other past incidents of serious violence or threats that you want to share with the judge?": recent_incident_most_serious
-    datatype: yesnoradio
----
 id: What happened other incidents
 question: |
   What happened -- other incidents
 fields:
+  - "Were there other past incidents of serious violence or threats that you want to share with the judge?": other_incident
+    datatype: yesnoradio
   - note: For each incident say when and where it happened; who else was there; and give details about any injuries resulting or any weapons used.
+    show if: other_incident
   - "Please describe the any other incident(s) with as much detail as possible.": other_incident_description
     input type: area
     rows: 20
+    show if: other_incident
 ---
 id: Danger of more abuse
 question: |
@@ -506,56 +498,73 @@ subquestion: |
 fields:
   - "Has the defendant used or threatened to use a gun/firearm or another deadly weapon against you or another family member?": used_firearm
     datatype: yesnoradio
-  - "Describe in detail how they used or threatened to use it?": used_firearm_how
+  - "Describe in detail how they used or threatened to use the weapon(s).": used_firearm_how
     input type: area
     show if: used_firearm
-  - "Does the defendant own or have access to guns/firearms or other deadly weapons?": owns_weapons
-    input type: radio
+  - Does the defendant own or have access to guns/firearms or other deadly weapons?: owns_weapons
+    datatype: radio
     choices:
       - Yes: other_parties1_weapon
       - No: other_parties1_weapon_no
       - Maybe: other_parties1_weapon_DK
-
-  - "Description of the 1st weapon": weapon1
+  - Description of the 1st weapon: weapon1
     maxlength: 76
+    show if: other_parties1_weapon
   - "Location of the 1st weapon": weapon1_location
     maxlength: 76
+    show if: other_parties1_weapon
   - "Description of the 2nd weapon": weapon2
     maxlength: 76
+    show if: weapon1
   - "Location of the 2nd weapon": weapon2_location
     maxlength: 76
+    show if: weapon1
   - "Description of the 3rd weapon": weapon3
     maxlength: 76
+    show if: weapon2
   - "Location of the 3rd weapon": weapon3_location
     maxlength: 76
+    show if: weapon2
   - "Description of the 4th weapon": weapon4
     maxlength: 76
+    show if: weapon3
   - "Location of the 4th weapon": weapon4_location
     maxlength: 76
+    show if: weapon3
   - "Description of the 5th weapon": weapon5
     maxlength: 76
+    show if: weapon4
   - "Location of the 5th weapon": weapon5_location
     maxlength: 76
+    show if: weapon4
   - "Description of the 6th weapon": weapon6
     maxlength: 76
+    show if: weapon5
   - "Location of the 6th weapon": weapon6_location
     maxlength: 76
+    show if: weapon5
   - "Description of the 7th weapon": weapon7
     maxlength: 76
+    show if: weapon6
   - "Location of the 7th weapon": weapon7_location
     maxlength: 76
+    show if: weapon6
   - "Description of the 8th weapon": weapon8
     maxlength: 76
+    show if: weapon7
   - "Location of the 8th weapon": weapon8_location
     maxlength: 76
+    show if: weapon7
   - "Check this box if you have more weapons to list. You can enter them here and it will be attached  as an extra sheet.": extra_sheet_weapons
     datatype: yesno
+    show if: weapon8
 #  if extra_sheet_weapons: 
 #    extra_sheets_attached = 1 
   - Other weapons: weapons_overflow
     input type: area
     rows: 4
     show if: extra_sheet_weapons
+continue button field: weapons_info
 ---
 id: What you want to ask for in the RFA order
 question: |
@@ -980,11 +989,7 @@ review:
   - Edit: other_parties1_weapon
     button: |
       **Does the defendant have guns/firearms or weapons?**:
-      ${ word(yesno(other_parties1_weapon)) }
-  - Edit: other_parties1_weapon_DK
-    button: |
-      **Do you not know if the defendant has guns/firearms or weapons?**:
-      ${ word(yesno(other_parties1_weapon_DK)) }
+      ${ word(owns_weapons) }
   - Edit: recent_incident_date
     button: |
       **What was the date of the most recent incident?**:
