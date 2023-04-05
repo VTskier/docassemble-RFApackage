@@ -1,7 +1,6 @@
 #####################################################################
 ####################### TO DO #######################
-#I'm stuck on weapons screen. Can't advance. I commented it out for now to move on until I get help.
-#For weapons screen, why does my show if not work for the list of 9 weapons? And how do I deal with yes/no/maybe?
+
 #On line 645, how can I loop through all the kids that were identified earlier in the interview (for getting PRR in the order)
 #On complaint and affidavit PDF, make the dates show like this mm/dd/yyy
 #Use questions as asked by court, but also explain in plain language
@@ -115,6 +114,7 @@ code: |
   user_ask_role = "plaintiff"
   nav.set_section("intro")
   Initial_screening_questions
+  used_firearm
   docket_number
   trial_court.address.address
   nav.set_section("about")
@@ -516,27 +516,37 @@ subquestion: |
 fields:
   - "Has the defendant used or threatened to use a gun/firearm or another deadly weapon against you or another family member?": used_firearm
     datatype: yesnoradio
+
   - "Describe in detail how they used or threatened to use the weapon(s).": used_firearm_how
     input type: area
     show if: used_firearm
+
   - Does the defendant own or have access to guns/firearms or other deadly weapons?: owns_weapons
-    datatype: radio
+    input type: radio
     choices:
-      - Yes: other_parties1_weapon
-      - No: other_parties1_weapon_no
-      - Maybe: other_parties1_weapon_DK
+      - Yes: True
+      - No: False
+      - I don't know: None
+
   - Description of the 1st weapon: weapon1
     maxlength: 76
-    show if: other_parties1_weapon
+    show if: owns_weapons
+
   - "Location of the 1st weapon": weapon1_location
     maxlength: 76
-    show if: other_parties1_weapon
+    show if: owns_weapons
+
   - "Description of the 2nd weapon": weapon2
     maxlength: 76
-    show if: weapon1
+    hide if: 
+      variable: weapon1
+      is: None
   - "Location of the 2nd weapon": weapon2_location
     maxlength: 76
-    show if: weapon1
+    hide if: 
+      variable: weapon1
+      is: None
+comment: |
   - "Description of the 3rd weapon": weapon3
     maxlength: 76
     show if: weapon2
@@ -576,8 +586,8 @@ fields:
   - "Check this box if you have more weapons to list. You can enter them here and it will be attached  as an extra sheet.": extra_sheet_weapons
     datatype: yesno
     show if: weapon8
-#  if extra_sheet_weapons: 
-#    extra_sheets_attached = 1 
+    #  if extra_sheet_weapons: 
+    #    extra_sheets_attached = 1 
   - Other weapons: weapons_overflow
     input type: area
     rows: 4
@@ -1110,11 +1120,17 @@ review:
       % for item in other_parties:
         * ${ item }
       % endfor
-#Fix this weapon question edit section to be my custom yes no or maybe
-  - Edit: other_parties1_weapon
+
+  - Edit: owns_weapons
     button: |
       **Does the defendant have guns/firearms or weapons?**:
-      ${ word(owns_weapons) }
+      % if owns_weapons is True:
+      Yes
+      % elif owns_weapons is False:
+      No
+      % else: 
+      I don't know
+      % endif
   - Edit: recent_incident_date
     button: |
       **What was the date of the most recent incident?**:
@@ -2174,9 +2190,9 @@ attachment:
       - "other_parties1_address_state__2": ${ other_parties[0].address.state }
       - "other_parties1_address_zip__1": ${ other_parties[0].address.zip }
       - "other_parties1_address_zip": ${ other_parties[0].address.zip }
-      - "other_parties1_weapon_yes": ${ other_parties1_weapon }
-      - "other_parties1_weapon_no": ${ other_parties1_weapon_no }
-      - "other_parties1_weapon_DK": ${ other_parties1_weapon_DK }
+      - "other_parties1_weapon_yes": ${ owns_weapons }
+      - "other_parties1_weapon_no": ${ not owns_weapons }
+      - "other_parties1_weapon_DK": ${ owns_weapons == None }
       - "recent_incident_date__1": ${ recent_incident_date.format() }
       - "recent_incident_date": ${ recent_incident_date.format() }
       - "recent_incident_time": ${ recent_incident_time }
