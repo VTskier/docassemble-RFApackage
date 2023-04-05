@@ -1,11 +1,11 @@
 #####################################################################
 ####################### TO DO #######################
 #I'm stuck on weapons screen. Can't advance. I commented it out for now to move on until I get help.
-# For weapons screen, why does my show if not work for the list of 9 weapons?
+#For weapons screen, why does my show if not work for the list of 9 weapons? And how do I deal with yes/no/maybe?
 #On line 645, how can I loop through all the kids that were identified earlier in the interview (for getting PRR in the order)
 #On complaint and affidavit PDF, make the dates show like this mm/dd/yyy
 #Use questions as asked by court, but also explain in plain language
-#I added nav but now my Review button is gone. Is that normal?
+#I added nav but now my Review button is gone. Is that normal? How is the nav supposed to work?
 #Prep updated confidential contact form and then upload it
 #Re-do complaint PDF so it's a smaller size document. Should check marks look larger on PDF?
 #update is defendant your spouse question on complaint PDF to have this field name is_spouse
@@ -27,7 +27,7 @@ include:
 ---
 metadata:
   title: |
-    Relief from Abuse
+    Relief from Abuse (RFA)
   short title: |
     Asking for a Relief from Abuse order (RFA) in Vermont
   tags:
@@ -577,7 +577,7 @@ id: What you want to ask for in the RFA order
 question: |
   What you want to ask for in the RFA order
 subquestion: |
-  Choose all that apply. This is a list of things that you can ask the court for. If approved, they will be part of the Relief from Abuse order. You can also add other things.
+  **Choose all that apply to you.** This is a list of things that you can ask the court for. If approved, they will be part of the Relief from Abuse order. You can also add other things at the bottom.
   
   I want the court to:
 fields:
@@ -665,14 +665,16 @@ fields:
   - "Order something else as part of the RFA order": request_other
     datatype: yesno
   - "Explain what else you'd like the RFA order to do.": request_other_description
-    maxlength: 74
+    input type: area
+    rows: 2
+    hint: Order the defendant to...
     show if: request_other
 ---
 id: Emergency order
 question: |
   Asking for your order to go into effect right away
 subquestion: |
-  Do you want all of your requests to be put in place now — in an emergency order? Most people choose **Yes** to get protection right away.
+  Do you want all of your requests to be put in place now — in an emergency order? Most people choose **Yes** to get protection as soon as possible.
 fields:
   - "I request on an emergency basis the same relief as requested above, to the extent available.": request_all_emergency
     datatype: yesnoradio
@@ -681,8 +683,11 @@ id: Existing orders or court proceedings
 question: |
   Existing orders or court proceedings
 subquestion: |
-  Is there an existing court order or a pending court proceeding involving you, the defendant, and/or the child/children? Select all that apply.
+  Is there an existing court order or a pending court proceeding involving you, the defendant, and/or your child or children? 
+  
+  Don't include things you plan to do. Only include things that have been submitted to the court already.
 fields:
+  - note: Select all that apply.
   - "For divorce or separation?": existing_order_divorce
     datatype: yesno
   - "For a civil union dissolution?": dissolution
@@ -720,21 +725,38 @@ continue button field: details_for_law_enforcement
 id: About your home
 question: |
   About your home
+subquestion: |
+  Will you be forced from your home and be without shelter -- unless the defendant is ordered to leave your home?
 fields:
-  - "Will you be forced from your home and be without shelter -- unless the defendant is ordered to leave your home?": users1_no_shelter
-    datatype: yesno
+  - no label: users1_no_shelter
+    datatype: yesnoradio
+  - note: What is the address of the home?
+    show if: users1_no_shelter
+  - "On one line, include: street address, apt./unit number, town and state abbreviation.": residence_shared_address
+    maxlength: 75
+    show if: users1_no_shelter
+  - note: Rent or own?
+    show if: users1_no_shelter
   - "The home is rented.": residence_rented
     datatype: yesno
+    show if: users1_no_shelter
   - "The home is owned.": residence_owned
     datatype: yesno
-  - "What is your shared home address (street address, town and state)?": residence_of_users1
+    show if: users1_no_shelter
+  - note: In whose name?
+    show if: users1_no_shelter
+  - "It is rented or owned in both of our names.": residence_of_both
     datatype: yesno
-  - "Is it owned or rented in the defendant's name?": residence_of_OP
+    show if: users1_no_shelter
+  - "It is rented or owned in my name.": residence_of_users1
     datatype: yesno
-  - "Is it owned or rented in both of your names?": residence_of_both
+    show if: users1_no_shelter
+  - "It is rented or owned in the defendant's name.": residence_of_OP
     datatype: yesno
-  - "Is it owned or rented by someone else?": residence_of_other
+    show if: users1_no_shelter
+  - "It is rented or owned by someone else.": residence_of_other
     datatype: yesno
+    show if: users1_no_shelter
 ---
 #Shall I make separate blocks for 1 - if the defendant can be found at their shared home and 2- if the defendant is living in another location?
 id: About the home
@@ -1374,10 +1396,10 @@ review:
     button: |
       **Will you be forced from your home and be without shelter -- unless the defendant is ordered to leave your home?**:
       ${ word(yesno(users1_no_shelter)) }
-  - Edit: residence_of_users1
+  - Edit: residence_shared_address
     button: |
       **What is your shared home address (street address, town and state)?**:
-      ${ word(yesno(residence_of_users1)) }
+      ${ word(yesno(residence_shared_address)) }
   - Edit: residence_owned
     button: |
       **Does one or both of you own your home?**:
@@ -2285,6 +2307,7 @@ attachment:
       - "used_firearm_yes__1": ${ used_firearm_yes }
       - "incarcerated": ${ incarcerated }
       - "users1_no_shelter": ${ users1_no_shelter }
+      - "residence_shared_address": ${ residence_shared_address }
       - "residence_of_users1": ${ residence_of_users1 }
       - "residence_owned": ${ residence_owned }
       - "residence_rented": ${ residence_rented }
