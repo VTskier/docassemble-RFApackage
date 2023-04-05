@@ -153,6 +153,9 @@ code: |
   existing_order_divorce
   nav.set_section('service')
   users1_no_shelter
+  details_for_law_enforcement
+  location_of_home
+  vehicle_make
   spouse_or_ex_spouse
   employer
   house2
@@ -678,42 +681,51 @@ id: Existing orders or court proceedings
 question: |
   Existing orders or court proceedings
 subquestion: |
-  Is there an existing order or a pending court proceeding involving you, the defendant, and/or the child/children?
+  Is there an existing court order or a pending court proceeding involving you, the defendant, and/or the child/children? Select all that apply.
 fields:
-  - "Is there an existing order or a pending court proceeding for divorce or separation?": existing_order_divorce
+  - "For divorce or separation?": existing_order_divorce
     datatype: yesno
-  - "Is there an existing order or a pending court proceeding for a civil union dissolution?": dissolution
+  - "For a civil union dissolution?": dissolution
     datatype: yesno
-  - "Is there an existing order or a pending court proceeding for Relief from Abuse?": existing_order_RFA
+  - "For Relief from Abuse?": existing_order_RFA
     datatype: yesno
-  - "Is there an existing order or a pending court proceeding for a criminal matter?": criminal_proceeding
+  - "For a criminal matter?": criminal_proceeding
     datatype: yesno
-  - "Is there an existing order or a pending court proceeding for parentage?": parentage_order
+  - "For parentage?": parentage_order
     datatype: yesno
-  - "Is there an existing order or a pending court proceeding for guardianship?": guardianship_order
+  - "For guardianship?": guardianship_order
     datatype: yesno
-  - "Is there an existing order or a pending court proceeding for a juvenile (DCF) matter?": juvenile_order
+  - "For a juvenile (DCF) matter?": juvenile_order
     datatype: yesno
-  - "Is there an existing order or a pending court proceeding for child support?": child_support_order
+  - "For child support?": child_support_order
     datatype: yesno
-  - "In what state is the existing order or a pending court proceeding?": existing_order_state
+  - "In what state(s) is the existing order or a pending court proceeding?": existing_order_state
     maxlength: 34
-  - "In what county is the existing order or a pending court proceeding?": existing_order_county
+  - "In what county/counties is the existing order or a pending court proceeding?": existing_order_county
     maxlength: 36
   - "What is the name of your attorney for the existing order or a pending court proceeding -- if you have one?": existing_order_users_attorney
     maxlength: 25
   - "What is the name of the other attorney for the existing order or a pending court proceeding -- if the defendant has one?": existing_order_OP_attorney
     maxlength: 25
 ---
-id: About the defendants home and vehicle
+id: Details for law enforcement
 question: |
-  About the defendant's home and vehicle
+  Details for law enforcement to serve the RFA order
+subquestion: |
+  If your RFA order is approved by a judge, law enforcement will be sent to "serve" (deliver) the order to the defendant. The following questions are used by law enforcement to do that quickly and safely.
+  
+  There may be a couple similar -- but unique -- questions as you provide details for the law enforcement form, which is called the Protection Order Service Information form.
+continue button field: details_for_law_enforcement
+---
+id: About your home
+question: |
+  About your home
 fields:
   - "Will you be forced from your home and be without shelter -- unless the defendant is ordered to leave your home?": users1_no_shelter
     datatype: yesno
-  - "Does one or both of you own your home?": residence_owned
+  - "The home is rented.": residence_rented
     datatype: yesno
-  - "Does one or both of you rent your home?": residence_rented
+  - "The home is owned.": residence_owned
     datatype: yesno
   - "What is your shared home address (street address, town and state)?": residence_of_users1
     datatype: yesno
@@ -723,6 +735,12 @@ fields:
     datatype: yesno
   - "Is it owned or rented by someone else?": residence_of_other
     datatype: yesno
+---
+#Shall I make separate blocks for 1 - if the defendant can be found at their shared home and 2- if the defendant is living in another location?
+id: About the home
+question: |
+  About the home
+fields:
   - "The house or building number on the street (Example: Enter 10 if it's 10 Main Street.)": house
     maxlength: 16
   - "If you don't have a street address, describe the location of the home.": location_of_home
@@ -732,17 +750,23 @@ fields:
     maxlength: 255
   - "Best days and times to contact the defendant at home.": best_contact_time
     input type: area
-  - "Vehicle plate number": vehicle_plate
-    maxlength: 14
-  - "Vehicle year": vehicle_year
-    maxlength: 6
+---
+id: About the defendant's vehicle
+question: |
+  About the defendant's vehicle (their car or truck). If you don't know, say I don't know.
+fields:
   - "What brand car or truck do they drive? (Ford, Honda, etc.)": vehicle_make
     maxlength: 19
   - "What model car or truck? (F-150, Civic)": vehicle_model
     maxlength: 17
   - "Color of car or truck": vehicle_color
     maxlength: 13
+  - "Vehicle plate number": vehicle_plate
+    maxlength: 14
+  - "Vehicle year": vehicle_year
+    maxlength: 6
 ---
+
 id: More on your relationship to defendant
 question: |
   More on your relationship to defendant
