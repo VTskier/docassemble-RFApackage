@@ -1,6 +1,7 @@
 #####################################################################
 ####################### TO DO #######################
-  
+#Need to update all the Review and Attachment variables for get_kids_relationships
+#For id: What happened most recently, need to group the checkbox questions at the bottom.
 #On line 645, how can I loop through all the kids that were identified earlier in the interview (for getting PRR in the order)
 #On complaint and affidavit PDF, make the dates show like this mm/dd/yyy
 #Use questions as asked by court, but also explain in plain language
@@ -114,7 +115,7 @@ code: |
   user_ask_role = "plaintiff"
   nav.set_section("intro")
   Initial_screening_questions
-  used_firearm
+  children.gather()
   docket_number
   trial_court.address.address
   nav.set_section("about")
@@ -138,7 +139,7 @@ code: |
   other_parties[0].address.address
   other_parties[0].phone_number
   set_progress(40)
-  children.gather()
+  #children.gather()
   nav.set_section('incidents')
   recent_incident_date
   if not recent_incident_most_serious:
@@ -147,9 +148,10 @@ code: |
   set_progress(40)
   danger_more_abuse
   nav.set_section('weapons')
-  #used_firearm
+  used_firearm
   nav.set_section('order')
   request_not_abuse
+  get_kids_relationships
   request_all_emergency
   set_progress(64)
   existing_order_divorce
@@ -264,11 +266,11 @@ sets:
 question: |
   What is your address?
 subquestion: |
-  Use an address where it is safe for the court to contact you.
+  Use an address where it is safe for the court to contact you. You can [talk with an advocate](https://vtnetwork.org/) about how to get a safer mailing address. 
 fields:
   - code: |
       users[0].address_fields(default_state=AL_DEFAULT_STATE)  
-  - "If you have a PO Box, or your mailing address is different than your street address, enter it here. (Example: P.O. Box 111)": users1_address_mailing
+  - "If you have a PO Box, or your mailing address is different than your street address, enter it here. (Example: PO Box 11111, Burlington, VT 05401)": users1_address_mailing
     maxlength: 42
     required: False
 continue button field: About_you
@@ -374,14 +376,14 @@ sets:
   - other_parties[i].address.zip
   - other_parties[i].address.state
 question: |
-  What is the defendants address?
+  What is the defendant's address?
 fields:
   - code: |
       other_parties[0].address_fields(default_state=AL_DEFAULT_STATE)  
 ---
 id: Gather defendants phone numbers
 question: |
-  What are the defendants phone numbers?
+  What are the defendant's phone numbers?
 fields:  
   - Home phone: other_parties[0].phone_number
     required: False
@@ -397,6 +399,8 @@ question: |
   What happened -- most recently
 subquestion: |
   Describe the most recent incident of abuse. Be as detailed as possible. The judge needs to know exactly what happened.
+  
+  See the [VTLawHelp.org legal help website](https://vtlawhelp.org/roadmap/relief-from-abuse/step-3#forms) for tips on what to include in your description, which will go into your Affidavit.
 fields:
   - "What was the date of the most recent incident?": recent_incident_date
     datatype: date
@@ -410,7 +414,8 @@ fields:
   - "Please describe the most recent incident with as much detail as possible.": recent_incident_description
     input type: area
     rows: 20
-  - note: Check all that apply to this incident
+  - note: |
+      Check all that apply to this incident:
   - You were the target of the recent abuse: recent_incident_users1
     datatype: yesno
   - Your children were the target of the recent abuse: recent_incident_children
@@ -664,12 +669,10 @@ fields:
   - "I want the order to protect my child/children.": request_no_contact_children
     datatype: yesno
     show if: request_no_contact
-  - "Award temporary Parental Rights and Responsibilities (custody) of our child/children to me or someone else. (Child(ren) of you and the defendant)": request_temp_PRR
-    datatype: yesno
-    
-    
-    
-    
+  - "Award temporary Parental Rights and Responsibilities (custody) of our child/children to me or someone else. (The child(ren) of you and the defendant.)": request_temp_PRR
+    datatype: yesno  
+  - note: If you choose custody, we will ask for the names of the children on the next screen.
+    show if: request_temp_PRR
 ---
 code: |
   for child in children: 
@@ -677,20 +680,23 @@ code: |
   get_kids_relationships = True
     
 ---
+id: Childrens relationships
 generic object: Individual     
 question: |
   Custody of ${x.name.first}
 fields:
-  - I want custody of ${x.name.first}: x.custody_wanted
-    datatype: yesno
+  - I want temporary custody of ${x.name.first}: x.custody_wanted
+    datatype: yesnoradio
   - "In 1 or 2 words, what is ${x.name.first}'s relationship to you?": x.relationship_users1
     maxlength: 19
     show if: x.custody_wanted
   - "What is ${x.name.first}'s relationship to the defendant?": x.relationship_OP
     maxlength: 21
     show if: x.custody_wanted
-    
-
+---
+id: Put something else in order
+generic object: Individual     
+question: |
   - "Order something else as part of the RFA order": request_other
     datatype: yesno
   - "Explain what else you'd like the RFA order to do.": request_other_description
