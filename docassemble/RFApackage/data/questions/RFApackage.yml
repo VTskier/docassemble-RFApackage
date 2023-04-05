@@ -1,6 +1,6 @@
 #####################################################################
 ####################### TO DO #######################
-
+  
 #On line 645, how can I loop through all the kids that were identified earlier in the interview (for getting PRR in the order)
 #On complaint and affidavit PDF, make the dates show like this mm/dd/yyy
 #Use questions as asked by court, but also explain in plain language
@@ -666,23 +666,31 @@ fields:
     show if: request_no_contact
   - "Award temporary Parental Rights and Responsibilities (custody) of our child/children to me or someone else. (Child(ren) of you and the defendant)": request_temp_PRR
     datatype: yesno
-  - "I want custody of my child named ${children[1].name.first}.": children1_PRR
+    
+    
+    
+    
+---
+code: |
+  for child in children: 
+    child.custody_wanted
+  get_kids_relationships = True
+    
+---
+generic object: Individual     
+question: |
+  Custody of ${x.name.first}
+fields:
+  - I want custody of ${x.name.first}: x.custody_wanted
     datatype: yesno
-    show if: request_temp_PRR
-  - "In 1 or 2 words, what is ${children[1].name.first}'s relationship to you?": children1_relationship_users1
+  - "In 1 or 2 words, what is ${x.name.first}'s relationship to you?": x.relationship_users1
     maxlength: 19
-    show if: children1_PRR
-  - "What is ${children[1].name.first}'s relationship to the defendant?": children1_relationship_OP
+    show if: x.custody_wanted
+  - "What is ${x.name.first}'s relationship to the defendant?": x.relationship_OP
     maxlength: 21
-    show if: children1_PRR
-#  - "This child's relationship to you?": children2_relationship_users1
-#    maxlength: 19
-#  - "This child's relationship to the defendant?": children2_relationship_OP
-#    maxlength: 21
-#  - "This child's relationship to you?": children3_relationship_users1
-#    maxlength: 19
-#  - "This child's relationship to the defendant?": children3_relationship_OP
-#    maxlength: 21
+    show if: x.custody_wanted
+    
+
   - "Order something else as part of the RFA order": request_other
     datatype: yesno
   - "Explain what else you'd like the RFA order to do.": request_other_description
