@@ -6,6 +6,8 @@
 #On complaint and affidavit PDF, make the dates show like this mm/dd/yyy
 #Use questions as asked by court, but also explain in plain language
 #I added nav but now my Review button is gone. Is that normal? How is the nav supposed to work?
+#Add these new fields to review and attachment sections; are they in the PDF?: other_parties1_street_address; other_parties1_city; other_parties1_state
+#Make sure house2 and house3 fields are in review and attachment sections; are they in the PDF?
 #Prep updated confidential contact form and then upload it
 #Re-do complaint PDF so it's a smaller size document. Should check marks look larger on PDF?
 #update is defendant your spouse question on complaint PDF to have this field name is_spouse
@@ -176,7 +178,7 @@ sections:
   - incidents: What happened
   - weapons: Weapons
   - order: What you want in the RFA order
-  - service: Info for law enforcement
+  - service: Info for law enforcement to serve the order
   - signature: Signature
 ##################
 ---
@@ -291,8 +293,17 @@ validation code: |
       (not showifdef('users[0].email')) and \
       (not showifdef('users1_work_phone_number'))):
     validation_error(word("You need to provide at least one contact method."), field="users[0].other_contact_method")
-
-
+---
+id: Share contact info
+question: |
+  Sharing your contact information
+subquestion: |
+  To keep your contact information confidential, select **No**. Then only the court and law enforcement will see your address and contact information. 
+  
+  If you select Yes, other people can get your address and contact information.
+fields:
+  - "I consent to the release of my address and contact information.": share_contact
+    datatype: yesnoradio
 ---
 id: Relationship to defendant
 question: |
@@ -712,15 +723,7 @@ fields:
     maxlength: 25
   - "What is the name of the other attorney for the existing order or a pending court proceeding -- if the defendant has one?": existing_order_OP_attorney
     maxlength: 25
----
-id: Details for law enforcement
-question: |
-  Details for law enforcement to serve the RFA order
-subquestion: |
-  If your RFA order is approved by a judge, law enforcement will be sent to "serve" (deliver) the order to the defendant. The following questions are used by law enforcement to do that quickly and safely.
-  
-  There may be a couple similar -- but unique -- questions as you provide details for the law enforcement form, which is called the Protection Order Service Information form.
-continue button field: details_for_law_enforcement
+
 ---
 id: About your home
 question: |
@@ -758,24 +761,46 @@ fields:
     datatype: yesno
     show if: users1_no_shelter
 ---
+id: Details for law enforcement
+question: |
+  Details for law enforcement to serve the RFA order
+subquestion: |
+  If your RFA order is approved by a judge, law enforcement will be sent to "serve" (deliver) the order to the defendant. The following information is used by law enforcement to do that quickly and safely.
+  
+  You may notice a couple similar questions -- but asked in a new way -- as you provide details for the law enforcement form, which is called the Protection Order Service Information form.
+continue button field: details_for_law_enforcement
+---
 #Shall I make separate blocks for 1 - if the defendant can be found at their shared home and 2- if the defendant is living in another location?
 id: About the home
 question: |
-  About the home
+  The defendant's home address at this time
+subquestion: |
+  Tell law enforcement where the defendant lives at this time. If they live with you, provide that address and information. If you don't know an answer, say I don't know.  
 fields:
   - "The house or building number on the street (Example: Enter 10 if it's 10 Main Street.)": house
-    maxlength: 16
+    maxlength: 10
+  - "Street or Town Road (Example: Enter Main Street)": other_parties1_street_address
+    maxlength: 28
+  - "Town / city": other_parties1_city
+    maxlength: 23
+  - "State": other_parties1_state
+    maxlength: 5
   - "If you don't have a street address, describe the location of the home.": location_of_home
     input type: area
+    required: False
   - "Describe what the defendant's home looks like.": description_of_home
     input type: area
-    maxlength: 255
+    maxlength: 220
   - "Best days and times to contact the defendant at home.": best_contact_time
     input type: area
+    maxlength: 220
 ---
+#How make all of these not required?
 id: About the defendant's vehicle
 question: |
-  About the defendant's vehicle (their car or truck). If you don't know, say I don't know.
+  The defendant's vehicle (their car or truck)
+subquestion: |
+  If you don't know an answer on this screen, leave it blank.
 fields:
   - "What brand car or truck do they drive? (Ford, Honda, etc.)": vehicle_make
     maxlength: 19
@@ -794,6 +819,8 @@ question: |
   More on your relationship to defendant
 subquestion: |
   Law enforcement asks these specific questions on their confidential form.
+  
+  Check all that apply to you.
 fields:
   - "I am the spouse or ex-spouse (former spouse) of the defendant.": spouse_or_ex_spouse
     datatype: yesno
@@ -833,14 +860,18 @@ fields:
   - "Work hours on Sundays": work_sun
     maxlength: 11
 ---
+#Make all these not required
 id: Other places the defendant might be
 question: |
   Other places the defendant might be
 subquestion: |
-  Where else might the defendant spend time? This can help law enforcement find the defendant.
+  Where else does the defendant spend time? This can help law enforcement find the defendant. Leave this screen blank if you can't think of another place.
 fields:
-  - "House or building number on the street": house2
-  - "Where would they be if not at home or work? List the street address of another location. NEED TO ADD FIELD FOR HOUSE NUMBER AND RENAME ON PDF TO house2.": other_location_street_address
+  - note: |
+      <h2 class="h4">Other location:</h2>
+  - "The house or building number on the street (Example: Enter 10 if it's 10 Main Street.)": house2
+    maxlength: 10
+  - "Street or Town Road (Example: Enter Main Street)": other_location_street_address
     maxlength: 28
   - "Town / city": other_location_city
     maxlength: 23
@@ -848,15 +879,26 @@ fields:
     maxlength: 5
   - "Phone number at that location": other_location_phone
     maxlength: 13
-  - "House or building number on the street": house3
-  - "List another street address if there is another location. NEED TO ADD FIELD FOR HOUSE NUMBER AND RENAME ON PDF TO house3.": other_location2_street_address
+  - "I have another place to list.": other_location2
+    datatype: yesno
+  - note: |
+      <h2 class="h4">Another location:</h2>
+    show if: other_location2
+  - "The house or building number on the street (Example: Enter 10 if it's 10 Main Street.)": house3
+    maxlength: 10
+    show if: other_location2
+  - "Street or Town Road (Example: Enter Main Street).": other_location2_street_address
     maxlength: 27
+    show if: other_location2
   - "Town / city": other_location2_city
     maxlength: 23
+    show if: other_location2
   - "State": other_location2_state
     maxlength: 5
+    show if: other_location2
   - "Phone number at that location": other_location2_phone
     maxlength: 13
+    show if: other_location2
 ---
 id: What the defendant looks like
 question: |
@@ -982,18 +1024,7 @@ fields:
     required: False
   - "Check this box if you get Reach Up benefits from the state": reach_up_users1
     datatype: yesno
-    
----
-id: Share contact info
-question: |
-  Sharing your contact information
-subquestion: |
-  To keep your contact information confidential, select **No**. Then only the court and law enforcement will see your address and contact information. 
-  
-  If you select Yes, other people can get your address and contact information.
-fields:
-  - "I consent to the release of my address and contact information.": share_contact
-    datatype: yesnoradio
+
 ---
 id: Signing some but not all of your forms
 question: |
