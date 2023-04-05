@@ -1,19 +1,19 @@
 #####################################################################
 ####################### TO DO #######################
-#I'm now working on getting PRR in the order and going through which kids
 #I'm stuck on weapons screen. Can't advance. I commented it out for now to move on until I get help.
+# For weapons screen, why does my show if not work for the list of 9 weapons?
+#On line 645, how can I loop through all the kids that were identified earlier in the interview (for getting PRR in the order)
+#On complaint and affidavit PDF, make the dates show like this mm/dd/yyy
 #Use questions as asked by court, but also explain in plain language
-#I added nav but now my Review button is gone
-#Prep updated conf contact form and then upload it
+#I added nav but now my Review button is gone. Is that normal?
+#Prep updated confidential contact form and then upload it
 #Re-do complaint PDF so it's a smaller size document. Should check marks look larger on PDF?
-#On complaint and affidavit, make the dates show like this mm/dd/yyy
 #update is defendant your spouse question on complaint PDF to have this field name is_spouse
 #Fix field name on PDF and in interview   other parties work phone (not word)
 #Customize address questions so it doesn't ask for unit/apt. on separate line. id: your address  sets:   How do I use sets? Dont want the unit number.
 #Add show if to the will you be forced from home question and those that follow it
 #  if recent_incident_date is defined, then set recent_incident_yes to True  figure out this so that checkbox gets checked automatically
-# For weapons screen, why does my show if not work for the list of 9 weapons?
-#For extra sheet of weapons, how do I   if extra_sheet_weapons:   then set  extra_sheets_attached = 1
+#For extra sheet of weapons, how do I do   if extra_sheet_weapons:   then set  extra_sheets_attached = 1
 # Also need to add weapons_overflow  as an overflow attachment
 
 
@@ -648,29 +648,31 @@ fields:
   - "In 1 or 2 words, what is ${children[1].name.first}'s relationship to you?": children1_relationship_users1
     maxlength: 19
     show if: children1_PRR
-  - "What is this child's relationship to the defendant?": children1_relationship_OP
+  - "What is ${children[1].name.first}'s relationship to the defendant?": children1_relationship_OP
     maxlength: 21
     show if: children1_PRR
-  - "This child's relationship to you?": children2_relationship_users1
-    maxlength: 19
-  - "This child's relationship to the defendant?": children2_relationship_OP
-    maxlength: 21
-  - "This child's relationship to you?": children3_relationship_users1
-    maxlength: 19
-  - "This child's relationship to the defendant?": children3_relationship_OP
-    maxlength: 21
-  - "Order something else": request_other
+#  - "This child's relationship to you?": children2_relationship_users1
+#    maxlength: 19
+#  - "This child's relationship to the defendant?": children2_relationship_OP
+#    maxlength: 21
+#  - "This child's relationship to you?": children3_relationship_users1
+#    maxlength: 19
+#  - "This child's relationship to the defendant?": children3_relationship_OP
+#    maxlength: 21
+  - "Order something else as part of the RFA order": request_other
     datatype: yesno
-  - "Explain what else you'd like the order to do.": request_other_description
+  - "Explain what else you'd like the RFA order to do.": request_other_description
     maxlength: 74
     show if: request_other
 ---
 id: Emergency order
 question: |
-  What 
+  Asking for your order to go into effect right away
 subquestion: |
-  - "Do you want all of the previous requests to be **put in place now** -- in an emergency order? (Most people choose **Yes** to get protection right away.)": request_all_emergency
-    datatype: yesno
+  Do you want all of your requests to be put in place now — in an emergency order? Most people choose **Yes** to get protection right away.
+fields:
+  - "I request on an emergency basis the same relief as requested above, to the extent available.": request_all_emergency
+    datatype: yesnoradio
 ---
 id: Existing orders or court proceedings
 question: |
