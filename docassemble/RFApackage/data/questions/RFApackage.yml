@@ -906,10 +906,15 @@ question: |
 subquestion: |
   What follows are questions that will help law enforcement identify the defendant so they can serve the RFA order.
 fields:
+  - note: |
+      <h2 class="h4">Sex/gender:</h2>
+      Note that law enforcement only offers these two checkboxes at this time.
   - "Female": sex_female
     datatype: yesno
   - "Male": sex_male
     datatype: yesno
+  - note: |
+      <h2 class="h4">Race:</h2>
   - "White": race_white
     datatype: yesno
   - "African-American": race_black
@@ -920,6 +925,8 @@ fields:
     datatype: yesno
   - "Other": race_other
     datatype: yesno
+  - note: |
+      <h2 class="h4">Skin color/tone:</h2>
   - "Light": skin_light
     datatype: yesno
   - "Medium": skin_medium
@@ -928,12 +935,18 @@ fields:
     datatype: yesno
   - "Other": skin_other
     datatype: yesno
+  - note: |
+      <h2 class="h4">Height:</h2>
   - "Height -- feet": other_parties1_height_ft
     maxlength: 5
   - "Height -- inches": other_parties1_height_in
     maxlength: 5
+  - note: |
+      <h2 class="h4">Weight:</h2>
   - "Weight -- in pounds": other_parties1_weight_lbs
     maxlength: 5
+  - note: |
+      <h2 class="h4">Eye color:</h2>
   - "Brown": eyes_brown
     datatype: yesno
   - "Blue": eyes_blue
@@ -946,6 +959,8 @@ fields:
     datatype: yesno
   - "Other": eyes_other
     datatype: yesno
+  - note: |
+      <h2 class="h4">Glasses and contacts:</h2>
   - "Glasses": lenses_glasses
     datatype: yesno
   - "Contacts": lenses_contacts
