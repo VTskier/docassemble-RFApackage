@@ -27,6 +27,9 @@
 include:
   - docassemble.AssemblyLine:assembly_line.yml
 ---
+features:
+  bootstrap theme: vermont.bootstrap.min.css
+---
 metadata:
   title: |
     Relief from Abuse (RFA)
