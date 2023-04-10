@@ -1,9 +1,10 @@
 #####################################################################
 ####################### TO DO #######################
+#In footer, add vtcourt forms are offered by Lsv
+#Reverted to original style because the bootstrap css file I did made too many changes to things. Do up a list of things I want to change on the standard css file. Consider putting dark blue in header. Consider using this yellow with the blue #fbf0cf. Consider And adding orange or purple rules or splashes of color like we have in Roadmaps? 
 #Need to update all the Review and Attachment variables for get_kids_relationships
 #For id: What happened most recently, need to group the checkbox questions at the bottom.
-#On line 645, how can I loop through all the kids that were identified earlier in the interview (for getting PRR in the order)
-#On complaint and affidavit PDF, make the dates show like this mm/dd/yyy
+#On complaint and affidavit PDFs, make the dates show like this mm/dd/yyy so they fit (not written out)
 #Use questions as asked by court, but also explain in plain language
 #I added nav but now my Review button is gone. Is that normal? How is the nav supposed to work?
 #Add these new fields to review and attachment sections; are they in the PDF?: other_parties1_street_address; other_parties1_city; other_parties1_state
@@ -27,8 +28,8 @@
 include:
   - docassemble.AssemblyLine:assembly_line.yml
 ---
-features:
-  bootstrap theme: vermont.bootstrap.min.css
+#features:
+  #bootstrap theme: vermont.bootstrap.min.css
 ---
 metadata:
   title: |
@@ -74,7 +75,6 @@ objects:
 ---
 images:
   big_logo: LSV_logo.png 
-
 ---
 code: |
   interview_metadata['main_interview_key'] =  'RFApackage'
@@ -113,7 +113,6 @@ id: interview_order_RFApackage
 code: |
   # Set the allowed courts for this interview
   allowed_courts = interview_metadata["RFApackage"]["allowed courts"]
-  nav.set_section("review_RFApackage")
   user_role = "plaintiff"
   user_ask_role = "plaintiff"
   nav.set_section("intro")
@@ -171,6 +170,7 @@ code: |
   hair_brown
   set_progress(80)
   notify_served
+  nav.set_section("review_RFApackage")
   nav.set_section('signature')
   printed_signature
   signature_date
@@ -184,7 +184,9 @@ sections:
   - weapons: Weapons
   - order: What you want in the RFA order
   - service: Info for law enforcement to serve the order
+  - review_RFApackage: Review your answers
   - signature: Signature
+progressive: False
 ##################
 ---
 code: |
@@ -215,6 +217,80 @@ code: |
       },
   )
   RFApackage_download
+---
+id: basic questions intro screen
+decoration: form-lineal
+question: |
+  ${interview_short_title}: ${ AL_ORGANIZATION_TITLE}
+subquestion: |  
+  Welcome to ${ AL_ORGANIZATION_TITLE}.
+  
+  ${ AL_ORGANIZATION_TITLE } can help you complete and download forms in 3 steps:
+  
+  * **Step 1:** Answer questions that will fill in court forms for you.
+  
+  * **Step 2:** Preview the completed forms.
+  
+  * **Step 3:** Download, save or print the final forms. You will need to mail, email, efile or deliver them to the court on your own.
+  
+  <i class="fas fa-file-text fa-2x"></i>   This interview will produce a completed Name Change Petition Form  — Vermont court form PC 122.
+  
+    <i class="fas fa-clock fa-2x"></i>   It will take you about 10 minutes to complete this interview.
+
+  VTCourtForms was created by Legal Services Vermont as an online tool for Vermonters. It is free to use this tool. However, you may have to pay the court a filing fee. 
+  
+  Be sure to [visit the VTLawHelp.org website to understand the name change process and any fees.](https://vtlawhelp.org/name-and-gender-marker-changes-vermont)
+  
+  This site is not a lawyer. Visit the [VTLawHelp.org website](https://vtlawhelp.org) if you have legal questions.
+  
+  [FILE big_logo, 30%, Legal Services Vermont logo]
+
+#  Tap the {green words} in any screen for a definition or more information.
+  
+#  % if chat_partners_available().help:
+#  Live help is currently available in this interview. Click the speech bubble
+#  (:comment-alt:) in the navigation bar to connect to a live advocate for help.
+#  % endif
+fields:
+  - To continue, you must accept our [terms of use](https://vtlawhelp.org/vlh-privacy): acknowledged_information_use
+    datatype: checkboxes
+    none of the above: False    
+    minlength: 1
+    choices:
+      - I accept the terms of use.
+    validation messages:
+      minlength: |
+        You cannot continue unless you agree to the terms of use.        
+continue button field: al_intro_screen
+#terms:
+#  green words: |
+#    Green words are legal terms or a short way of referring to something that needs more explanation. #The definition or explanation pops up when you tap the green words.
+#right: |
+#  % if user_has_saved_answers:
+#  ${fa_icon("bell", color="primary", size="sm")}
+#  Saved answers available!  
+  
+#  ${action_button_html(url_action('load_answer'), icon="folder-open", label=word("View answers"), #size="sm" )}
+#  % endif    
+---
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
 ---
 id: RFApackage
 continue button field: RFApackage_intro
