@@ -174,6 +174,7 @@ code: |
   nav.set_section('signature')
   printed_signature
   signature_date
+  nav.set_section('get_docs')
   interview_order_RFApackage = True
 ---
 sections:
@@ -186,7 +187,8 @@ sections:
   - service: Info for law enforcement to serve the order
   - review_RFApackage: Review your answers
   - signature: Signature
-progressive: False
+  - get_docs: Get your documents
+#progressive: False
 ##################
 ---
 code: |
@@ -233,9 +235,9 @@ subquestion: |
   
   * **Step 3:** Download, save or print the final forms. You will need to mail, email, efile or deliver them to the court on your own.
   
-  <i class="fas fa-file-text fa-2x"></i>   This interview will produce a completed Name Change Petition Form  — Vermont court form PC 122.
+  <i class="fas fa-file-text fa-2x" style="color:#1f455c; margin-right: 10px;"></i>   This interview will produce a completed Name Change Petition Form  — Vermont court form PC 122.
   
-    <i class="fas fa-clock fa-2x"></i>   It will take you about 10 minutes to complete this interview.
+    <i class="fas fa-clock fa-2x" style="color:#1f455c; margin-right: 10px;"></i>   It will take you about 10 minutes to complete this interview.
 
   VTCourtForms was created by Legal Services Vermont as an online tool for Vermonters. It is free to use this tool. However, you may have to pay the court a filing fee. 
   
@@ -278,21 +280,8 @@ continue button field: al_intro_screen
   
   
   
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
 ---
-id: RFApackage
+id: RFApackage_intro
 continue button field: RFApackage_intro
 question: |
   What to know before you start
@@ -301,22 +290,24 @@ subquestion: |
   
   * There is no charge for an RFA order. It is free. 
   * For details on the whole RFA process, visit the RFA Roadmap on the VTLawHelp.org website. 
-  * Even when the courts are closed, it’s after hours, or it’s a weekend or holiday, you can start a Relief from Abuse case. You may be able to get a temporary order right away to help keep you safe. At these times, you can email these forms or simply call and ask for help. Contact local police for help or call the Vermont courts’ answering service at 1-800-540-9990. Say that you need help applying for a Relief from Abuse order over the phone. If you call the answering service, you need to leave a message with a number where they can call you back within an hour.
-  * Applying for an RFA order can be a very dangerous time. Work with an advocate from the Vermont Network to create a safety plan — whether you end up asking for an RFA or not.
+  * **Even when the courts are closed, it’s after hours, or it’s a weekend or holiday, you can start a Relief from Abuse case.** You may be able to get a temporary order right away to help keep you safe. At these times, you can email these forms or simply call and ask for help. Call the Vermont courts’ answering service at 1-800-540-9990. Say that you need help applying for a Relief from Abuse order over the phone. If you call, you need to leave a message with a number where they can call you back within an hour.
+  * Applying for an RFA order can be a very dangerous time. Work with an advocate from the [Vermont Network](https://www.vtnetwork.org/get-help/) to create a safety plan — whether you end up asking for an RFA or not.
 ---
-id: RFApackage2
+id: RFApackage_intro_2
 continue button field: RFApackage_intro_2
 question: |
   About using this guided interview
 subquestion: |  
-  * Make sure you are in a safe place. It takes time to work through this interview. It may take 1 hour or more.
   * If you are in danger right now, dial 911.
-  * Consider creating an account and saving your work along the way. You could even share a link with an advocate. Look in the upper-right corner of the screen to create an account.
+  * Make sure you are in a safe place. It takes time to work through this interview. It may take 1 hour or more.
+  * Consider [creating an account and saving your work along the way.](https://apps-dev.suffolklitlab.org/user/sign-in) You could log in later to review your answers with an advocate. Look in the upper-right corner of the screen to create an account or use other features.
   * Use this guided interview if you are asking for an RFA order for you, or both you and your children. (There are different forms for asking for an RFA only on behalf of a child or children.)
   * The forms you make with this interview can only be used in Vermont.
+  <h3 class="h4">Information you will need</h3>
   * To complete this interview, you will need to know the date or dates when the abuse occurred and give a detailed description of the abuse. This includes the most recent incident and the most serious incident. You will need to fully describe the incidents and make it clear how severe or how frequent the abuse has been.
-  * You will need to give a safe address and telephone number where the court can reach you. If you don’t have one, ask an advocate from the Vermont Network.
-  * You will see important questions about weapons that are in the home. If you list what they are and where they are located, the court can order law enforcement to collect them to help keep you safe. 
+  * You will need to give a safe address and telephone number where the court can reach you. If you don’t have one, ask an advocate from the [Vermont Network.](https://www.vtnetwork.org/get-help/)
+  * You will see important questions about weapons that are in the home. If you list what they are and where they are located, the court can order law enforcement to collect them to help keep you safe.
+  <h3 class="h4">After answering the questions</h3>
   * At the end you will get a chance to preview your forms and make changes if you need to. 
   * Then you can download, print and/or save a PDF of your completed forms.
   * You will also get an instruction sheet about how to get the completed forms to the court – this includes emailing them or dropping them off at your local family court.
