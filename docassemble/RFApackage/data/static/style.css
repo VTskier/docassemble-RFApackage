@@ -1,0 +1,19 @@
+.bg-dark {
+  background-color: #1f455c !important;  /* replace with your desired nav bar color */
+}
+.da-form-group .da-form-label, 
+.da-subquestion,
+input.labelauty+label,
+.da-form-group.row.da-field-container.da-field-container-note,
+.nav.flex-column.nav-pills.danav.danav-vertical.danavlinks {
+    font-size: 1.1rem;
+}
+.title-row-1 {
+    font-size: 1rem;
+    font-weight: normal;
+}
+.fa-2x {
+    font-size: 2em;
+    color: #1f455c;
+    margin-right: 10px;
+}
