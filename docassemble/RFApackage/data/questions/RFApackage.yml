@@ -3,7 +3,6 @@
 #Check if I posted the most recent edited intro text as seen by Laura and Renee
 #In footer, add vtcourt forms are offered by Lsv
 #Use questions as asked by court, but also explain in plain language
-#Reverted to original style because the bootstrap css file I did made too many changes to things. Do up a list of things I want to change on the standard css file. 
 #Need to update all the Review and Attachment variables for get_kids_relationships
 #For id: What happened most recently, need to group the checkbox questions at the bottom.
 #On complaint and affidavit PDFs, make the dates show like this mm/dd/yyy so they fit (not written out)
@@ -114,9 +113,9 @@ code: |
   user_ask_role = "plaintiff"
   nav.set_section("intro")
   Initial_screening_questions
-  children.gather()
+
   docket_number
-  trial_court.address.address
+  trial_court_name
   nav.set_section("about")
   users.gather()
   set_parts(subtitle=str(users))
@@ -128,6 +127,7 @@ code: |
   users[0].email
   set_progress(16)
   share_contact
+  children.gather()
   ex_spouse
   set_progress(24)
   #set_parts(subtitle=str(other_parties))
@@ -234,11 +234,11 @@ subquestion: |
   
   <i class="fas fa-file-text fa-2x"></i> This interview will produce a complete package of 4 forms needed to ask the court for a Relief from Abuse order — Complaint, Affidavit, Confidential Notification form and Protection Order Service Information form.
   
-  <i class="fas fa-clock fa-2x"></i> It may take you over 1 hour to complete this interview.
-
-  VTCourtForms was created by Legal Services Vermont as an online tool for Vermonters. It is free to use this tool. 
+  <i class="fas fa-clock fa-2x"></i> It may take you over 1 hour to complete this interview. Consider creating a free account so you can save your progress. Make an account in the upper-right of the screen.
   
-  Be sure to [visit our VTLawHelp.org website to understand the process of getting a Relief from Abuse order.](https://vtlawhelp.org/roadmap/relief-from-abuse/step-1)
+  <i class="fas fa-share-nodes fa-2x"></i> Use the Share feature at the bottom of the page to share your progress with a trusted friend or advocate.
+
+  VTCourtForms was created by Legal Services Vermont as an online tool for Vermonters. It is free to use this tool.
   
   This site is not a lawyer. Visit our [VTLawHelp.org website](https://vtlawhelp.org) if you have legal questions.
   
@@ -251,7 +251,7 @@ subquestion: |
 #  (:comment-alt:) in the navigation bar to connect to a live advocate for help.
 #  % endif
 fields:
-  - To continue, you must accept our [terms of use](https://vtlawhelp.org/vlh-privacy): acknowledged_information_use
+  - To continue, please accept our [terms of use](https://vtlawhelp.org/vlh-privacy): acknowledged_information_use
     datatype: checkboxes
     none of the above: False    
     minlength: 1
@@ -288,7 +288,7 @@ subquestion: |
   * There is no charge for an RFA order. It is free. 
   * **Even when the courts are closed, it’s after hours, or it’s a weekend or holiday, you can start a Relief from Abuse case.** You may be able to get a temporary order right away to help keep you safe. At these times, you can email these forms or simply call and ask for help. Call the Vermont courts’ answering service at 1-800-540-9990. Say that you need help applying for a Relief from Abuse order over the phone. If you call, you need to leave a message with a number where they can call you back within an hour.
   * Applying for an RFA order can be a very dangerous time. Work with an advocate from the [Vermont Network](https://www.vtnetwork.org/get-help/) to create a safety plan — whether you end up asking for an RFA or not.
-  * For details on the whole RFA process, visit the [RFA Roadmap on the VTLawHelp.org website.](https://vtlawhelp.org/roadmap/relief-from-abuse/step-1). 
+  * For details on the whole RFA process, visit the [RFA Roadmap on the VTLawHelp.org website.](https://vtlawhelp.org/roadmap/relief-from-abuse/step-1)
 ---
 id: RFApackage_intro_2
 continue button field: RFApackage_intro_2
@@ -310,7 +310,7 @@ subquestion: |
   * Then you can download, print and/or save a PDF of your completed forms.
   * You will also get an instruction sheet about how to get the completed forms to the court – this includes emailing them or dropping them off at your local family court.
   
-  First, let’s make sure this is the right interview for your situation.
+  Next, let’s make sure this is the right interview for your situation.
 ---
 id: Initial screening questions
 question: |
@@ -318,6 +318,51 @@ question: |
 subquestion: |
   (to be created)
 continue button field: Initial_screening_questions
+---
+id: choose a court
+question: |
+  % if al_form_type == 'starts_case':
+  What court do you want to file in?
+  % elif al_form_type == 'appeal':
+  What is the name of the trial court your case was originally filed in?
+  % else:
+  What court is your case in?
+  % endif
+subquestion: |
+  % if not al_form_type == 'starts_case':
+  Look at your court paperwork. Match the name listed there.
+  % endif
+#${ collapse_template(how_to_pick_court_help_template) }
+fields:
+  - note: |
+      Choose the county where you will file your forms to ask for a RFA order. It can be the county you live in, or the county the other person lives in (the defendant).
+  - County: trial_court_name
+    choices:
+      - Addison
+      - Bennington
+      - Caledonia
+      - Chittenden
+      - Essex
+      - Franklin
+      - Grand Isle
+      - Lamoille
+      - Orange
+      - Orleans
+      - Rutland
+      - Washington
+      - Windham
+      - Windsor
+  #- Address: trial_court_address.address
+  #  address autocomplete: True
+  #  required: False
+  #- Suite: trial_court_address.unit
+  #  required: False
+  #- City: trial_court_address.city
+  #  required: False
+  #- State: trial_court_address.state
+  #  required: False
+  #- Postal code: trial_court_address.zip    
+  #  required: False
 ---
 id: About you
 question: |
@@ -376,6 +421,25 @@ subquestion: |
 fields:
   - "I consent to the release of my address and contact information.": share_contact
     datatype: yesnoradio
+---
+id: how many children
+question: |
+  % if al_form_type in ['starts_case','existing_case','appeal']:
+  Are any children involved in this case? 
+  % else:
+  Are any children involved in this matter?
+  % endif  
+fields:
+  - note: |
+      Include children under 18 who have been affected by abuse. Also include children who you would like to ask for temporary custody of.
+  - no label: children.there_are_any
+    datatype: yesnoradio
+  - How many?: children.target_number
+    datatype: integer
+    show if: children.there_are_any
+validation code: |
+  if not children.there_are_any:
+    children.target_number = 0
 ---
 id: Relationship to defendant
 question: |
