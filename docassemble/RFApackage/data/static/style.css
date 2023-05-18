@@ -12,6 +12,9 @@ input.labelauty+label,
     font-size: 1.1rem;
     font-weight: normal;
 }
+.al-title {
+  line-height: 1.2em;
+}
 .fa-2x {
     font-size: 2em;
     color: #1f455c;
