@@ -220,7 +220,8 @@ code: |
 id: basic questions intro screen
 decoration: form-lineal
 question: |
-  ${interview_short_title}: ${ AL_ORGANIZATION_TITLE}
+  **${interview_short_title} in Vermont**
+
 subquestion: |  
   Welcome to ${ AL_ORGANIZATION_TITLE}.
   
@@ -232,13 +233,13 @@ subquestion: |
   
   * **Step 3:** Download, save or print the final forms. You will need to mail, email, efile or deliver them to the court on your own.
   
-  <i class="fas fa-file-text fa-2x"></i> This interview will produce a complete package of 4 forms needed to ask the court for a Relief from Abuse order — Complaint, Affidavit, Confidential Notification form and Protection Order Service Information form.
+  <i class="fas fa-file-text fa-2x"></i> This interview will produce a complete package of 4 forms needed to ask the court for a Relief from Abuse order in Vermont — Complaint, Affidavit, Confidential Notification form and Protection Order Service Information form.
   
   <i class="fas fa-clock fa-2x"></i> It may take you over 1 hour to complete this interview. Consider creating a free account so you can save your progress. Make an account in the upper-right of the screen.
   
   <i class="fas fa-share-nodes fa-2x"></i> Use the Share feature at the bottom of the page to share your progress with a trusted friend or advocate.
 
-  VTCourtForms was created by Legal Services Vermont as an online tool for Vermonters. It is free to use this tool.
+  VTCourtForms was created by Legal Services Vermont with support from the Legal Services Corporation. It is free to use this tool.
   
   This site is not a lawyer. Visit our [VTLawHelp.org website](https://vtlawhelp.org) if you have legal questions.
   
@@ -283,7 +284,7 @@ continue button field: RFApackage_intro
 question: |
   What to know before you start
 subquestion: |
-  Here are some important things to know about asking the court for a Relief from Abuse order (RFA):
+  Here are some important things to know about asking the court for a Relief from Abuse order (RFA) in Vermont:
   
   * There is no charge for an RFA order. It is free. 
   * **Even when the courts are closed, it’s after hours, or it’s a weekend or holiday, you can start a Relief from Abuse case.** You may be able to get a temporary order right away to help keep you safe. At these times, you can email these forms or simply call and ask for help. Call the Vermont courts’ answering service at 1-800-540-9990. Say that you need help applying for a Relief from Abuse order over the phone. If you call, you need to leave a message with a number where they can call you back within an hour.
