@@ -116,13 +116,13 @@ code: |
   extend_or_change
   relationship_question
   #if relationship_question == is_family_member:
-    #age
-  age
+    #under_16
+  under_16
   who_needs_protection
   plaintiff_lives_in_vermont
   defendant_lives_in_vermont
   
-  docket_number
+  #docket_number
   trial_court_name
   nav.set_section("about")
   users.gather()
@@ -351,9 +351,10 @@ id: initial_screening_questions_2a
 question: |
   Initial screening questions
 fields:
-  - "How old are you?": age
-  - note: These are **not** the right forms to fill out. [Find the right forms on this page of the VTLawHelp.org website.](https://vtlawhelp.org/roadmap/relief-from-abuse/step-6) You can also find out who to contact for help. [End this interview](https://apps-dev.suffolklitlab.org/interview?i=docassemble.playground270RFApackage%3ARFApackage.yml#page1)
-
+  - "Are you under age 16?": under_16
+    datatype: yesnoradio
+  - note: <i class="fas fa-hand-paper fa-3x" aria-hidden="true"></i>  **Stop.** In this situation, if you are under age 16, these are **not** the right forms to fill out. **Do not use this interview.** [Find the right forms on this page of the VTLawHelp.org website.](https://vtlawhelp.org/protection-minors) You can also find out who to contact for help. [End this interview](https://apps-dev.suffolklitlab.org/interview?i=docassemble.playground270RFApackage%3ARFApackage.yml#page1)
+    show if: under_16
 ---
 id: initial_screening_questions_3
 question: |
