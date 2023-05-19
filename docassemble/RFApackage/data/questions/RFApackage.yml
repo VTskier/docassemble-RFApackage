@@ -112,8 +112,16 @@ code: |
   user_role = "plaintiff"
   user_ask_role = "plaintiff"
   nav.set_section("intro")
-  Initial_screening_questions
-
+  ##initial_screening_questions##
+  extend_or_change
+  relationship_question
+  #if relationship_question == is_family_member:
+    #age
+  age
+  who_needs_protection
+  plaintiff_lives_in_vermont
+  defendant_lives_in_vermont
+  
   docket_number
   trial_court_name
   nav.set_section("about")
@@ -312,13 +320,66 @@ subquestion: |
   * You will also get an instruction sheet about how to get the completed forms to the court – this includes emailing them or dropping them off at your local family court.
   
   Next, let’s make sure this is the right interview for your situation.
+  
+  
+  
+  
 ---
-id: Initial screening questions
+id: initial_screening_questions_1
 question: |
   Initial screening questions
-subquestion: |
-  (to be created)
-continue button field: Initial_screening_questions
+fields:
+  - "Do you want to extend or change an existing RFA order?": extend_or_change
+    datatype: yesnoradio
+  - note: These are **not** the right forms to fill out. [Find the right forms on this page of the VTLawHelp.org website.](https://vtlawhelp.org/roadmap/relief-from-abuse/step-6) You can also find out who to contact for help. [End this interview](https://apps-dev.suffolklitlab.org/interview?i=docassemble.playground270RFApackage%3ARFApackage.yml#page1)
+    show if: extend_or_change
+---
+id: initial_screening_questions_2
+question: |
+  Initial screening questions
+fields:
+  - "What is your relationship to the person who has abused you or is abusing you?": relationship_question
+    input type: radio
+    choices:
+      - Family member: is_family_member
+      - Current of former sexual partner: is_sexual_partner
+      - Someone you date or used to date: dated
+      - Someone who lives with you or used to live with you: lived_with
+      - None of the above: none_of_these
+---
+id: initial_screening_questions_2a
+question: |
+  Initial screening questions
+fields:
+  - "How old are you?": age
+  - note: These are **not** the right forms to fill out. [Find the right forms on this page of the VTLawHelp.org website.](https://vtlawhelp.org/roadmap/relief-from-abuse/step-6) You can also find out who to contact for help. [End this interview](https://apps-dev.suffolklitlab.org/interview?i=docassemble.playground270RFApackage%3ARFApackage.yml#page1)
+
+---
+id: initial_screening_questions_3
+question: |
+  Initial screening questions
+fields:
+  - "Who needs protection from abuse?": who_needs_protection
+    input type: radio
+    choices:
+      - I need this order to protect me: protect_self
+      - I need this order to protect me and my child or children: protect_self_and_kids
+      - I’m asking for an RFA only for a child or children.: protect_kids_only
+---
+id: initial_screening_questions_4
+question: |
+  Initial screening questions
+fields:
+  - "Do you live in Vermont?": plaintiff_lives_in_vermont
+    datatype: yesnoradio
+---
+id: initial_screening_questions_5
+question: |
+  Initial screening questions
+fields:
+  - "Does the defendant live in Vermont?": defendant_lives_in_vermont
+    datatype: yesnoradio
+  - note: The 'defendant' is the person who is abusing you.
 ---
 id: choose a court
 question: |
