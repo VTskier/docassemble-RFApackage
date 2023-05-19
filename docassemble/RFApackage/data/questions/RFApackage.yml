@@ -111,13 +111,13 @@ code: |
   allowed_courts = interview_metadata["RFApackage"]["allowed courts"]
   user_role = "plaintiff"
   user_ask_role = "plaintiff"
-  nav.set_section("intro")
+  nav.set_section("screening")
   ##initial_screening_questions##
   extend_or_change
   if extend_or_change:
     initial_screening_questions_1_exit
+    
   relationship_question
-  
   if relationship_question == 'Family member':
     under_16
     if under_16:
@@ -134,11 +134,26 @@ code: |
       initial_screening_questions_2_exit
 
   if relationship_question == 'None of the above':
-    initial_screening_questions_2a_exit
+    initial_screening_questions_2_exit_a
+    
+  who_needs_protection  
+  if who_needs_protection == 'I’m asking for an RFA only for a child or children':
+    initial_screening_questions_3_exit
       
-  who_needs_protection
   plaintiff_lives_in_vermont
-  defendant_lives_in_vermont
+  if plaintiff_lives_in_vermont:
+    defendant_lives_in_vermont
+    if defendant_lives_in_vermont:
+      initial_screening_questions_5_continue
+    if not defendant_lives_in_vermont:
+      initial_screening_questions_5_exit_b
+      
+  if not plaintiff_lives_in_vermont:
+    defendant_lives_in_vermont
+    if defendant_lives_in_vermont:
+      initial_screening_questions_5_continue
+    if not defendant_lives_in_vermont:
+      initial_screening_questions_5_exit_a
   
   #docket_number
   trial_court_name
@@ -202,6 +217,7 @@ code: |
 ---
 sections:
   - intro: Introduction
+  - screening: Is interview right for you
   - about: About you
   - defendant: About the defendant
   - incidents: What happened
@@ -228,6 +244,7 @@ comment: |
   Delete mandatory: True to include in another interview
 mandatory: True
 code: |
+  nav.set_section("intro")
   al_intro_screen
   RFApackage_intro
   RFApackage_intro_2
@@ -349,7 +366,9 @@ id: initial_screening_questions_1_exit
 question: |
   Stop
 subquestion: |
-  <i class="fas fa-hand-paper fa-3x" aria-hidden="true"></i>  **Stop.** In this situation, these are **not** the right forms to fill out. [Find the right forms to extend or change an existing RFA order on this page of the VTLawHelp.org website.](https://vtlawhelp.org/roadmap/relief-from-abuse/step-6) You can also find out who to contact for help.
+  <i class="fas fa-hand-paper fa-3x" aria-hidden="true"></i>  **Stop.** In this situation, these are **not** the right forms to fill out. **Do not use this interview.** 
+  
+  [Find the right forms to extend or change an existing RFA order on this page of the VTLawHelp.org website.](https://vtlawhelp.org/roadmap/relief-from-abuse/step-6) You can also find out who to contact for help.
 continue button field: initial_screening_questions_1_exit
 buttons:
   - Exit: exit
@@ -379,18 +398,22 @@ id: initial_screening_questions_2_exit
 question: |
   Stop
 subquestion: |
-  <i class="fas fa-hand-paper fa-3x" aria-hidden="true"></i>  **Stop.** In this situation, if you are under age 16, these are **not** the right forms to fill out. [Find the right forms to extend or change an existing RFA order on this page of the VTLawHelp.org website.](https://vtlawhelp.org/roadmap/relief-from-abuse/step-6) You can also find out who to contact for help.
+  <i class="fas fa-hand-paper fa-3x" aria-hidden="true"></i>  **Stop.** In this situation, if you are under age 16, these are **not** the right forms to fill out. **Do not use this interview.**
+  
+  [Learn about your options on this page of the VTLawHelp.org website.](https://vtlawhelp.org/protection-minors) You can also find out who to contact for help.
 continue button field: initial_screening_questions_2_exit
 buttons:
   - Exit: exit
     url: https://vtlawhelp.org
 ---    
-id: initial_screening_questions_2a_exit
+id: initial_screening_questions_2_exit_a
 question: |
   Stop
 subquestion: |
-  <i class="fas fa-hand-paper fa-3x" aria-hidden="true"></i>  **Stop.** In this situation, these are **not** the right forms to fill out. [On this page of the VTLawHelp.org website](https://vtlawhelp.org/stalking-and-sexual-assault), learn about other options that include getting an Order Against Sexual Assault or an Order Against Stalking. You can also find out who to contact for help.
-continue button field: initial_screening_questions_2a_exit
+  <i class="fas fa-hand-paper fa-3x" aria-hidden="true"></i>  **Stop.** In this situation, these are **not** the right forms to fill out. **Do not use this interview.**
+  
+  [On this page of the VTLawHelp.org website](https://vtlawhelp.org/stalking-and-sexual-assault), learn about other options that include getting an Order Against Sexual Assault or an Order Against Stalking. You can also find out who to contact for help.
+continue button field: initial_screening_questions_2_exit_a
 buttons:
   - Exit: exit
     url: https://vtlawhelp.org
@@ -402,9 +425,21 @@ fields:
   - "Who needs protection from abuse?": who_needs_protection
     input type: radio
     choices:
-      - I need this order to protect me: protect_self
-      - I need this order to protect me and my child or children: protect_self_and_kids
-      - I’m asking for an RFA only for a child or children.: protect_kids_only
+      - I need this order to protect me
+      - I need this order to protect me and my child or children
+      - I’m asking for an RFA only for a child or children
+---
+id: initial_screening_questions_3_exit
+question: |
+  Stop
+subquestion: |
+  <i class="fas fa-hand-paper fa-3x" aria-hidden="true"></i>  **Stop.** In this situation, these are **not** the right forms to fill out. **Do not use this interview.**
+  
+  [On this page of the VTLawHelp.org website](https://vtlawhelp.org/roadmap/relief-from-abuse/step-3), learn about the other forms to use when asking for an RFA order **only** on behalf of a child or children. You can also find out who to contact for help.
+continue button field: initial_screening_questions_3_exit
+buttons:
+  - Exit: exit
+    url: https://vtlawhelp.org
 ---
 id: initial_screening_questions_4
 question: |
@@ -420,6 +455,41 @@ fields:
   - "Does the defendant live in Vermont?": defendant_lives_in_vermont
     datatype: yesnoradio
   - note: The 'defendant' is the person who is abusing you.
+---
+id: initial_screening_questions_5_continue
+question: |
+  Continue
+subquestion: |
+  <i class="fas fa-check fa-3x" style="color: #429a3c;" aria-hidden="true"></i>  Yes, you can use this interview to fill out these forms. Let's get started.
+continue button field: initial_screening_questions_5_continue
+buttons:
+  - Start the interview: continue
+---
+id: initial_screening_questions_5_exit_a
+question: |
+  Stop
+subquestion: |
+  <i class="fas fa-hand-paper fa-3x" aria-hidden="true"></i>  **Stop.** **Do not use this interview.**
+  
+  In this situation, these are **not** the right forms to fill out. Consult with a lawyer or legal aid organization in your state or the defendant’s state.
+continue button field: initial_screening_questions_5_exit_a
+buttons:
+  - Exit: exit
+    url: https://vtlawhelp.org
+---
+id: initial_screening_questions_5_exit_b
+question: |
+  Stop
+subquestion: |
+  <i class="fas fa-hand-paper fa-3x" aria-hidden="true"></i>  **Stop.** It’s time to stop and ask for advice! If the defendant is not currently a Vermont resident, then there may be a question as to whether Vermont has jurisdiction over the defendant. 
+  
+  Vermont needs to have jurisdiction over the defendant to make the Relief from Abuse order work. Consult with a lawyer, like the lawyers at [Legal Services Vermont and Vermont Legal Aid](https://vtlawhelp.org). 
+  
+  Find out whether you should use these forms or not. If you get the green light from a lawyer, come back and answer Yes to this question so you can start the guided interview.
+continue button field: initial_screening_questions_5_exit_b
+buttons:
+  - Exit: exit
+    url: https://vtlawhelp.org
 ---
 id: choose a court
 question: |
@@ -438,6 +508,8 @@ subquestion: |
 fields:
   - note: |
       Choose the county where you will file your forms to ask for a RFA order. It can be the county you live in, or the county the other person lives in (the defendant).
+      
+      Not sure what county? [Check this list of towns to find your county.](https://en.m.wikipedia.org/wiki/List_of_municipalities_in_Vermont#Cities)
   - County: trial_court_name
     choices:
       - Addison
