@@ -114,10 +114,28 @@ code: |
   nav.set_section("intro")
   ##initial_screening_questions##
   extend_or_change
+  if extend_or_change:
+    initial_screening_questions_1_exit
   relationship_question
-  #if relationship_question == is_family_member:
-    #under_16
-  under_16
+  
+  if relationship_question == 'Family member':
+    under_16
+    if under_16:
+      initial_screening_questions_2_exit
+
+  if relationship_question == 'Current or former sexual partner':
+    under_16
+    if under_16:
+      initial_screening_questions_2_exit
+      
+  if relationship_question == 'Someone who lives with you or used to live with you':
+    under_16
+    if under_16:
+      initial_screening_questions_2_exit
+
+  if relationship_question == 'None of the above':
+    initial_screening_questions_2a_exit
+      
   who_needs_protection
   plaintiff_lives_in_vermont
   defendant_lives_in_vermont
@@ -280,11 +298,6 @@ continue button field: al_intro_screen
   
 #  ${action_button_html(url_action('load_answer'), icon="folder-open", label=word("View answers"), #size="sm" )}
 #  % endif    
----
-  
-  
-  
-  
   
 ---
 id: RFApackage_intro
@@ -327,38 +340,64 @@ subquestion: |
 ---
 id: initial_screening_questions_1
 question: |
-  Initial screening questions
+  See if this interview is right for your situation
 fields:
   - "Do you want to extend or change an existing RFA order?": extend_or_change
     datatype: yesnoradio
-  - note: These are **not** the right forms to fill out. [Find the right forms on this page of the VTLawHelp.org website.](https://vtlawhelp.org/roadmap/relief-from-abuse/step-6) You can also find out who to contact for help. [End this interview](https://apps-dev.suffolklitlab.org/interview?i=docassemble.playground270RFApackage%3ARFApackage.yml#page1)
-    show if: extend_or_change
+---
+id: initial_screening_questions_1_exit
+question: |
+  Stop
+subquestion: |
+  <i class="fas fa-hand-paper fa-3x" aria-hidden="true"></i>  **Stop.** In this situation, these are **not** the right forms to fill out. [Find the right forms to extend or change an existing RFA order on this page of the VTLawHelp.org website.](https://vtlawhelp.org/roadmap/relief-from-abuse/step-6) You can also find out who to contact for help.
+continue button field: initial_screening_questions_1_exit
+buttons:
+  - Exit: exit
+    url: https://vtlawhelp.org
 ---
 id: initial_screening_questions_2
 question: |
-  Initial screening questions
+  See if this interview is right for your situation
 fields:
   - "What is your relationship to the person who has abused you or is abusing you?": relationship_question
     input type: radio
     choices:
-      - Family member: is_family_member
-      - Current of former sexual partner: is_sexual_partner
-      - Someone you date or used to date: dated
-      - Someone who lives with you or used to live with you: lived_with
-      - None of the above: none_of_these
+      - Family member
+      - Current or former sexual partner
+      - Someone you date or used to date
+      - Someone who lives with you or used to live with you
+      - None of the above
 ---
-id: initial_screening_questions_2a
+id: initial_screening_questions_2_a
 question: |
-  Initial screening questions
+  See if this interview is right for your situation
 fields:
   - "Are you under age 16?": under_16
     datatype: yesnoradio
-  - note: <i class="fas fa-hand-paper fa-3x" aria-hidden="true"></i>  **Stop.** In this situation, if you are under age 16, these are **not** the right forms to fill out. **Do not use this interview.** [Find the right forms on this page of the VTLawHelp.org website.](https://vtlawhelp.org/protection-minors) You can also find out who to contact for help. [End this interview](https://apps-dev.suffolklitlab.org/interview?i=docassemble.playground270RFApackage%3ARFApackage.yml#page1)
-    show if: under_16
+---    
+id: initial_screening_questions_2_exit
+question: |
+  Stop
+subquestion: |
+  <i class="fas fa-hand-paper fa-3x" aria-hidden="true"></i>  **Stop.** In this situation, if you are under age 16, these are **not** the right forms to fill out. [Find the right forms to extend or change an existing RFA order on this page of the VTLawHelp.org website.](https://vtlawhelp.org/roadmap/relief-from-abuse/step-6) You can also find out who to contact for help.
+continue button field: initial_screening_questions_2_exit
+buttons:
+  - Exit: exit
+    url: https://vtlawhelp.org
+---    
+id: initial_screening_questions_2a_exit
+question: |
+  Stop
+subquestion: |
+  <i class="fas fa-hand-paper fa-3x" aria-hidden="true"></i>  **Stop.** In this situation, these are **not** the right forms to fill out. [On this page of the VTLawHelp.org website](https://vtlawhelp.org/stalking-and-sexual-assault), learn about other options that include getting an Order Against Sexual Assault or an Order Against Stalking. You can also find out who to contact for help.
+continue button field: initial_screening_questions_2a_exit
+buttons:
+  - Exit: exit
+    url: https://vtlawhelp.org
 ---
 id: initial_screening_questions_3
 question: |
-  Initial screening questions
+  See if this interview is right for your situation
 fields:
   - "Who needs protection from abuse?": who_needs_protection
     input type: radio
@@ -369,14 +408,14 @@ fields:
 ---
 id: initial_screening_questions_4
 question: |
-  Initial screening questions
+  See if this interview is right for your situation
 fields:
   - "Do you live in Vermont?": plaintiff_lives_in_vermont
     datatype: yesnoradio
 ---
 id: initial_screening_questions_5
 question: |
-  Initial screening questions
+  See if this interview is right for your situation
 fields:
   - "Does the defendant live in Vermont?": defendant_lives_in_vermont
     datatype: yesnoradio
