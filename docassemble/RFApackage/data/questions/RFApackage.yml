@@ -1,6 +1,10 @@
 #####################################################################
 ####################### TO DO #######################
 #Check if I posted the most recent edited intro text as seen by Laura and Renee
+#For weapons, how do I cycle through offering fields for more weapons until they are done?
+#For id: What you want to ask for in the RFA order, make subquestions required
+#For id: Existing orders or court proceedings, only show the bottom questions if applicable
+#Why is background black when I look at this in Chrome on Android phone?
 #In footer, add vtcourt forms are offered by Lsv
 #Use questions as asked by court, but also explain in plain language
 #Need to update all the Review and Attachment variables for get_kids_relationships
@@ -184,7 +188,7 @@ code: |
   recent_incident_date
   if not recent_incident_most_serious:
     serious_incident_date
-  other_incident_description
+  #other_incident_description
   set_progress(40)
   danger_more_abuse
   nav.set_section('weapons')
@@ -192,6 +196,7 @@ code: |
   nav.set_section('order')
   request_not_abuse
   get_kids_relationships
+  request_other
   request_all_emergency
   set_progress(64)
   existing_order_divorce
@@ -217,7 +222,7 @@ code: |
 ---
 sections:
   - intro: Introduction
-  - screening: Is interview right for you
+  - screening: Is this interview right for you
   - about: About you
   - defendant: About the defendant
   - incidents: What happened
@@ -266,27 +271,27 @@ question: |
   **${interview_short_title} in Vermont**
 
 subquestion: |  
-  Welcome to ${ AL_ORGANIZATION_TITLE}.
+
+  <div class="border-around-text">
+  <p>Welcome to ${ AL_ORGANIZATION_TITLE}.</p>
   
-  ${ AL_ORGANIZATION_TITLE } can help you complete and download forms in 3 steps:
-  
-  * **Step 1:** Answer questions that will fill in court forms for you.
-  
-  * **Step 2:** Preview the completed forms.
-  
-  * **Step 3:** Download, save or print the final forms. At this time you will need to mail, email, efile or deliver them to the court on your own.
+  <p>${ AL_ORGANIZATION_TITLE } can help you complete and download forms in 3 steps:</p>
+  <ul><li><b>Step 1:</b> Answer questions that will fill in court forms for you.</li>
+  <li><b>Step 2:</b> Preview the completed forms.</li>
+  <li><b>Step 3:</b> Download, save or print the final forms. You will need to mail, email, efile or deliver them to the court on your own.</li></ul>
+  </div>  
   
   <i class="fas fa-file-text fa-2x"></i> This interview will produce a complete package of 4 forms needed to ask the court for a Relief from Abuse order in Vermont — Complaint, Affidavit, Confidential Notification form and Protection Order Service Information form. Learn more about RFAs and this interview on the next screen.
   
   <i class="fas fa-clock fa-2x"></i> It may take you over 1 hour to complete this interview. Consider creating a free account so you can save your progress. Choose "sign up" in the menu above, or "register" below.
   
   <i class="fas fa-share-nodes fa-2x"></i> Use the Share feature at the bottom of the page to share your progress with a trusted friend or advocate.
-
+  
+  After saving or printing your work, log out and close your web browser.
+  
   VTCourtForms interviews were created by Legal Services Vermont with support from the Legal Services Corporation. It is free to use this program. This site is not a lawyer. Visit our [VTLawHelp.org website](https://vtlawhelp.org) if you have legal questions.
   
-  This program will keep your information confidential. After saving or printing your work, log out and close your web browser.
-  
-  [FILE big_logo, 30%, Legal Services Vermont logo]
+  [FILE big_logo, 25%, Legal Services Vermont logo]
 
 #  Tap the {green words} in any screen for a definition or more information.
   
@@ -295,7 +300,7 @@ subquestion: |
 #  (:comment-alt:) in the navigation bar to connect to a live advocate for help.
 #  % endif
 fields:
-  - To continue, please check this box to accept our [terms of use](https://vtlawhelp.org/vlh-privacy).: acknowledged_information_use
+  - To continue, please accept our [terms of use](https://vtlawhelp.org/vlh-privacy).: acknowledged_information_use
     datatype: checkboxes
     none of the above: False    
     minlength: 1
@@ -708,7 +713,7 @@ question: |
 subquestion: |
   Describe the most recent incident of abuse. Be as detailed as possible. The judge needs to know exactly what happened.
   
-  See the [VTLawHelp.org legal help website](https://vtlawhelp.org/roadmap/relief-from-abuse/step-3#forms) for tips on what to include in your description, which will go into your Affidavit.
+  See the [VTLawHelp.org legal help website](https://vtlawhelp.org/roadmap/relief-from-abuse/step-3#forms) for tips on what to include in your description. This information will be part of your "Affidavit".
 fields:
   - "What was the date of the most recent incident?": recent_incident_date
     datatype: date
@@ -807,16 +812,22 @@ question: |
   Danger of more abuse
 subquestion: |
   It's important to answer **Yes** to this question if you want to get a court order that starts right away.
-fields:
+
   - "Is there immediate danger of more abuse from the defendant?": danger_more_abuse
     datatype: yesnoradio
-  - "There is danger of more abuse to you": danger_more_abuse_users1
-    datatype: yesno
+  - note: Select all that apply.
     show if: danger_more_abuse
-  - "There is danger of more abuse to the child/children": danger_more_abuse_children
-    datatype: yesno
+    
+  - "Select all that apply": danger_more_abuse_who
+    datatype: checkboxes
     show if: danger_more_abuse
-  - "If yes, please include any information not already described before. Be as specific as possible.": danger_more_abuse_why
+    none of the above: False
+    minlength: 1
+    choices:
+      - "There is danger of more abuse to you": users1
+      - "There is danger of more abuse to the child/children": children
+    
+  - "Include any information not already described before. Be as specific as possible.": danger_more_abuse_why
     input type: area
     show if: danger_more_abuse
     required: False
@@ -911,7 +922,11 @@ id: What you want to ask for in the RFA order
 question: |
   What you want to ask for in the RFA order
 subquestion: |
-  **Choose all that apply to you.** This is a list of things that you can ask the court for. If approved, they will be part of the Relief from Abuse order. You can also add other things at the bottom.
+  **Choose all that apply to you.** 
+  
+  This is a list of things that you can ask the court for. If approved, they will be part of the Relief from Abuse order. 
+  
+  You can also ask for other things on an upcoming screen -- things that are specific to your situation.
   
   I want the court to:
 fields:
@@ -920,9 +935,13 @@ fields:
   - "I want the order to protect me from this.": request_not_abuse_users1
     datatype: yesno
     show if: request_not_abuse
-  - "I want the order to protect my child/children.": request_not_abuse_children
+  - "I want the order to protect my child/children from this.": request_not_abuse_children
     datatype: yesno
     show if: request_not_abuse
+  - note: |
+      ---
+    show if: request_not_abuse
+    
   - "Order the defendant to not stalk or sexually assault me or my child/children": request_no_stalking_assault
     datatype: yesno
   - "I want the order to stop stalking.": request_no_stalking
@@ -931,19 +950,23 @@ fields:
   - "I want the order to stop sexual assault.": request_no_assault
     datatype: yesno
     show if: request_no_stalking_assault
-  - "I want the order to protect me.": request_no_assault_users1
+  - "I want the order to protect me from this.": request_no_assault_users1
     datatype: yesno
     show if: request_no_stalking_assault
-  - "I want the order to protect my child/children.": request_no_assault_children
+  - "I want the order to protect my child/children from this.": request_no_assault_children
     datatype: yesno
     show if: request_no_stalking_assault
+  - note: |
+      ---
+    show if: request_no_stalking_assault
+    
   - "Order the defendant to immediately leave the residence, and to order sole possession to me": request_leave
     datatype: yesno
   - "Order the defendant not to possess or purchase firearms for the duration of the order": request_no_firearms
     datatype: yesno
   - "Order the defendant to surrender immediately to law enforcement all guns/firearms that they own, possess or control": request_surrender_firearms
     datatype: yesno
-  - "Order the defendant to pay your temporary living expenses": request_living_expenses
+  - "Order the defendant to pay my temporary living expenses": request_living_expenses
     datatype: yesno
   - "Order the defendant to pay temporary child support": request_child_support
     datatype: yesno
@@ -954,29 +977,41 @@ fields:
     show if: request_no_pet_harm
   - "I want the order to protect the pets owned by my child/children.": request_no_pet_children
     datatype: yesno
+    show if: request_no_pet_harm    
+  - note: |
+      ---
     show if: request_no_pet_harm
+    
   - "Order me to get temporary possession and control of the pet(s)": request_control_of_pet
     datatype: yesno
-    show if: request_no_pet_harm
+    show if: request_no_pet_harm  
   - "Order the defendant to stay a certain distance away": request_stay_away
     datatype: yesno
   - "How many feet away?": request_stay_away_feet
     maxlength: 5
     show if: request_stay_away
-  - "I want the order to protect me.": request_stay_away_users1
+  - "I want the order to protect me from this.": request_stay_away_users1
     datatype: yesno
     show if: request_stay_away
-  - "I want the order to protect my child/children.": request_stay_away_children
+  - "I want the order to protect my child/children from this.": request_stay_away_children
     datatype: yesno
     show if: request_stay_away
+  - note: |
+      ---
+    show if: request_stay_away
+    
   - "Order the defendant to not contact me or my child/children in any way": request_no_contact
     datatype: yesno
-  - "I want the order to protect me.": request_no_contact_users1
+  - "I want the order to protect me from this.": request_no_contact_users1
     datatype: yesno
     show if: request_no_contact
-  - "I want the order to protect my child/children.": request_no_contact_children
+  - "I want the order to protect my child/children from this.": request_no_contact_children
     datatype: yesno
     show if: request_no_contact
+  - note: |
+      ---
+    show if: request_no_contact
+
   - "Award temporary Parental Rights and Responsibilities (custody) of our child/children to me or someone else. (The child(ren) of you and the defendant.)": request_temp_PRR
     datatype: yesno  
   - note: If you choose custody, we will ask for the names of the children on the next screen.
@@ -1003,11 +1038,12 @@ fields:
     show if: x.custody_wanted
 ---
 id: Put something else in order
-generic object: Individual     
 question: |
-  - "Order something else as part of the RFA order": request_other
+  Anything else to ask for in the RFA order
+fields:
+  - Do you want to ask the court for something else as part of the RFA order?: request_other
     datatype: yesno
-  - "Explain what else you'd like the RFA order to do.": request_other_description
+  - Explain what else you'd like the RFA order to do. Start with "Order the defendant to ..." or "Order me to get ...": request_other_description
     input type: area
     rows: 2
     hint: Order the defendant to...
@@ -1760,14 +1796,14 @@ review:
     button: |
       **Did the defendant sexually assault you?**:
       ${ word(yesno(recent_incident_assault_users1)) }
-  - Edit: danger_more_abuse_children
+  - Edit: danger_more_abuse_who
     button: |
       **Is there danger of more abuse to the child/children?**:
-      ${ word(yesno(danger_more_abuse_children)) }
-  - Edit: danger_more_abuse_users1
+      ${ word(yesno(danger_more_abuse_who["children"])) }
+  - Edit: danger_more_abuse_who
     button: |
       **Is there danger of more abuse to you?**:
-      ${ word(yesno(danger_more_abuse_users1)) }
+      ${ word(yesno(danger_more_abuse_who["users1"])) }
   - Edit: used_firearm_yes
     button: |
       **Did the defendant use, display or threaten to use a gun/ firearm against you or against a family member?**:
@@ -2686,8 +2722,8 @@ attachment:
       - "recent_incident_assault_children": ${ recent_incident_assault_children }
       - "recent_incident_assault_": ${ recent_incident_assault }
       - "recent_incident_assault_users1": ${ recent_incident_assault_users1 }
-      - "danger_more_abuse_children": ${ danger_more_abuse_children }
-      - "danger_more_abuse_users1": ${ danger_more_abuse_users1 }
+      - "danger_more_abuse_children": ${ danger_more_abuse_who["children"] }
+      - "danger_more_abuse_users1": ${ danger_more_abuse_who["users1"] }
       - "used_firearm_yes__1": ${ used_firearm_yes }
       - "incarcerated": ${ incarcerated }
       - "users1_no_shelter": ${ users1_no_shelter }
