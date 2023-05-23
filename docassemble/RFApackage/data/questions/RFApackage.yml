@@ -199,7 +199,7 @@ code: |
   request_other
   request_all_emergency
   set_progress(64)
-  existing_order_divorce
+  #existing_order
   nav.set_section('service')
   users1_no_shelter
   details_for_law_enforcement
@@ -1041,9 +1041,12 @@ id: Put something else in order
 question: |
   Anything else to ask for in the RFA order
 fields:
-  - Do you want to ask the court for something else as part of the RFA order?: request_other
-    datatype: yesno
-  - Explain what else you'd like the RFA order to do. Start with "Order the defendant to ..." or "Order me to get ...": request_other_description
+  - "Do you want to ask the court for something else as part of the RFA order?": request_other
+    datatype: yesnoradio
+  - note: |
+      Start with a phrase like: 'Order the defendant to ...' or 'Order me to get ...': 
+    show if: request_other
+  - "Explain what else you'd like the RFA order to do": request_other_description
     input type: area
     rows: 2
     hint: Order the defendant to...
@@ -1065,6 +1068,17 @@ subquestion: |
   Is there an existing court order or a pending court proceeding involving you, the defendant, and/or your child or children? 
   
   Don't include things you plan to do. Only include things that have been submitted to the court already.
+  
+  
+#  - "Select all that apply": existing_order
+#    datatype: checkboxes
+#    show if: danger_more_abuse
+#    none of the above: False
+#    minlength: 1
+#    choices:
+#      - "There is danger of more abuse to you": users1
+#      - "There is danger of more abuse to the child/children": children  
+  
 fields:
   - note: Select all that apply.
   - "For divorce or separation?": existing_order_divorce
@@ -1083,8 +1097,10 @@ fields:
     datatype: yesno
   - "For child support?": child_support_order
     datatype: yesno
+    
   - "In what state(s) is the existing order or a pending court proceeding?": existing_order_state
     maxlength: 34
+    show if: existing_order_divorce or dissolution
   - "In what county/counties is the existing order or a pending court proceeding?": existing_order_county
     maxlength: 36
   - "What is the name of your attorney for the existing order or a pending court proceeding -- if you have one?": existing_order_users_attorney
