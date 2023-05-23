@@ -2,7 +2,9 @@
 ####################### TO DO #######################
 #Check if I posted the most recent edited intro text as seen by Laura and Renee
 #For weapons, how do I cycle through offering fields for more weapons until they are done?
+#For id: What you want to ask for in the RFA order, require at least one checkmark
 #For id: What you want to ask for in the RFA order, make subquestions required
+#For id: Childrens relationships, only show it if PRR was requested
 #For id: Existing orders or court proceedings, only show the bottom questions if applicable
 #Why is background black when I look at this in Chrome on Android phone?
 #In footer, add vtcourt forms are offered by Lsv
@@ -194,14 +196,14 @@ code: |
   nav.set_section('weapons')
   used_firearm
   nav.set_section('order')
+  users1_no_shelter  
   request_not_abuse
   get_kids_relationships
   request_other
   request_all_emergency
   set_progress(64)
-  #existing_order
+  existing_order
   nav.set_section('service')
-  users1_no_shelter
   details_for_law_enforcement
   location_of_home
   vehicle_make
@@ -1016,6 +1018,9 @@ fields:
     datatype: yesno  
   - note: If you choose custody, we will ask for the names of the children on the next screen.
     show if: request_temp_PRR
+    
+  - "I want to ask for something else. (You can write what you want on an upcoming screen.)": other_request
+    datatype: yesno
 ---
 code: |
   for child in children: 
@@ -1068,52 +1073,40 @@ subquestion: |
   Is there an existing court order or a pending court proceeding involving you, the defendant, and/or your child or children? 
   
   Don't include things you plan to do. Only include things that have been submitted to the court already.
-  
-  
-#  - "Select all that apply": existing_order
-#    datatype: checkboxes
-#    show if: danger_more_abuse
-#    none of the above: False
-#    minlength: 1
-#    choices:
-#      - "There is danger of more abuse to you": users1
-#      - "There is danger of more abuse to the child/children": children  
-  
-fields:
-  - note: Select all that apply.
-  - "For divorce or separation?": existing_order_divorce
-    datatype: yesno
-  - "For a civil union dissolution?": dissolution
-    datatype: yesno
-  - "For Relief from Abuse?": existing_order_RFA
-    datatype: yesno
-  - "For a criminal matter?": criminal_proceeding
-    datatype: yesno
-  - "For parentage?": parentage_order
-    datatype: yesno
-  - "For guardianship?": guardianship_order
-    datatype: yesno
-  - "For a juvenile (DCF) matter?": juvenile_order
-    datatype: yesno
-  - "For child support?": child_support_order
-    datatype: yesno
-    
+fields:  
+  - "Select all that apply": existing_order
+    datatype: checkboxes
+    none of the above: False
+    required: False
+    choices:
+      - "For divorce or separation?": existing_order_divorce
+      - "For a civil union dissolution?": dissolution
+      - "For Relief from Abuse?": existing_order_RFA
+      - "For a criminal matter?": criminal_proceeding
+      - "For parentage?": parentage_order
+      - "For guardianship?": guardianship_order
+      - "For a juvenile (DCF) matter?": juvenile_order
+      - "For child support?": child_support_order
+      
   - "In what state(s) is the existing order or a pending court proceeding?": existing_order_state
     maxlength: 34
-    show if: existing_order_divorce or dissolution
+    required: False
   - "In what county/counties is the existing order or a pending court proceeding?": existing_order_county
     maxlength: 36
+    required: False
   - "What is the name of your attorney for the existing order or a pending court proceeding -- if you have one?": existing_order_users_attorney
     maxlength: 25
+    required: False
   - "What is the name of the other attorney for the existing order or a pending court proceeding -- if the defendant has one?": existing_order_OP_attorney
     maxlength: 25
+    required: False
 
 ---
 id: About your home
 question: |
-  About your home
+  Shelter or a place to stay?
 subquestion: |
-  Will you be forced from your home and be without shelter -- unless the defendant is ordered to leave your home?
+  Have you been or will you be forced from your home -- and be without shelter -- unless the defendant is ordered to leave your home?
 fields:
   - no label: users1_no_shelter
     datatype: yesnoradio
