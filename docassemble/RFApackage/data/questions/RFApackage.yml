@@ -1,6 +1,9 @@
 #####################################################################
 ####################### TO DO #######################
+#Work on the Review answers section
 #For weapons, how do I cycle through offering fields for more weapons until they are done?
+#Make nav on the left grey instead of looking like blue links. Top it with the words: Your progress
+#Update variable names in Edit and Publish sections for all the ones that I did checkboxes for, including: relationship_for_LE race skin hair hair_color
 #For id: What you want to ask for in the RFA order, require at least one checkmark
 #For id: What you want to ask for in the RFA order, make subquestions required
 #For id: Childrens relationships, only show it if PRR was requested
@@ -184,24 +187,25 @@ code: |
   other_parties[0].birthdate
   other_parties[0].address.address
   other_parties[0].phone_number
-  set_progress(40)
   #children.gather()
   nav.set_section('incidents')
   recent_incident_date
+  set_progress(40)
   if not recent_incident_most_serious:
     serious_incident_date
   #other_incident_description
-  set_progress(40)
+  set_progress(50)
   danger_more_abuse
   nav.set_section('weapons')
   used_firearm
   nav.set_section('order')
+  set_progress(60)
   users1_no_shelter  
   request_not_abuse
   get_kids_relationships
   request_other
   request_all_emergency
-  set_progress(64)
+  set_progress(70)
   existing_order
   nav.set_section('service')
   details_for_law_enforcement
@@ -210,10 +214,10 @@ code: |
   relationship_for_LE
   employer
   house2
-  set_progress(72)
-  sex_female
-  hair_brown
   set_progress(80)
+  race
+  hair
+  set_progress(90)
   notify_served
   nav.set_section("review_RFApackage")
   nav.set_section('signature')
@@ -1147,16 +1151,15 @@ subquestion: |
   You may notice a couple similar questions -- but asked in a new way -- as you provide details for the law enforcement form, which is called the Protection Order Service Information form.
 continue button field: details_for_law_enforcement
 ---
-#Shall I make separate blocks for 1 - if the defendant can be found at their shared home and 2- if the defendant is living in another location?
 id: About the home
 question: |
   The defendant's home address at this time
 subquestion: |
   Tell law enforcement where the defendant lives at this time. If they live with you, provide that address and information. If you don't know an answer, say I don't know.  
 fields:
-  - "The house or building number on the street (Example: Enter 10 if it's 10 Main Street.)": house
+  - "The house or building number on the street (Example: Enter '10' if it's 10 Main Street.)": house
     maxlength: 10
-  - "Name of the street or Town Road number (Example: Enter Main Street)": other_parties1_street_address
+  - "Name of the street or Town Road number (Example: Enter 'Main Street')": other_parties1_street_address
     maxlength: 28
   - "Town / city": other_parties1_city
     maxlength: 23
@@ -1172,7 +1175,6 @@ fields:
     input type: area
     maxlength: 220
 ---
-#How make all of these not required?
 id: About the defendant's vehicle
 question: |
   The defendant's vehicle (their car or truck)
@@ -1300,10 +1302,10 @@ id: What the defendant looks like
 question: |
   What the defendant looks like
 subquestion: |
-  What follows are questions that will help law enforcement identify the defendant so they can serve the RFA order.
+  These are questions that will help law enforcement identify the defendant so they can serve the RFA order.
 fields:
   - note: |
-      <h2 class="h4">Sex/gender:</h2>
+      <h2 class="h4">Defendant's sex/gender:</h2>
       Note that law enforcement only offers these two checkboxes at this time.
   - "Female": sex_female
     datatype: yesno
@@ -1311,26 +1313,29 @@ fields:
     datatype: yesno
   - note: |
       <h2 class="h4">Race:</h2>
-  - "White": race_white
-    datatype: yesno
-  - "African-American": race_black
-    datatype: yesno
-  - "Native American": race_native
-    datatype: yesno
-  - "Asian": race_asian
-    datatype: yesno
-  - "Other": race_other
-    datatype: yesno
+  - "Select one.": race
+    datatype: checkboxes
+    none of the above: False
+    minlength: 1
+    maxlength: 1
+    choices:        
+      - "White": race_white
+      - "African-American": race_black
+      - "Native American": race_native
+      - "Asian": race_asian
+      - "Other": race_other
   - note: |
       <h2 class="h4">Skin color/tone:</h2>
-  - "Light": skin_light
-    datatype: yesno
-  - "Medium": skin_medium
-    datatype: yesno
-  - "Dark": skin_dark
-    datatype: yesno
-  - "Other": skin_other
-    datatype: yesno
+  - "Select one.": skin
+    datatype: checkboxes
+    none of the above: False
+    minlength: 1
+    maxlength: 1
+    choices:              
+      - "Light": skin_light
+      - "Medium": skin_medium
+      - "Dark": skin_dark
+      - "Other": skin_other
   - note: |
       <h2 class="h4">Height:</h2>
   - "Height -- feet": other_parties1_height_ft
@@ -1368,30 +1373,30 @@ question: |
 fields:
   - note: |
       <h2 class="h4">Hair length:</h2>
-  - "Short": hair_short
-    datatype: yesno
-  - "Medium": hair_medium
-    datatype: yesno
-  - "Long": hair_long
-    datatype: yesno
-  - "Bald": hair_bald
-    datatype: yesno
+  - "Select one.": hair
+    datatype: checkboxes
+    none of the above: False
+    minlength: 1
+    maxlength: 1
+    choices:  
+      - "Short": hair_short
+      - "Medium": hair_medium
+      - "Long": hair_long
+      - "Bald": hair_bald
   - note: |
       <h2 class="h4">Hair color:</h2>
-  - "Brown": hair_brown
-    datatype: yesno
-  - "Blond": hair_blond
-    datatype: yesno
-  - "Black": hair_black
-    datatype: yesno
-  - "Red": hair_red
-    datatype: yesno
-  - "Gray / white": hair_gray
-    datatype: yesno
-  - "Bald": hair_bald_color
-    datatype: yesno    
-  - "Other": hair_other
-    datatype: yesno
+  - "Select one.": hair_color
+    datatype: checkboxes
+    none of the above: False
+    minlength: 1
+    choices:  
+      - "Brown": hair_brown
+      - "Blond": hair_blond
+      - "Black": hair_black
+      - "Red": hair_red
+      - "Gray / white": hair_gray
+      - "Bald": hair_bald_color
+      - "Other": hair_other
   - note: |
       <h2 class="h4">Facial hair:</h2>
   - "Beard": hair_beard
@@ -1424,22 +1429,24 @@ fields:
 ---
 id: When law enforcement serves the order to the defendant
 question: |
-  When law enforcement serves the order to the defendant
+  When law enforcement serves (delivers) the order to the defendant
 fields:
-  - "Notify served": notify_served
-    datatype: yesno
-  - "Users1 notify phone number": users1_notify_phone_number
+  - "If you get a RFA order, do you wish to be notified after the order is served?": notify_served
+    datatype: yesnoradio
+  - "What phone number should law enforcement call to notify you?": users1_notify_phone_number
     maxlength: 45
+    show if: notify_served
   - "Will the defendant try to avoid being served this order?": avoid_served
-    datatype: yesno
+    datatype: yesnoradio
   - "Does the defendant have guard dogs or vicious dogs?": guard_dog
-    datatype: yesno
+    datatype: yesnoradio
   - "Is the defendant likely to be under the influence of drugs or alcohol?": under_infl
-    datatype: yesno
+    datatype: yesnoradio
   - "Will the officer who serves this order be in any danger?": danger_for_officer
-    datatype: yesno
+    datatype: yesnoradio
   - "Why will the officer be in danger?": danger_for_officer_why
     input type: area
+    show if: danger_for_officer
 ---
 id: Misc that I need to put in the right spots
 question: |
@@ -1459,7 +1466,12 @@ fields:
   - "Please type your name. This will appear under your signature.": printed_signature
     maxlength: 34
   - "Date of signature of complaint form": date
-    maxlength: 24
+    datatype: date
+    required: False
+    default: |
+      ${ today() }
+  -  note: |
+      You can change this date or leave it blank for now if you want.
 ---
 id: preview RFApackage
 question: |
@@ -2380,7 +2392,7 @@ review:
       ${ vehicle_color }
   - Edit: avoid_served
     button: |
-      **y.) Will the defendant try to avoid being served this order?**:
+      **Will the defendant try to avoid being served this order?**:
       ${ word(yesno(avoid_served)) }
   - Edit: guard_dog
     button: |
@@ -2534,11 +2546,11 @@ progress: 100
 ---
 # ALDocument objects specify the metadata for each template
 objects:
+  - RFAcomplaint: ALDocument.using(title="RFA Complaint", filename="1_RFA-complaint", enabled=True, has_addendum=True, default_overflow_message=AL_DEFAULT_OVERFLOW_MESSAGE)
+  - RFAaffidavit: ALDocument.using(title="RFA Affidavit", filename="3_RFA-affidavit", enabled=True, has_addendum=True, default_overflow_message=AL_DEFAULT_OVERFLOW_MESSAGE)
+  - RFAconfidentialcontactinfo: ALDocument.using(title="RFA Confidential Contact Info", filename="4_RFA-confidential-contact-info", enabled=True, has_addendum=True, default_overflow_message=AL_DEFAULT_OVERFLOW_MESSAGE)
+  - RFAserviceinfo: ALDocument.using(title="Protection Order Service Info", filename="2_RFA-service-info", enabled=True, has_addendum=True, default_overflow_message=AL_DEFAULT_OVERFLOW_MESSAGE)
   - RFApackage_Post_interview_instructions: ALDocument.using(title="Instructions", filename="RFApackage_next_steps.docx", enabled=True, has_addendum=False)
-  - RFAaffidavit: ALDocument.using(title="3 rfa-affidavit", filename="3_RFA-affidavit", enabled=True, has_addendum=True, default_overflow_message=AL_DEFAULT_OVERFLOW_MESSAGE)
-  - RFAconfidentialcontactinfo: ALDocument.using(title="4 rfa-confidential-contact-info", filename="4_RFA-confidential-contact-info", enabled=True, has_addendum=True, default_overflow_message=AL_DEFAULT_OVERFLOW_MESSAGE)
-  - RFAcomplaint: ALDocument.using(title="1 rfa-complaint", filename="1_RFA-complaint", enabled=True, has_addendum=True, default_overflow_message=AL_DEFAULT_OVERFLOW_MESSAGE)
-  - RFAserviceinfo: ALDocument.using(title="2 rfa-service-info", filename="2_RFA-service-info", enabled=True, has_addendum=True, default_overflow_message=AL_DEFAULT_OVERFLOW_MESSAGE)
 ---
 # Bundles group the ALDocuments into separate downloads, such as for court and for the user
 objects:
