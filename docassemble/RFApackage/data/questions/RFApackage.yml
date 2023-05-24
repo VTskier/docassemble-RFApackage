@@ -1,13 +1,13 @@
 #####################################################################
 ####################### TO DO #######################
-#Check if I posted the most recent edited intro text as seen by Laura and Renee
 #For weapons, how do I cycle through offering fields for more weapons until they are done?
 #For id: What you want to ask for in the RFA order, require at least one checkmark
 #For id: What you want to ask for in the RFA order, make subquestions required
 #For id: Childrens relationships, only show it if PRR was requested
 #For id: Existing orders or court proceedings, only show the bottom questions if applicable
+#For id: Existing orders or court proceedings, I may need to change my variable names in the review section and print section, etc. because I changed how I set up the checkboxes -- like I did with (danger_more_abuse_who["children"] 
 #Why is background black when I look at this in Chrome on Android phone?
-#In footer, add vtcourt forms are offered by Lsv
+#In footer, add vtcourt forms are offered by LSV
 #Use questions as asked by court, but also explain in plain language
 #Need to update all the Review and Attachment variables for get_kids_relationships
 #For id: What happened most recently, need to group the checkbox questions at the bottom.
@@ -17,7 +17,7 @@
 #Prep updated confidential contact form and then upload it
 #Re-do complaint PDF so it's a smaller size document. Should check marks look larger on PDF?
 #update is defendant your spouse question on complaint PDF to have this field name is_spouse
-#Fix field name on PDF and in interview   other parties work phone (not word)
+#Fix field name on PDF and in interview --  other parties work phone (not word)
 #Customize address questions so it doesn't ask for unit/apt. on separate line. id: your address  sets:   How do I use sets? Dont want the unit number.
 #Add show if to the will you be forced from home question and those that follow it
 #  if recent_incident_date is defined, then set recent_incident_yes to True  figure out this so that checkbox gets checked automatically
@@ -207,7 +207,7 @@ code: |
   details_for_law_enforcement
   location_of_home
   vehicle_make
-  spouse_or_ex_spouse
+  relationship_for_LE
   employer
   house2
   set_progress(72)
@@ -343,7 +343,7 @@ question: |
 subquestion: |  
   * Make sure you are in a safe place. It takes time to work through this interview. It may take 1 hour or more.
   * If you are in danger right now, dial 911.
-  * Use this interview if you are asking for an RFA order for you, or both you and your children. (There are different forms for asking for an RFA only on behalf of a child or children.)
+  * Use this interview if you are asking for an RFA order for you, or both you and your children. (There are different forms for [asking for an RFA only on behalf of a child or children.](https://vtlawhelp.org/roadmap/relief-from-abuse/step-3)
   * The forms in this interview can only be used in Vermont.
   * Consider creating an account and saving your work along the way. You could log in later to review your answers with an advocate. Choose “sign up” in the menu above, or “register” below.
   * Click "Share" at the bottom of this page to share a link to your progress with someone you trust. Important: The person you share this link with will be able to see and edit your answers.
@@ -478,7 +478,7 @@ question: |
 subquestion: |
   <i class="fas fa-hand-paper fa-3x" aria-hidden="true"></i>  **Stop.** **Do not use this interview.**
   
-  In this situation, these are **not** the right forms to fill out. Consult with a lawyer or legal aid organization in your state or the defendant’s state.
+  In this situation, these may **not** be the right forms to fill out. Consult with a lawyer or legal aid organization in your state or the defendant’s state.
 continue button field: initial_screening_questions_5_exit_a
 buttons:
   - Exit: exit
@@ -1156,7 +1156,7 @@ subquestion: |
 fields:
   - "The house or building number on the street (Example: Enter 10 if it's 10 Main Street.)": house
     maxlength: 10
-  - "Street or Town Road (Example: Enter Main Street)": other_parties1_street_address
+  - "Name of the street or Town Road number (Example: Enter Main Street)": other_parties1_street_address
     maxlength: 28
   - "Town / city": other_parties1_city
     maxlength: 23
@@ -1181,14 +1181,19 @@ subquestion: |
 fields:
   - "What brand car or truck do they drive? (Ford, Honda, etc.)": vehicle_make
     maxlength: 19
+    required: False
   - "What model car or truck? (F-150, Civic)": vehicle_model
     maxlength: 17
+    required: False
   - "Color of car or truck": vehicle_color
     maxlength: 13
+    required: False
   - "Vehicle plate number": vehicle_plate
     maxlength: 14
+    required: False
   - "Vehicle year": vehicle_year
     maxlength: 6
+    required: False
 ---
 
 id: More on your relationship to defendant
@@ -1196,19 +1201,18 @@ question: |
   More on your relationship to defendant
 subquestion: |
   Law enforcement asks these specific questions on their confidential form.
-  
-  Check all that apply to you.
-fields:
-  - "I am the spouse or ex-spouse (former spouse) of the defendant.": spouse_or_ex_spouse
-    datatype: yesno
-  - "The defendant and I have lived together while having a sexual relationship together.": lived_together
-    datatype: yesno
-  - "The defendant and I have a child or children in common.": had_kids_together
-    datatype: yesno
-  - "I am the defendant’s child or step-child, or I am filing on behalf of that child or step-child.": defendants_child
-    datatype: yesno
-  - "I am the child of the plaintiff who currently or has in the past lived with the defendant while having a sexual relationship together, or I am filing on behalf of that child.": plaintiffs_child
-    datatype: yesno
+fields:  
+  - "Select all that apply to you.": relationship_for_LE
+    datatype: checkboxes
+    none of the above: False
+    required: False
+    choices:  
+      - "I am the spouse or ex-spouse (former spouse) of the defendant.": spouse_or_ex_spouse
+      - "The defendant and I have lived together while having a sexual relationship together.": lived_together
+      - "The defendant and I have a child or children in common.": had_kids_together
+      - "I am the defendant’s child or step-child, or I am filing on behalf of that child or step-child.": defendants_child
+      - "I am the child of the plaintiff who currently or has in the past lived with the defendant while having a sexual relationship together, or I am filing on behalf of that child.": plaintiffs_child
+
 ---
 id: Defendant s work information
 question: |
@@ -1218,24 +1222,34 @@ subquestion: |
 fields:
   - "Defendant's employer": employer
     maxlength: 36
+    required: False
   - "Their employers street address": employers_street_address
     maxlength: 29
+    required: False
   - "Employers city and state": employers_city_state
     maxlength: 36
+    required: False
   - "Work hours on Mondays": work_mondays
     maxlength: 11
+    required: False
   - "Work hours on Tuesdays": work_tues
     maxlength: 11
+    required: False
   - "Work hours on Wednesdays": work_weds
     maxlength: 11
+    required: False
   - "Work hours on Thursdays": work_thurs
     maxlength: 11
+    required: False
   - "Work hours on Fridays": work_fri
     maxlength: 11
+    required: False
   - "Work hours on Saturdays": work_sat
     maxlength: 11
+    required: False
   - "Work hours on Sundays": work_sun
     maxlength: 11
+    required: False
 ---
 #Make all these not required
 id: Other places the defendant might be
@@ -1248,14 +1262,19 @@ fields:
       <h2 class="h4">Other location:</h2>
   - "The house or building number on the street (Example: Enter 10 if it's 10 Main Street.)": house2
     maxlength: 10
+    required: False
   - "Street or Town Road (Example: Enter Main Street)": other_location_street_address
     maxlength: 28
+    required: False
   - "Town / city": other_location_city
     maxlength: 23
+    required: False
   - "State": other_location_state
     maxlength: 5
+    required: False
   - "Phone number at that location": other_location_phone
     maxlength: 13
+    required: False
   - "I have another place to list.": other_location2
     datatype: yesno
   - note: |
@@ -1347,6 +1366,18 @@ id: More about what the defendant looks like
 question: |
   More about what the defendant looks like
 fields:
+  - note: |
+      <h2 class="h4">Hair length:</h2>
+  - "Short": hair_short
+    datatype: yesno
+  - "Medium": hair_medium
+    datatype: yesno
+  - "Long": hair_long
+    datatype: yesno
+  - "Bald": hair_bald
+    datatype: yesno
+  - note: |
+      <h2 class="h4">Hair color:</h2>
   - "Brown": hair_brown
     datatype: yesno
   - "Blond": hair_blond
@@ -1357,36 +1388,39 @@ fields:
     datatype: yesno
   - "Gray / white": hair_gray
     datatype: yesno
-  - "Bald": hair_bald
-    datatype: yesno
+  - "Bald": hair_bald_color
+    datatype: yesno    
   - "Other": hair_other
     datatype: yesno
-  - "Short": hair_short
-    datatype: yesno
-  - "Medium": hair_medium
-    datatype: yesno
-  - "Long": hair_long
-    datatype: yesno
+  - note: |
+      <h2 class="h4">Facial hair:</h2>
   - "Beard": hair_beard
     datatype: yesno
   - "Mustache": hair_mustache
     datatype: yesno
+  - note: |
+      <h2 class="h4">Other identifiers:</h2>
   - "Tattoos": tattoos
     datatype: yesno
-  - "Where are the tattoos located?": tattoos_location
+    required: False
+  - "Where are the tattoos? What design(s)?": tattoos_location
     maxlength: 74
+    show if: tattoos
   - "Scars or marks": scars
     datatype: yesno
-  - "Where are the scars located?": scars_location
+  - "Where are the scars?": scars_location
     maxlength: 74
+    show if: scars
   - "Body piercing / earrings": piercing
     datatype: yesno
-  - "Where are the piercings located?": piercing_location
+  - "Where are the piercings?": piercing_location
     maxlength: 74
+    show if: piercing
   - "Other identifying marks": other_marks
     datatype: yesno
-  - "Where are the marks located?": marks_location
+  - "What are they and where are they?": marks_location
     maxlength: 74
+    show if: other_marks
 ---
 id: When law enforcement serves the order to the defendant
 question: |
@@ -1396,7 +1430,7 @@ fields:
     datatype: yesno
   - "Users1 notify phone number": users1_notify_phone_number
     maxlength: 45
-  - "y.) Will the defendant try to avoid being served this order?": avoid_served
+  - "Will the defendant try to avoid being served this order?": avoid_served
     datatype: yesno
   - "Does the defendant have guard dogs or vicious dogs?": guard_dog
     datatype: yesno
@@ -2164,10 +2198,10 @@ review:
     button: |
       **Gray / white**:
       ${ word(yesno(hair_gray)) }
-  - Edit: hair_bald
+  - Edit: hair_bald_color
     button: |
       **Bald**:
-      ${ word(yesno(hair_bald)) }
+      ${ word(yesno(hair_bald_color)) }
   - Edit: hair_other
     button: |
       **Other**:
@@ -2184,6 +2218,10 @@ review:
     button: |
       **Long**:
       ${ word(yesno(hair_long)) }
+  - Edit: hair_bald
+    button: |
+      **Bald**:
+      ${ word(yesno(hair_bald)) }
   - Edit: hair_beard
     button: |
       **Beard**:
@@ -2857,7 +2895,7 @@ attachment:
       - "hair_black": ${ hair_black }
       - "hair_red": ${ hair_red }
       - "hair_gray": ${ hair_gray }
-      - "hair_bald": ${ hair_bald }
+      - "hair_bald": ${ hair_bald_color }
       - "hair_bald__1": ${ hair_bald }
       - "hair_other": ${ hair_other }
       - "hair_short": ${ hair_short }
