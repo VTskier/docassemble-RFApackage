@@ -39,3 +39,9 @@ input.labelauty+label,
     border-width: 1px;
     border-color: gray;
 }
+.btn-group-sm>.btn, .btn-sm {
+    --bs-btn-padding-y: 0.25rem;
+    --bs-btn-padding-x: 0.5rem;
+    --bs-btn-font-size: 1.2rem;
+    --bs-btn-border-radius: 0.25rem;
+}

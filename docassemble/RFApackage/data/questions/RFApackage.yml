@@ -1,6 +1,11 @@
 #####################################################################
 ####################### TO DO #######################
-#Work on the Review answers section
+#Insert the signature feature
+#How change line spacing for narrative answers in affidavit PDF
+#Work on getting all answers to show correctly on PDFs
+#On Complaint only allow one answer for relationship
+#Work on the Review answers section. Show all fields including plaintiff and def addresses.
+#In downloads area, insert my static document (final version)
 #For weapons, how do I cycle through offering fields for more weapons until they are done?
 #Make nav on the left grey instead of looking like blue links. Top it with the words: Your progress
 #Update variable names in Edit and Publish sections for all the ones that I did checkboxes for, including: relationship_for_LE race skin hair hair_color
@@ -120,6 +125,7 @@ code: |
   allowed_courts = interview_metadata["RFApackage"]["allowed courts"]
   user_role = "plaintiff"
   user_ask_role = "plaintiff"
+  users[0].signature
   nav.set_section("screening")
   ##initial_screening_questions##
   extend_or_change
@@ -220,9 +226,10 @@ code: |
   set_progress(90)
   notify_served
   nav.set_section("review_RFApackage")
+  RFApackage_preview_question
   nav.set_section('signature')
   printed_signature
-  signature_date
+
   nav.set_section('get_docs')
   interview_order_RFApackage = True
 ---
@@ -235,8 +242,8 @@ sections:
   - weapons: Weapons
   - order: What you want in the RFA order
   - service: Info for law enforcement to serve the order
-  - review_RFApackage: Review your answers
   - signature: Signature
+  - review_RFApackage: Edit your answers
   - get_docs: Get your documents
 #progressive: False
 ##################
@@ -1465,13 +1472,16 @@ question: |
 fields:
   - "Please type your name. This will appear under your signature.": printed_signature
     maxlength: 34
-  - "Date of signature of complaint form": date
+  - "Date of your signature on complaint form": date
     datatype: date
     required: False
     default: |
       ${ today() }
   -  note: |
       You can change this date or leave it blank for now if you want.
+      
+
+  
 ---
 id: preview RFApackage
 question: |
@@ -1512,13 +1522,10 @@ review:
     button: |
       **Docket number**:
       ${ docket_number }
-  - Edit: trial_court
+  - Edit: trial_court_name
     button: |
-      **Trial court**
-  
-      % if defined("trial_court.address.county"):
-      * address: ${ trial_court.address.block() }
-      % endif
+      **County family court where you want to file these forms**
+      ${ trial_court_name }
   - Edit: users.revisit
     button: |
       **Users**
@@ -1819,18 +1826,18 @@ review:
     button: |
       **Did the defendant abuse the child/children -- physically injured or otherwise treated the child(ren) in a manner which placed their life, health, development or welfare in jeopardy?**:
       ${ word(yesno(recent_incident_abused)) }
-  - Edit: recent_incident_stalked_users1
+  - Edit: recent_incident_stalked
     button: |
       **Did the defendant stalk you or the child/children?**:
-      ${ word(yesno(recent_incident_stalked_users1)) }
+      ${ word(yesno(recent_incident_stalked)) }
   - Edit: recent_incident_stalked_children
     button: |
       **Did the defendant stalk the child/children?**:
       ${ word(yesno(recent_incident_stalked_children)) }
-  - Edit: recent_incident_stalked
+  - Edit: recent_incident_stalked_users1
     button: |
       **Did the defendant stalk you?**:
-      ${ word(yesno(recent_incident_stalked)) }
+      ${ word(yesno(recent_incident_stalked_users1)) }
   - Edit: recent_incident_stalked_date2
     button: |
       **On what date did they first stalk you?**:
@@ -1897,11 +1904,11 @@ review:
       ${ word(yesno(residence_of_both)) }
   - Edit: reach_up_users1
     button: |
-      **Do you get Reach Up benefits?**:
+      **Do you get Reach Up benefits from the state?**:
       ${ word(yesno(reach_up_users1)) }
   - Edit: reach_up_OP
     button: |
-      **Does the defendant get Reach Up benefits?**:
+      **Does the defendant get Reach Up benefits from the state?**:
       ${ word(yesno(reach_up_OP)) }
   - Edit: request_not_abuse_children
     button: |
@@ -2012,11 +2019,11 @@ review:
       % endfor
   - Edit: children1_relationship_users1
     button: |
-      **This child's relationship to you?**:
+      **This child's -- ${ children1_name } -- relationship to you?**:
       ${ children1_relationship_users1 }
   - Edit: children1_relationship_OP
     button: |
-      **This child's relationship to the defendant?**:
+      **This child's -- ${ children1_name } -- relationship to the defendant?**:
       ${ children1_relationship_OP }
   - Edit: children2_relationship_users1
     button: |
@@ -2036,11 +2043,11 @@ review:
       ${ children3_relationship_OP }
   - Edit: request_other_description
     button: |
-      **PRR other description**:
+      **Description of other request**:
       ${ request_other_description }
   - Edit: request_other
     button: |
-      **PRR other?**:
+      **Request something else in the RFA order?**:
       ${ word(yesno(request_other)) }
   - Edit: request_all_emergency
     button: |
@@ -2048,7 +2055,7 @@ review:
       ${ word(yesno(request_all_emergency)) }
   - Edit: date
     button: |
-      **Date of signature of complaint form**:
+      **Date of your signature on complaint form**:
       ${ date }
   - Edit: users1_notify_phone_number
     button: |
@@ -2056,7 +2063,7 @@ review:
       ${ users1_notify_phone_number }
   - Edit: notify_served
     button: |
-      **Notify served**:
+      **If you get a RFA order, do you wish to be notified after the order is served?**:
       ${ word(yesno(notify_served)) }
   - Edit: spouse_or_ex_spouse
     button: |
@@ -2528,13 +2535,15 @@ confirm: True
 id: download RFApackage
 event: RFApackage_download
 question: |
-  All done
+  Review your forms and download and/or print them
 subquestion: |
-  Thank you ${users}. Your form is ready to download and deliver.
+  The interview is done. Your forms are ready to view.
   
-  View, download and send your form below. Click the "Edit answers" button to fix any mistakes.
+  Select the "Edit answers" button to fix any mistakes. Then, download your forms and the instructions sheet for the next steps to take. You can email the filled-in forms to yourself or someone else, too.
+  
+  You can also use the Share feature to share a link to your interview with a trusted person. Important: If you use the Share feature, that person will be able to see and edit your answers.
 
-  ${ action_button_html(url_action('review_RFApackage'), label='Edit answers', color='info') }
+  ${ action_button_html(url_action('review_RFApackage'), label='Edit your answers', color='info') }
   
   
   ${ al_user_bundle.download_list_html() }
@@ -2550,11 +2559,11 @@ objects:
   - RFAaffidavit: ALDocument.using(title="RFA Affidavit", filename="3_RFA-affidavit", enabled=True, has_addendum=True, default_overflow_message=AL_DEFAULT_OVERFLOW_MESSAGE)
   - RFAconfidentialcontactinfo: ALDocument.using(title="RFA Confidential Contact Info", filename="4_RFA-confidential-contact-info", enabled=True, has_addendum=True, default_overflow_message=AL_DEFAULT_OVERFLOW_MESSAGE)
   - RFAserviceinfo: ALDocument.using(title="Protection Order Service Info", filename="2_RFA-service-info", enabled=True, has_addendum=True, default_overflow_message=AL_DEFAULT_OVERFLOW_MESSAGE)
-  - RFApackage_Post_interview_instructions: ALDocument.using(title="Instructions", filename="RFApackage_next_steps.docx", enabled=True, has_addendum=False)
+  - RFApackage_Post_interview_instructions: ALDocument.using(title="Instructions for Next Steps to Take", filename="RFApackage_next_steps.docx", enabled=True, has_addendum=False)
 ---
 # Bundles group the ALDocuments into separate downloads, such as for court and for the user
 objects:
-  - al_user_bundle: ALDocumentBundle.using(elements=[RFApackage_Post_interview_instructions, RFAaffidavit, RFAconfidentialcontactinfo, RFAcomplaint, RFAserviceinfo], filename="RFApackage", title="All forms to download for your records", enabled=True)
+  - al_user_bundle: ALDocumentBundle.using(elements=[RFApackage_Post_interview_instructions, RFAaffidavit, RFAconfidentialcontactinfo, RFAcomplaint, RFAserviceinfo], filename="RFApackage", title="Download all forms", enabled=True)
   - al_court_bundle: ALDocumentBundle.using(elements=[RFAaffidavit, RFAconfidentialcontactinfo, RFAcomplaint, RFAserviceinfo],  filename="RFApackage", title="All forms to deliver to court", enabled=True)
 ---
 
@@ -2703,7 +2712,7 @@ attachment:
       - "users1_name__2": ${ users[0] }
       - "users1_name": ${ users[0] }
       - "users1_birthdate__1": ${ users[0].birthdate.format() }
-      - "users1_birthdate": ${ users[0].birthdate.format() }
+      - "users1_birthdate": ${ format_date(users[0].birthdate, format='M/d/yyyy') }
       - "users1_birthdate__2": ${ users[0].birthdate.format() }
       - "other_parties1_name__1": ${ other_parties[0] }
       - "other_parties1_name__2": ${ other_parties[0] }
@@ -2724,9 +2733,7 @@ attachment:
       - "other_parties1_address_zip": ${ other_parties[0].address.zip }
       - "recent_incident_date__1": ${ recent_incident_date.format() }
       - "recent_incident_date": ${ recent_incident_date.format() }
-      - "danger_more_abuse_yes": ${ danger_more_abuse }
-      - "danger_more_abuse_no": ${ not danger_more_abuse }
-      - "danger_more_abuse": ${ not danger_more_abuse }
+      - "danger_more_abuse": ${ danger_more_abuse }
       - "users1_address_address__1": ${ users[0].address.address }
       - "users1_address_address": ${ users[0].address.address }
       - "users1_address_city__1": ${ users[0].address.city }
@@ -2734,12 +2741,12 @@ attachment:
       - "users1_address_state__1": ${ users[0].address.state }
       - "users1_address_state": ${ users[0].address.state }
       - "signature_date__1": ${ signature_date }
-      - "signature_date": ${ signature_date }
-      - "users1_signature__1": ${ users[0].signature_if_final(i) }
-      - "users1_signature": ${ users[0].signature_if_final(i) }
+      - "date_complaint": ${ date_complaint }
+      - "users1_signature__1": ${ users[0].signature }
+      - "users1_signature": ${ x.signature }
       - "family_member_description": ${ family_member_description }
       - "family_member": ${ family_member }
-      - "is_spouse": ${ is_spouse }
+      - "spouse": ${ is_spouse }
       - "other_relationship_description": ${ other_relationship_description }
       - "ex_spouse": ${ ex_spouse }
       - "other_relationship": ${ other_relationship }
