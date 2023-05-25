@@ -1,10 +1,17 @@
 #####################################################################
 ####################### TO DO #######################
-#Insert the signature feature
-#How change line spacing for narrative answers in affidavit PDF
+#How do I put this on my main fork again in GitHub???
+#Did first pass on complaint. Now onto Affidavit.
+#NEED TO ADD FIELD FOR HOUSE NUMBER AND RENAME ON PDF TO house2. On PDF, too?
+#NEED TO ADD FIELD FOR HOUSE NUMBER AND RENAME ON PDF TO house3. On PDF, too?
+#Add these to review screen
+#The defendant has  has not used, displayed, or threatened to use a firearm or
+#Do you feel that you are in immediate danger of further abuse from the defendant?  Yes  No 
+#Test if the signature feature working
 #Work on getting all answers to show correctly on PDFs
+#How change line spacing for narrative answers in affidavit PDF
 #On Complaint only allow one answer for relationship
-#Work on the Review answers section. Show all fields including plaintiff and def addresses.
+#Work on the Review answers section. Show all fields. How show basic plaintiff and def info and addresses?
 #In downloads area, insert my static document (final version)
 #For weapons, how do I cycle through offering fields for more weapons until they are done?
 #Make nav on the left grey instead of looking like blue links. Top it with the words: Your progress
@@ -125,7 +132,6 @@ code: |
   allowed_courts = interview_metadata["RFApackage"]["allowed courts"]
   user_role = "plaintiff"
   user_ask_role = "plaintiff"
-  users[0].signature
   nav.set_section("screening")
   ##initial_screening_questions##
   extend_or_change
@@ -229,7 +235,7 @@ code: |
   RFApackage_preview_question
   nav.set_section('signature')
   printed_signature
-
+  users[0].signature
   nav.set_section('get_docs')
   interview_order_RFApackage = True
 ---
@@ -715,7 +721,7 @@ fields:
     required: False
   - Cell phone: other_parties[0].mobile_number
     required: False
-  - Work phone: other_parties1_word_phone_number
+  - Work phone: other_parties1_work_phone_number
     required: False
   - Other phone: other_parties1_other_phone_number
     required: False    
@@ -1063,8 +1069,7 @@ fields:
       Start with a phrase like: 'Order the defendant to ...' or 'Order me to get ...': 
     show if: request_other
   - "Explain what else you'd like the RFA order to do": request_other_description
-    input type: area
-    rows: 2
+    maxlength: 70
     hint: Order the defendant to...
     show if: request_other
 ---
@@ -1528,14 +1533,14 @@ review:
       ${ trial_court_name }
   - Edit: users.revisit
     button: |
-      **Users**
+      **User -- usually you**
 
       % for item in users:
         * ${ item }
       % endfor
   - Edit: other_parties.revisit
     button: |
-      **Other parties**
+      **Other party -- the defendant**
 
       % for item in other_parties:
         * ${ item }
@@ -1956,7 +1961,7 @@ review:
       ${ word(yesno(request_surrender_firearms)) }
   - Edit: request_living_expenses
     button: |
-      **Do you want the court to order the defendant?? to pay your temporary living expenses?**:
+      **Do you want the court to order the defendant to pay your temporary living expenses?**:
       ${ word(yesno(request_living_expenses)) }
   - Edit: request_child_support
     button: |
@@ -2281,13 +2286,13 @@ review:
     button: |
       **Where are the marks located?**:
       ${ marks_location }
-  - Edit: other_parties1_word_phone_number
+  - Edit: other_parties1_work_phone_number
     button: |
-      **Defendant's work phone number FIX NAME OF FIELD**:
-      ${ other_parties1_word_phone_number }
+      **Defendant's work phone**:
+      ${ other_parties1_work_phone_number }
   - Edit: other_parties1_other_phone_number
     button: |
-      **Defendant's other phone number**:
+      **Defendant's other phone**:
       ${ other_parties1_other_phone_number }
   - Edit: house
     button: |
@@ -2347,31 +2352,39 @@ review:
       ${ work_sun }
   - Edit: other_location_street_address
     button: |
-      **Where would they be if not at home or work? List the street address of another location. NEED TO ADD FIELD FOR HOUSE NUMBER AND RENAME ON PDF TO house2.**:
+      **Where would they be if not at home or work? List the street address of another location.**:
       ${ other_location_street_address }
+  - Edit: house2
+    button: |
+      **House or building number on the street**:
+      ${ house2 }
   - Edit: other_location_city
     button: |
-      **Town / city**:
+      **Town / city of that other location**:
       ${ other_location_city }
   - Edit: other_location_state
     button: |
-      **State**:
+      **State of that other location**:
       ${ other_location_state }
   - Edit: other_location_phone
     button: |
-      **Phone number at that location**:
+      **Phone number at that other location**:
       ${ other_location_phone }
   - Edit: other_location2_street_address
     button: |
-      **List another street address if there is another location. NEED TO ADD FIELD FOR HOUSE NUMBER AND RENAME ON PDF TO house3.**:
+      **List another street address if there is another location.**:
       ${ other_location2_street_address }
+  - Edit: house3
+    button: |
+      **House or building number on the street**:
+      ${ house3 }
   - Edit: other_location2_city
     button: |
-      **Town / city**:
+      **Town / city of that location**:
       ${ other_location2_city }
   - Edit: other_location2_state
     button: |
-      **State**:
+      **State of that location**:
       ${ other_location2_state }
   - Edit: other_location2_phone
     button: |
@@ -2417,14 +2430,6 @@ review:
     button: |
       **Why will the officer be in danger?**:
       > ${ single_paragraph(danger_for_officer_why) }
-  - Edit: house2
-    button: |
-      **House or building number on the street**:
-      ${ house2 }
-  - Edit: house3
-    button: |
-      **House or building number on the street**:
-      ${ house3 }
 ---
 continue button field: users.revisit
 question: |
@@ -2592,19 +2597,19 @@ attachment:
       - "docket_number": ${ docket_number }
       - "trial_court_county__1": ${ trial_court.address.county }
       - "trial_court_county__2": ${ trial_court.address.county }
-      - "trial_court_county": ${ trial_court.address.county }
+      - "trial_court_county": ${ trial_court_name }
       - "users1_name__1": ${ users[0] }
       - "users1_name__2": ${ users[0] }
       - "users1_name": ${ users[0] }
-      - "users1_birthdate__1": ${ users[0].birthdate.format() }
-      - "users1_birthdate": ${ users[0].birthdate.format() }
-      - "users1_birthdate__2": ${ users[0].birthdate.format() }
+      - "users1_birthdate__1": ${ format_date(users[0].birthdate, format='M/d/yyyy') }
+      - "users1_birthdate": ${ format_date(users[0].birthdate, format='M/d/yyyy') }
+      - "users1_birthdate__2": ${ format_date(users[0].birthdate, format='M/d/yyyy') }
       - "other_parties1_name__1": ${ other_parties[0] }
       - "other_parties1_name__2": ${ other_parties[0] }
       - "other_parties1_name": ${ other_parties[0] }
-      - "other_parties1_birthdate__1": ${ other_parties[0].birthdate.format() }
-      - "other_parties1_birthdate": ${ other_parties[0].birthdate.format() }
-      - "other_parties1_birthdate__2": ${ other_parties[0].birthdate.format() }
+      - "other_parties1_birthdate__1": ${ format_date(other_parties[0].birthdate, format='M/d/yyyy') }
+      - "other_parties1_birthdate": ${ format_date(other_parties[0].birthdate, format='M/d/yyyy') }
+      - "other_parties1_birthdate__2": ${ format_date(other_parties[0].birthdate, format='M/d/yyyy') }
       - "other_parties1_address_address__1": ${ other_parties[0].address.address }
       - "other_parties1_address_address": ${ other_parties[0].address.address }
       - "other_parties1_address_address__2": ${ other_parties[0].address.address }
@@ -2619,15 +2624,15 @@ attachment:
       - "other_parties1_weapon_yes": ${ owns_weapons }
       - "other_parties1_weapon_no": ${ not owns_weapons }
       - "other_parties1_weapon_DK": ${ owns_weapons == None }
-      - "recent_incident_date__1": ${ recent_incident_date.format() }
-      - "recent_incident_date": ${ recent_incident_date.format() }
+      - "recent_incident_date__1": ${ format_date(recent_incident_date, format='M/d/yyyy') }
+      - "recent_incident_date": ${ format_date(recent_incident_date, format='M/d/yyyy') }
       - "recent_incident_time": ${ recent_incident_time }
       - "recent_incident_town": ${ recent_incident_town }
       - "recent_incident_state": ${ recent_incident_state }
       - "recent_incident_description": ${ RFAaffidavit.safe_value("recent_incident_description") }
       - "recent_incident_most_serious_yes": ${ recent_incident_most_serious }
       - "recent_incident_most_serious_no": ${ not recent_incident_most_serious }
-      - "serious_incident_date": ${ serious_incident_date.format() }
+      - "serious_incident_date": ${ format_date(serious_incident_date, format='M/d/yyyy') }
       - "serious_incident_time": ${ serious_incident_time }
       - "serious_incident_town": ${ serious_incident_town }
       - "serious_incident_state": ${ serious_incident_state }
@@ -2673,7 +2678,7 @@ attachment:
       - "docket_number": ${ docket_number }
       - "trial_court_county__1": ${ trial_court.address.county }
       - "trial_court_county__2": ${ trial_court.address.county }
-      - "trial_court_county": ${ trial_court.address.county }
+      - "trial_court_county": ${ trial_court_name }
       - "users1_name__1": ${ users[0] }
       - "users1_name__2": ${ users[0] }
       - "users1_name": ${ users[0] }
@@ -2691,7 +2696,7 @@ attachment:
       - "share_contact_yes": ${ share_contact }
       - "share_contact_no": ${ not share_contact }
       - "signature_date__1": ${ signature_date }
-      - "signature_date": ${ signature_date }
+      - "signature_date": ${ format_date(signature_date, format='M/d/yyyy') }
       - "users1_signature__1": ${ users[0].signature_if_final(i) }
       - "users1_signature": ${ users[0].signature_if_final(i) }
 ---
@@ -2707,7 +2712,7 @@ attachment:
       - "docket_number": ${ docket_number }
       - "trial_court_county__1": ${ trial_court.address.county }
       - "trial_court_county__2": ${ trial_court.address.county }
-      - "trial_court_county": ${ trial_court.address.county }
+      - "trial_court_county": ${ trial_court_name }
       - "users1_name__1": ${ users[0] }
       - "users1_name__2": ${ users[0] }
       - "users1_name": ${ users[0] }
@@ -2718,7 +2723,7 @@ attachment:
       - "other_parties1_name__2": ${ other_parties[0] }
       - "other_parties1_name": ${ other_parties[0] }
       - "other_parties1_birthdate__1": ${ other_parties[0].birthdate.format() }
-      - "other_parties1_birthdate": ${ other_parties[0].birthdate.format() }
+      - "other_parties1_birthdate": ${ format_date(other_parties[0].birthdate, format='M/d/yyyy') }
       - "other_parties1_birthdate__2": ${ other_parties[0].birthdate.format() }
       - "other_parties1_address_address__1": ${ other_parties[0].address.address }
       - "other_parties1_address_address": ${ other_parties[0].address.address }
@@ -2732,7 +2737,7 @@ attachment:
       - "other_parties1_address_zip__1": ${ other_parties[0].address.zip }
       - "other_parties1_address_zip": ${ other_parties[0].address.zip }
       - "recent_incident_date__1": ${ recent_incident_date.format() }
-      - "recent_incident_date": ${ recent_incident_date.format() }
+      - "recent_incident_date": ${ format_date(recent_incident_date, format='M/d/yyyy') }
       - "danger_more_abuse": ${ danger_more_abuse }
       - "users1_address_address__1": ${ users[0].address.address }
       - "users1_address_address": ${ users[0].address.address }
@@ -2741,7 +2746,7 @@ attachment:
       - "users1_address_state__1": ${ users[0].address.state }
       - "users1_address_state": ${ users[0].address.state }
       - "signature_date__1": ${ signature_date }
-      - "date_complaint": ${ date_complaint }
+      - "date_complaint": ${ format_date(date_complaint, format='M/d/yyyy') }
       - "users1_signature__1": ${ users[0].signature }
       - "users1_signature": ${ x.signature }
       - "family_member_description": ${ family_member_description }
@@ -2783,8 +2788,8 @@ attachment:
       - "recent_incident_stalked_users1": ${ recent_incident_stalked_users1 }
       - "recent_incident_stalked_children": ${ recent_incident_stalked_children }
       - "recent_incident_stalked": ${ recent_incident_stalked }
-      - "recent_incident_stalked_date2": ${ recent_incident_stalked_date2 }
-      - "recent_incident_stalked_date1": ${ recent_incident_stalked_date1 }
+      - "recent_incident_stalked_date2": ${ format_date(recent_incident_stalked_date2, format='M/d/yyyy') }
+      - "recent_incident_stalked_date1": ${ format_date(recent_incident_stalked_date1, format='M/d/yyyy') }
       - "recent_incident_assault_children": ${ recent_incident_assault_children }
       - "recent_incident_assault_": ${ recent_incident_assault }
       - "recent_incident_assault_users1": ${ recent_incident_assault_users1 }
@@ -2828,15 +2833,15 @@ attachment:
       - "request_no_contact": ${ request_no_contact }
       - "request_temp_PRR": ${ request_temp_PRR }
       - "children1_name": ${ children[0] }
-      - "children1_birthdate": ${ children[0].birthdate.format() }
+      - "children1_birthdate": ${ format_date(children[0].birthdate, format='M/d/yyyy') }
       - "children1_relationship_users1": ${ children1_relationship_users1 }
       - "children1_relationship_OP": ${ children1_relationship_OP }
       - "children2_name": ${ children[1] }
-      - "children2_birthdate": ${ children[1].birthdate.format() }
+      - "children2_birthdate": ${ format_date(children[1].birthdate, format='M/d/yyyy') }
       - "children2_relationship_users1": ${ children2_relationship_users1 }
       - "children2_relationship_OP": ${ children2_relationship_OP }
       - "children3_name": ${ children[2] }
-      - "children3_birthdate": ${ children[2].birthdate.format() }
+      - "children3_birthdate": ${ format_date(children[2].birthdate, format='M/d/yyyy') }
       - "children3_relationship_users1": ${ children3_relationship_users1 }
       - "children3_relationship_OP": ${ children3_relationship_OP }
       - "request_other_description": ${ request_other_description }
@@ -2851,10 +2856,10 @@ attachment:
   pdf template file: 2_RFA-service-info.pdf
   fields:
       - "users1_birthdate__1": ${ users[0].birthdate.format() }
-      - "users1_birthdate": ${ users[0].birthdate.format() }
+      - "users1_birthdate": ${ format_date(users[0].birthdate, format='M/d/yyyy') }
       - "users1_birthdate__2": ${ users[0].birthdate.format() }
       - "other_parties1_birthdate__1": ${ other_parties[0].birthdate.format() }
-      - "other_parties1_birthdate": ${ other_parties[0].birthdate.format() }
+      - "other_parties1_birthdate": ${ format_date(other_parties[0].birthdate, format='M/d/yyyy') }
       - "other_parties1_birthdate__2": ${ other_parties[0].birthdate.format() }
       - "other_parties1_address_address__1": ${ other_parties[0].address.address }
       - "other_parties1_address_address": ${ other_parties[0].address.address }
@@ -2865,7 +2870,7 @@ attachment:
       - "other_parties1_address_state__1": ${ other_parties[0].address.state }
       - "other_parties1_address_state": ${ other_parties[0].address.state }
       - "other_parties1_address_state__2": ${ other_parties[0].address.state }
-      - "date": ${ date }
+      - "date": ${ format_date(date, format='M/d/yyyy') }
       - "users1_name_last": ${ users[0].name.last }
       - "users1_name_first": ${ users[0].name.first }
       - "users1_name_middle": ${ users[0].name.middle }
@@ -2932,7 +2937,7 @@ attachment:
       - "marks_location": ${ marks_location }
       - "other_parties1_phone_number": ${ other_parties[0].phone_number }
       - "other_parties1_mobile_number": ${ other_parties[0].mobile_number }
-      - "other_parties1_word_phone_number": ${ other_parties1_word_phone_number }
+      - "other_parties1_word_phone_number": ${ other_parties1_work_phone_number }
       - "other_parties1_other_phone_number": ${ other_parties1_other_phone_number }
       - "house": ${ house }
       - "house__1": ${ house }
