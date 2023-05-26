@@ -1,5 +1,5 @@
 .bg-dark {
-  background-color: #1f455c !important;  /* replace with your desired nav bar color */
+  background-color: #1f455c !important;  /* nav bar color */
 }
 .da-form-group .da-form-label, 
 .da-subquestion,
@@ -13,8 +13,8 @@ input.labelauty+label,
     border-radius: 10px;
     border-color: #092a69;
     box-shadow: 2px 2px 8px #69868e;
-    padding: 10px;
-    margin: 16px 0px 16px 0px;
+    padding: 18px 12px 12px 18px;
+    margin: 16px 0px 24px 0px;
 }
 .title-row-1 {
     font-size: 1.1rem;

@@ -4,23 +4,24 @@
 #Did first pass on complaint. Now onto Affidavit.
 #NEED TO ADD FIELD FOR HOUSE NUMBER AND RENAME ON PDF TO house2. On PDF, too?
 #NEED TO ADD FIELD FOR HOUSE NUMBER AND RENAME ON PDF TO house3. On PDF, too?
-#Add these to review screen
-#The defendant has  has not used, displayed, or threatened to use a firearm or
-#Do you feel that you are in immediate danger of further abuse from the defendant?  Yes  No 
+#Add these to review screen: The defendant has  has not used, displayed, or threatened to use a firearm; Do you feel that you are in immediate danger of further abuse from the defendant?  Yes  No 
 #Test if the signature feature working
 #Work on getting all answers to show correctly on PDFs
 #How change line spacing for narrative answers in affidavit PDF
-#On Complaint only allow one answer for relationship
+#if recent_incident_date is defined, then set recent_incident_yes to True so it gets a checkmark on the complaint
 #Work on the Review answers section. Show all fields. How show basic plaintiff and def info and addresses?
 #In downloads area, insert my static document (final version)
 #For weapons, how do I cycle through offering fields for more weapons until they are done?
 #Make nav on the left grey instead of looking like blue links. Top it with the words: Your progress
 #Update variable names in Edit and Publish sections for all the ones that I did checkboxes for, including: relationship_for_LE race skin hair hair_color
+#id: Relationship to defendant, require only one answer
 #For id: What you want to ask for in the RFA order, require at least one checkmark
 #For id: What you want to ask for in the RFA order, make subquestions required
 #For id: Childrens relationships, only show it if PRR was requested
 #For id: Existing orders or court proceedings, only show the bottom questions if applicable
+#Other places the defendant might be, Use state abbreviations and default to VT
 #For id: Existing orders or court proceedings, I may need to change my variable names in the review section and print section, etc. because I changed how I set up the checkboxes -- like I did with (danger_more_abuse_who["children"] 
+# trial_court_address.address and .county was triggering the baked-in What court do you want to file in screen when it is not needed.
 #Why is background black when I look at this in Chrome on Android phone?
 #In footer, add vtcourt forms are offered by LSV
 #Use questions as asked by court, but also explain in plain language
@@ -158,7 +159,7 @@ code: |
     initial_screening_questions_2_exit_a
     
   who_needs_protection  
-  if who_needs_protection == 'I’m asking for an RFA only for a child or children':
+  if who_needs_protection == 'I’m asking for an RFA order only for a child or children':
     initial_screening_questions_3_exit
       
   plaintiff_lives_in_vermont
@@ -205,7 +206,7 @@ code: |
   set_progress(40)
   if not recent_incident_most_serious:
     serious_incident_date
-  #other_incident_description
+  other_incident
   set_progress(50)
   danger_more_abuse
   nav.set_section('weapons')
@@ -300,17 +301,17 @@ subquestion: |
   <li><b>Step 3:</b> Download, save or print the final forms. You will need to mail, email, efile or deliver them to the court on your own.</li></ul>
   </div>  
   
-  <i class="fas fa-file-text fa-2x"></i> This interview will produce a complete package of 4 forms needed to ask the court for a Relief from Abuse order in Vermont — Complaint, Affidavit, Confidential Notification form and Protection Order Service Information form. Learn more about RFAs and this interview on the next screen.
+  <i class="fas fa-file-text fa-2x"></i> This guided interview will produce a complete package of 4 forms needed to ask the court for a Relief from Abuse (RFA) order in Vermont: the Complaint, Affidavit, Confidential Notification form and Protection Order Service Information form. Learn more about RFA orders and this interview on the next screen.
   
-  <i class="fas fa-clock fa-2x"></i> It may take you over 1 hour to complete this interview. Consider creating a free account so you can save your progress. Choose "sign up" in the menu above, or "register" below.
+  <i class="fas fa-clock fa-2x"></i> It may take you over 1 hour to complete this interview. Consider creating a free account so you can save your progress. At any time choose "sign up" in the menu above, or "register" below.
   
   <i class="fas fa-share-nodes fa-2x"></i> Use the Share feature at the bottom of the page to share your progress with a trusted friend or advocate.
   
-  After saving or printing your work, log out and close your web browser.
+  <i class="fas fa-sign-out-alt fa-2x"></i> After saving or printing your work, log out and close your web browser.
   
   VTCourtForms interviews were created by Legal Services Vermont with support from the Legal Services Corporation. It is free to use this program. This site is not a lawyer. Visit our [VTLawHelp.org website](https://vtlawhelp.org) if you have legal questions.
   
-  [FILE big_logo, 25%, Legal Services Vermont logo]
+  [FILE big_logo, 30%, Legal Services Vermont logo]
 
 #  Tap the {green words} in any screen for a definition or more information.
   
@@ -346,7 +347,7 @@ continue button field: RFApackage_intro
 question: |
   What to know before you start
 subquestion: |
-  Here are some important things to know about asking the court for a Relief from Abuse order (RFA) in Vermont:
+  Some important things to know about asking the court for a Relief from Abuse order (RFA) in Vermont:
   
   * There is no charge for an RFA order. It is free. 
   * **Even when the courts are closed, it’s after hours, or it’s a weekend or holiday, you can start a Relief from Abuse case.** You may be able to get a temporary order right away to help keep you safe. At these times, you can email these forms or simply call and ask for help. Call the Vermont courts’ answering service at 1-800-540-9990. Say that you need help applying for a Relief from Abuse order over the phone. If you call, you need to leave a message with a number where they can call you back within an hour.
@@ -360,7 +361,7 @@ question: |
 subquestion: |  
   * Make sure you are in a safe place. It takes time to work through this interview. It may take 1 hour or more.
   * If you are in danger right now, dial 911.
-  * Use this interview if you are asking for an RFA order for you, or both you and your children. (There are different forms for [asking for an RFA only on behalf of a child or children.](https://vtlawhelp.org/roadmap/relief-from-abuse/step-3)
+  * Use this interview if you are asking for an RFA order for you, **or** both you and your children. (There are different forms for [asking for an RFA only on behalf of a child or children.](https://vtlawhelp.org/roadmap/relief-from-abuse/step-3))
   * The forms in this interview can only be used in Vermont.
   * Consider creating an account and saving your work along the way. You could log in later to review your answers with an advocate. Choose “sign up” in the menu above, or “register” below.
   * Click "Share" at the bottom of this page to share a link to your progress with someone you trust. Important: The person you share this link with will be able to see and edit your answers.
@@ -451,7 +452,7 @@ fields:
     choices:
       - I need this order to protect me
       - I need this order to protect me and my child or children
-      - I’m asking for an RFA only for a child or children
+      - I’m asking for an RFA order only for a child or children
 ---
 id: initial_screening_questions_3_exit
 question: |
@@ -517,23 +518,17 @@ buttons:
 ---
 id: choose a court
 question: |
-  % if al_form_type == 'starts_case':
-  What court do you want to file in?
-  % elif al_form_type == 'appeal':
-  What is the name of the trial court your case was originally filed in?
-  % else:
-  What court is your case in?
-  % endif
-subquestion: |
-  % if not al_form_type == 'starts_case':
-  Look at your court paperwork. Match the name listed there.
-  % endif
-#${ collapse_template(how_to_pick_court_help_template) }
+  Choose a Family Court
 fields:
   - note: |
-      Choose the county where you will file your forms to ask for a RFA order. It can be the county you live in, or the county the other person lives in (the defendant).
+      Choose the county where you will file your forms to ask for a RFA order. 
       
-      Not sure what county? [Check this list of towns to find your county.](https://en.m.wikipedia.org/wiki/List_of_municipalities_in_Vermont#Cities)
+      It can be:
+      
+      * the county you live in, or 
+      * the county the other person lives in (the defendant).
+      
+      Not sure what county? [Check this list of cities and towns to find the county.](https://en.m.wikipedia.org/wiki/List_of_municipalities_in_Vermont#Cities)
   - County: trial_court_name
     choices:
       - Addison
@@ -550,6 +545,20 @@ fields:
       - Washington
       - Windham
       - Windsor
+ #% if al_form_type == 'starts_case':
+  #What court do you want to file in?
+  #% elif al_form_type == 'appeal':
+  #What is the name of the trial court your case was originally filed in?
+  #% else:
+  #What court is your case in?
+  #% endif
+  #subquestion: |
+  #% if not al_form_type == 'starts_case':
+  #Look at your court paperwork. Match the name listed there.
+  #% endif
+  ##${ collapse_template(how_to_pick_court_help_template) }
+
+  
   #- Address: trial_court_address.address
   #  address autocomplete: True
   #  required: False
@@ -561,6 +570,10 @@ fields:
   #  required: False
   #- Postal code: trial_court_address.zip    
   #  required: False
+---
+#I had to set this because the automated AL.court bundle wanted to define the court address and county, when I didn't need that at this time. AL.court bundle will be needed to efile. 
+code: |
+  trial_court_address.county = trial_court_name
 ---
 id: About you
 question: |
@@ -730,7 +743,7 @@ id: What happened most recently
 question: |
   What happened -- most recently
 subquestion: |
-  Describe the most recent incident of abuse. Be as detailed as possible. The judge needs to know exactly what happened.
+  This is where you will describe the **most recent** incident of abuse. Be as detailed as possible. The judge needs to know exactly what happened. If you don't give enough details, you may not get a RFA order.
   
   See the [VTLawHelp.org legal help website](https://vtlawhelp.org/roadmap/relief-from-abuse/step-3#forms) for tips on what to include in your description. This information will be part of your "Affidavit".
 fields:
@@ -761,7 +774,7 @@ fields:
     datatype: yesno
   - "The defendant abused the child/children -- meaning they physically injured or otherwise treated the child(ren) in a manner which placed child(ren's) life, health, development or welfare in jeopardy.": recent_incident_abused
     datatype: yesno
-  - "The defendant stalked you and/or the child/children. Stalking is defined in Vermont law here: 12 V.S.A 5131(6)": recent_incident_stalked
+  - "The defendant stalked you and/or the child/children. Stalking is defined in Vermont law here: [12 V.S.A 5131(6)](https://legislature.vermont.gov/statutes/section/12/178/05131)": recent_incident_stalked
     datatype: yesno
   - "The defendant stalked you": recent_incident_stalked_users1
     datatype: yesno
@@ -769,7 +782,7 @@ fields:
   - "The defendant stalked the child/children": recent_incident_stalked_children
     datatype: yesno
     show if: recent_incident_stalked
-  - "On what date did they first stalk you?": recent_incident_stalked_date2
+  - "Vermont law says it is stalking if has happened two times or more. On what date did they first stalk you?": recent_incident_stalked_date2
     datatype: date
     show if: recent_incident_stalked
   - "What was the second date that they stalked you?": recent_incident_stalked_date1
@@ -788,14 +801,14 @@ id: Was recent most serious too
 question: |
   What happened
 fields:
-  - "Was the recent incident you described also the most serious incident that has happened?": recent_incident_most_serious
+  - "Was the recent incident you described also the **most serious** incident that has happened?": recent_incident_most_serious
     datatype: yesnoradio
 ---
 id: What happened most serious
 question: |
   What happened -- most serious
 subquestion: |
-  Describe the most serious incident of abuse. Again, be as detailed as possible. The judge needs to know exactly what happened.
+  Describe the **most serious** incident of abuse. Again, be as detailed as possible. The judge needs to know exactly what happened.
 fields:
   - "What was the date of the most serious incident?": serious_incident_date
     datatype: date
@@ -809,9 +822,6 @@ fields:
   - "Please describe the most serious incident with as much detail as possible.": serious_incident_description
     input type: area
     rows: 20
----
-#code: |
-#  if recent_incident_date is defined, then set recent_incident_yes to True
 ---
 id: What happened other incidents
 question: |
@@ -831,11 +841,9 @@ question: |
   Danger of more abuse
 subquestion: |
   It's important to answer **Yes** to this question if you want to get a court order that starts right away.
-
+fields:
   - "Is there immediate danger of more abuse from the defendant?": danger_more_abuse
     datatype: yesnoradio
-  - note: Select all that apply.
-    show if: danger_more_abuse
     
   - "Select all that apply": danger_more_abuse_who
     datatype: checkboxes
@@ -981,7 +989,7 @@ fields:
     
   - "Order the defendant to immediately leave the residence, and to order sole possession to me": request_leave
     datatype: yesno
-  - "Order the defendant not to possess or purchase firearms for the duration of the order": request_no_firearms
+  - "Order the defendant not to possess or purchase guns/firearms for the duration of the order": request_no_firearms
     datatype: yesno
   - "Order the defendant to surrender immediately to law enforcement all guns/firearms that they own, possess or control": request_surrender_firearms
     datatype: yesno
@@ -1180,7 +1188,7 @@ fields:
   - "If you don't have a street address, describe the location of the home.": location_of_home
     input type: area
     required: False
-  - "Describe what the defendant's home looks like.": description_of_home
+  - "Describe what the defendant's home looks like. If it's an apartment, include the apartment number.": description_of_home
     input type: area
     maxlength: 220
   - "Best days and times to contact the defendant at home.": best_contact_time
@@ -1216,7 +1224,7 @@ question: |
 subquestion: |
   Law enforcement asks these specific questions on their confidential form.
 fields:  
-  - "Select all that apply to you.": relationship_for_LE
+  - "Select any that apply to you.": relationship_for_LE
     datatype: checkboxes
     none of the above: False
     required: False
@@ -1224,8 +1232,8 @@ fields:
       - "I am the spouse or ex-spouse (former spouse) of the defendant.": spouse_or_ex_spouse
       - "The defendant and I have lived together while having a sexual relationship together.": lived_together
       - "The defendant and I have a child or children in common.": had_kids_together
-      - "I am the defendant’s child or step-child, or I am filing on behalf of that child or step-child.": defendants_child
-      - "I am the child of the plaintiff who currently or has in the past lived with the defendant while having a sexual relationship together, or I am filing on behalf of that child.": plaintiffs_child
+      - "I am the defendant’s child or step-child, **or** I am filing on behalf of that child or step-child.": defendants_child
+      - "I am the child of a person who currently or has in the past lived with the defendant while having a sexual relationship together, **or** I am filing on behalf of that child.": plaintiffs_child
 
 ---
 id: Defendant s work information
@@ -1274,10 +1282,10 @@ subquestion: |
 fields:
   - note: |
       <h2 class="h4">Other location:</h2>
-  - "The house or building number on the street (Example: Enter 10 if it's 10 Main Street.)": house2
+  - "The house or building number on the street (Example: Enter '10' if it's 10 Main Street.)": house2
     maxlength: 10
     required: False
-  - "Street or Town Road (Example: Enter Main Street)": other_location_street_address
+  - "Street or Town Road (Example: Enter 'Main Street')": other_location_street_address
     maxlength: 28
     required: False
   - "Town / city": other_location_city
@@ -1294,10 +1302,10 @@ fields:
   - note: |
       <h2 class="h4">Another location:</h2>
     show if: other_location2
-  - "The house or building number on the street (Example: Enter 10 if it's 10 Main Street.)": house3
+  - "The house or building number on the street (Example: Enter '10' if it's 10 Main Street.)": house3
     maxlength: 10
     show if: other_location2
-  - "Street or Town Road (Example: Enter Main Street).": other_location2_street_address
+  - "Street or Town Road (Example: Enter 'Main Street').": other_location2_street_address
     maxlength: 27
     show if: other_location2
   - "Town / city": other_location2_city
@@ -1494,7 +1502,7 @@ question: |
 subquestion: |
   Here is a preview of the form you will sign on the next page.   
   
-  ${ al_court_bundle.as_pdf(key='preview') }
+  #${ al_court_bundle.as_pdf(key='preview') }
 
   Click the image to open it in a new tab. Click the "Edit answers" button
   to edit your answers.
@@ -2569,7 +2577,7 @@ objects:
 # Bundles group the ALDocuments into separate downloads, such as for court and for the user
 objects:
   - al_user_bundle: ALDocumentBundle.using(elements=[RFApackage_Post_interview_instructions, RFAaffidavit, RFAconfidentialcontactinfo, RFAcomplaint, RFAserviceinfo], filename="RFApackage", title="Download all forms", enabled=True)
-  - al_court_bundle: ALDocumentBundle.using(elements=[RFAaffidavit, RFAconfidentialcontactinfo, RFAcomplaint, RFAserviceinfo],  filename="RFApackage", title="All forms to deliver to court", enabled=True)
+  #- al_court_bundle: ALDocumentBundle.using(elements=[RFAaffidavit, RFAconfidentialcontactinfo, RFAcomplaint, RFAserviceinfo],  filename="RFApackage", title="All forms to deliver to court", enabled=True)
 ---
 
 
