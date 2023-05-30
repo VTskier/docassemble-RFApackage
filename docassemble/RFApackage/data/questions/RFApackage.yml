@@ -1,6 +1,7 @@
 #####################################################################
 ####################### TO DO #######################
 #How do I put this on my main fork again in GitHub???
+#Work with Michelle on: We need to check off these boxes on paper form -- weapons : yes / no / I don't know. See attachment section and look for owns_weapons. We need to fix that.
 #Did first pass on complaint. Now onto Affidavit.
 #NEED TO ADD FIELD FOR HOUSE NUMBER AND RENAME ON PDF TO house2. On PDF, too?
 #NEED TO ADD FIELD FOR HOUSE NUMBER AND RENAME ON PDF TO house3. On PDF, too?
@@ -866,7 +867,7 @@ objects:
 ---
 id: Gather weapons
 question: |
-  Weapon gathering
+  Gather list of weapons
 fields:
   - Does the defendant own or have access to guns/firearms or other deadly weapons?: weapons.there_are_any
     input type: radio
@@ -874,20 +875,32 @@ fields:
       - Yes: True
       - No: False
       - I don't know: False
+#We need to check off these boxes on paper form -- weapons : yes / no / I don't know. See attachment section and look for owns_weapons. We need to fix that.
 ---
-id: A weapon
+id: List of weapons
 question: |
-  A weapon
+  List of weapons
+subquestion: |
+  We'll create a list of the weapons -- one at a time.
 fields:
-  - Describe the weapon: weapons[i]
+  - Describe weapon (handgun, rifle, knife, etc.). Include the make and model if you know them.: weapons[i]
+    maxlength: 76
+  - Where is this weapon located? (kitchen, car, friend's house, etc.): weapons_location
     maxlength: 76
 
 ---
-id: Another
+id: Another weapon
 question: |
-  Another weapon
+  List of weapons
+subquestion: |
+  You have told us about these weapons:
+  
+  % for item in weapons:
+    * ${ item }
+  % endfor
+
 fields:
-  - Do you know about any other weapons?: weapons.there_is_another
+  - Do you know about any other guns/firearms or other deadly weapons?: weapons.there_is_another
     input type: radio
     choices:
       - Yes: True
@@ -899,7 +912,7 @@ id: Weapons
 question: |
   Weapons
 subquestion: |
-  Weapons can make this a dangerous time for you and/or your children. If you let the court know about weapons, they may be able to collect them from the defendant as part of the court order. This can help keep you safe.
+  Weapons can make this a more dangerous time for you and/or your children. If you let the court know about weapons, they may be able to collect the weapons from the defendant as part of the court order. This can help keep you safe.
 fields:
   - "Has the defendant used or threatened to use a gun/firearm or another deadly weapon against you or another family member?": used_firearm
     datatype: yesnoradio
@@ -1548,6 +1561,13 @@ review:
       % else: 
       I don't know
       % endif
+      
+  - Edit: weapons.revisit
+    button: |
+      **List of weapons that defendant has access to**
+      % for item in weapons:
+        * ${ item }
+      % endfor
   - Edit: recent_incident_date
     button: |
       **What was the date of the most recent incident?**:
@@ -2689,7 +2709,7 @@ attachment:
       - "users1_email": ${ users[0].email }
       - "share_contact_yes": ${ share_contact }
       - "share_contact_no": ${ not share_contact }
-      - "signature_date__1": ${ signature_date }
+      - "signature_date__1": ${ format_date(signature_date, format='M/d/yyyy') }
       - "signature_date": ${ format_date(signature_date, format='M/d/yyyy') }
       - "users1_signature__1": ${ users[0].signature_if_final(i) }
       - "users1_signature": ${ users[0].signature_if_final(i) }
@@ -2739,10 +2759,12 @@ attachment:
       - "users1_address_city": ${ users[0].address.city }
       - "users1_address_state__1": ${ users[0].address.state }
       - "users1_address_state": ${ users[0].address.state }
-      - "signature_date__1": ${ signature_date }
+      - "signature_date__1": ${ format_date(signature_date, format='M/d/yyyy') }
       - "date_complaint": ${ format_date(date_complaint, format='M/d/yyyy') }
-      - "users1_signature__1": ${ users[0].signature }
-      - "users1_signature": ${ x.signature }
+      #- "users1_signature__1": ${ users[0].signature }
+      #- "users1_signature": ${ x.signature }
+      - "users1_signature__1": ${ users[0].signature_if_final(i) }
+      - "users1_signature": ${ users[0].signature_if_final(i) }
       - "family_member_description": ${ family_member_description }
       - "family_member": ${ family_member }
       - "spouse": ${ is_spouse }
