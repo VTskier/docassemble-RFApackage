@@ -12,7 +12,7 @@
 #Work on the Review answers section. Show all fields. How show basic plaintiff and def info and addresses?
 #In downloads area, insert my static document (final version)
 #For weapons, how do I cycle through offering fields for more weapons until they are done?
-#Make nav on the left grey instead of looking like blue links. Top it with the words: Your progress
+#Make nav on the left grey instead of looking like blue links. Make it not look like buttons. Top it with the words: Your progress
 #Update variable names in Edit and Publish sections for all the ones that I did checkboxes for, including: relationship_for_LE race skin hair hair_color
 #id: Relationship to defendant, require only one answer
 #For id: What you want to ask for in the RFA order, require at least one checkmark
@@ -134,6 +134,8 @@ code: |
   user_role = "plaintiff"
   user_ask_role = "plaintiff"
   nav.set_section("screening")
+  weapons.gather()
+  used_firearm
   ##initial_screening_questions##
   extend_or_change
   if extend_or_change:
@@ -210,7 +212,7 @@ code: |
   set_progress(50)
   danger_more_abuse
   nav.set_section('weapons')
-  used_firearm
+
   nav.set_section('order')
   set_progress(60)
   users1_no_shelter  
@@ -859,6 +861,40 @@ fields:
     show if: danger_more_abuse
     required: False
 ---
+objects:
+  - weapons: DAList
+---
+id: Gather weapons
+question: |
+  Weapon gathering
+fields:
+  - Does the defendant own or have access to guns/firearms or other deadly weapons?: weapons.there_are_any
+    input type: radio
+    choices:
+      - Yes: True
+      - No: False
+      - I don't know: False
+---
+id: A weapon
+question: |
+  A weapon
+fields:
+  - Describe the weapon: weapons[i]
+    maxlength: 76
+
+---
+id: Another
+question: |
+  Another weapon
+fields:
+  - Do you know about any other weapons?: weapons.there_is_another
+    input type: radio
+    choices:
+      - Yes: True
+      - No: False
+      - I don't know: False
+
+---
 id: Weapons
 question: |
   Weapons
@@ -872,78 +908,26 @@ fields:
     input type: area
     show if: used_firearm
 
-  - Does the defendant own or have access to guns/firearms or other deadly weapons?: owns_weapons
+  - Does the defendant own or have access to guns/firearms or other deadly weapons?: weapons.there_are_any
     input type: radio
     choices:
       - Yes: True
       - No: False
-      - I don't know: None
+      - I don't know: False
 
-  - Description of the 1st weapon: weapon1
-    maxlength: 76
-    show if: owns_weapons
 
-  - "Location of the 1st weapon": weapon1_location
-    maxlength: 76
-    show if: owns_weapons
 
-  - "Description of the 2nd weapon": weapon2
-    maxlength: 76
-    hide if: 
-      variable: weapon1
-      is: None
-  - "Location of the 2nd weapon": weapon2_location
-    maxlength: 76
-    hide if: 
-      variable: weapon1
-      is: None
-comment: |
-  - "Description of the 3rd weapon": weapon3
-    maxlength: 76
-    show if: weapon2
-  - "Location of the 3rd weapon": weapon3_location
-    maxlength: 76
-    show if: weapon2
-  - "Description of the 4th weapon": weapon4
-    maxlength: 76
-    show if: weapon3
-  - "Location of the 4th weapon": weapon4_location
-    maxlength: 76
-    show if: weapon3
-  - "Description of the 5th weapon": weapon5
-    maxlength: 76
-    show if: weapon4
-  - "Location of the 5th weapon": weapon5_location
-    maxlength: 76
-    show if: weapon4
-  - "Description of the 6th weapon": weapon6
-    maxlength: 76
-    show if: weapon5
-  - "Location of the 6th weapon": weapon6_location
-    maxlength: 76
-    show if: weapon5
-  - "Description of the 7th weapon": weapon7
-    maxlength: 76
-    show if: weapon6
-  - "Location of the 7th weapon": weapon7_location
-    maxlength: 76
-    show if: weapon6
-  - "Description of the 8th weapon": weapon8
-    maxlength: 76
-    show if: weapon7
-  - "Location of the 8th weapon": weapon8_location
-    maxlength: 76
-    show if: weapon7
-  - "Check this box if you have more weapons to list. You can enter them here and it will be attached  as an extra sheet.": extra_sheet_weapons
-    datatype: yesno
-    show if: weapon8
-    #  if extra_sheet_weapons: 
-    #    extra_sheets_attached = 1 
-  - Other weapons: weapons_overflow
-    input type: area
-    rows: 4
-    show if: extra_sheet_weapons
-continue button field: weapons_info
+
+#  - "Check this box if you have more weapons to list. You can enter them here and it will be attached  as an extra sheet.": extra_sheet_weapons
+#    datatype: yesno
+#    show if: weapon8
+#    #  if extra_sheet_weapons: 
+#    #    extra_sheets_attached = 1 
+#  - Other weapons: weapons_overflow
+#    input type: area
+#    rows: 4
+#    show if: extra_sheet_weapons
+#continue button field: weapons_info
 ---
 id: What you want to ask for in the RFA order
 question: |
@@ -1537,7 +1521,7 @@ review:
       ${ docket_number }
   - Edit: trial_court_name
     button: |
-      **County family court where you want to file these forms**
+      **You want to file in Family Court of this county:**
       ${ trial_court_name }
   - Edit: users.revisit
     button: |
@@ -1554,12 +1538,12 @@ review:
         * ${ item }
       % endfor
 
-  - Edit: owns_weapons
+  - Edit: weapons.there_are_any
     button: |
       **Does the defendant have guns/firearms or weapons?**:
-      % if owns_weapons is True:
+      % if weapons.there_are_any == True:
       Yes
-      % elif owns_weapons is False:
+      % elif weapons.there_are_any == False:
       No
       % else: 
       I don't know
@@ -2441,7 +2425,7 @@ review:
 ---
 continue button field: users.revisit
 question: |
-  Edit users
+  Edit user(s)
 subquestion: |
   ${ users.table }
 
@@ -2474,7 +2458,7 @@ confirm: True
 ---
 continue button field: other_parties.revisit
 question: |
-  Edit other_parties
+  Edit other party / parties
 subquestion: |
   ${ other_parties.table }
 
@@ -2552,9 +2536,11 @@ question: |
 subquestion: |
   The interview is done. Your forms are ready to view.
   
-  Select the "Edit answers" button to fix any mistakes. Then, download your forms and the instructions sheet for the next steps to take. You can email the filled-in forms to yourself or someone else, too.
+  Select the "Edit your answers" button to fix any mistakes. Then, download your forms and the instructions sheet for the next steps to take. You can email the filled-in PDF forms to yourself or someone else, too.
   
-  You can also use the Share feature to share a link to your interview with a trusted person. Important: If you use the Share feature, that person will be able to see and edit your answers.
+  Consider creating a free account so you can save your progress. At any time choose "sign up" in the menu above, or "register" below.
+  
+  You can also use the Share feature to share a link to your interview with a trusted person. Important: If you use the Share feature, that person will be able to see and edit your answers online.
 
   ${ action_button_html(url_action('review_RFApackage'), label='Edit your answers', color='info') }
   
@@ -2629,8 +2615,8 @@ attachment:
       - "other_parties1_address_state__2": ${ other_parties[0].address.state }
       - "other_parties1_address_zip__1": ${ other_parties[0].address.zip }
       - "other_parties1_address_zip": ${ other_parties[0].address.zip }
-      - "other_parties1_weapon_yes": ${ owns_weapons }
-      - "other_parties1_weapon_no": ${ not owns_weapons }
+      - "other_parties1_weapon_yes": ${ weapons.there_are_any }
+      - "other_parties1_weapon_no": ${ not weapons.there_are_any }
       - "other_parties1_weapon_DK": ${ owns_weapons == None }
       - "recent_incident_date__1": ${ format_date(recent_incident_date, format='M/d/yyyy') }
       - "recent_incident_date": ${ format_date(recent_incident_date, format='M/d/yyyy') }
