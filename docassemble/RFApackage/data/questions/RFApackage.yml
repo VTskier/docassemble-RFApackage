@@ -1,8 +1,15 @@
 #####################################################################
 ####################### TO DO #######################
 #How do I put this on my main fork again in GitHub???
-#Work with Michelle on: We need to check off these boxes on paper form -- weapons : yes / no / I don't know. See attachment section and look for owns_weapons. We need to fix that.
+#Work with Michelle on: We need to check off these boxes on paper form -- weapons : yes / no / I don't know. See attachment section and look for owns_weapons. We need to fix that. Also work on collecting location of each weapon in the proper way.
 #Did first pass on complaint. Now onto Affidavit.
+#####FOR LEMMA LEGAL TO WORK ON#####
+#On Complaint and Affidavit attachments, include apartment in the address text that is printed on forms
+#On Complaint attachment, get child's relationship info to show on second page
+#In interview, why does this page show? id: preview RFApackage  before the page where they can view forms and hit edit button?
+#In interview, trial_court_address.address and .county was triggering the baked-in What court do you want to file in screen when it is not needed.
+
+
 #NEED TO ADD FIELD FOR HOUSE NUMBER AND RENAME ON PDF TO house2. On PDF, too?
 #NEED TO ADD FIELD FOR HOUSE NUMBER AND RENAME ON PDF TO house3. On PDF, too?
 #Add these to review screen: The defendant has  has not used, displayed, or threatened to use a firearm; Do you feel that you are in immediate danger of further abuse from the defendant?  Yes  No 
@@ -22,7 +29,6 @@
 #For id: Existing orders or court proceedings, only show the bottom questions if applicable
 #Other places the defendant might be, Use state abbreviations and default to VT
 #For id: Existing orders or court proceedings, I may need to change my variable names in the review section and print section, etc. because I changed how I set up the checkboxes -- like I did with (danger_more_abuse_who["children"] 
-# trial_court_address.address and .county was triggering the baked-in What court do you want to file in screen when it is not needed.
 #Why is background black when I look at this in Chrome on Android phone?
 #In footer, add vtcourt forms are offered by LSV
 #Use questions as asked by court, but also explain in plain language
@@ -190,6 +196,7 @@ code: |
   users[0].birthdate
   users1_address_mailing
   users[0].phone_number
+  
   users[0].email
   set_progress(16)
   share_contact
@@ -203,7 +210,7 @@ code: |
   other_parties[0].birthdate
   other_parties[0].address.address
   other_parties[0].phone_number
-  #children.gather()
+  incarcerated
   nav.set_section('incidents')
   recent_incident_date
   set_progress(40)
@@ -602,6 +609,10 @@ fields:
   - "Mailing address": users1_address_mailing
     maxlength: 42
     required: False
+  - note: |
+      <h2 class="h3">Reach Up Benefits</h2>
+  - "Check this box if you get Reach Up benefits from the state": reach_up_users1
+    datatype: yesno    
 continue button field: About_you
 ---
 id: Gather users contact information
@@ -914,12 +925,15 @@ question: |
 subquestion: |
   Weapons can make this a more dangerous time for you and/or your children. If you let the court know about weapons, they may be able to collect the weapons from the defendant as part of the court order. This can help keep you safe.
 fields:
-  - "Has the defendant used or threatened to use a gun/firearm or another deadly weapon against you or another family member?": used_firearm
+  - "Has the defendant used, displayed or threatened to use a **gun/firearm** against you or against another family member?": used_firearm
     datatype: yesnoradio
 
-  - "Describe in detail how they used or threatened to use the weapon(s).": used_firearm_how
+  - "Has the defendant used, displayed or threatened to use a gun/firearm **or another deadly weapon** against you or another family member?": used_weapon
+    datatype: yesnoradio
+    
+  - "Describe in detail how they used or threatened to use the weapon(s).": used_weapon_how
     input type: area
-    show if: used_firearm
+    show if: used_weapon
 
   - Does the defendant own or have access to guns/firearms or other deadly weapons?: weapons.there_are_any
     input type: radio
@@ -1465,30 +1479,19 @@ fields:
     input type: area
     show if: danger_for_officer
 ---
-id: Misc that I need to put in the right spots
-question: |
-  Extra details
-fields:
-  - "If you have one, what is your work phone number?": users1_work_phone_number
-    maxlength: 24
-    required: False
-  - "Check this box if you get Reach Up benefits from the state": reach_up_users1
-    datatype: yesno
-
----
 id: Signing some but not all of your forms
 question: |
   Signing some -- but not all -- of your forms
 fields:
   - "Please type your name. This will appear under your signature.": printed_signature
     maxlength: 34
-  - "Date of your signature on complaint form": date
+  - "Date of your signature for these forms": date
     datatype: date
     required: False
     default: |
       ${ today() }
   -  note: |
-      You can change this date or leave it blank for now if you want.
+      You can change this date later or leave it blank for now if you want.
       
 
   
@@ -1553,7 +1556,7 @@ review:
 
   - Edit: weapons.there_are_any
     button: |
-      **Does the defendant have guns/firearms or weapons?**:
+      **Does the defendant have guns/firearms or deadly weapons?**:
       % if weapons.there_are_any == True:
       Yes
       % elif weapons.there_are_any == False:
@@ -1686,12 +1689,12 @@ review:
       ${ extra_sheets_attached }
   - Edit: used_firearm
     button: |
-      **Has the defendant used, displayed or threatened to use a gun/firearm or deadly weapon against you?**:
+      **Has the defendant used, displayed or threatened to use a gun/firearm against you or against a family member?**:
       ${ word(yesno(used_firearm)) }
-  - Edit: used_firearm_how
+  - Edit: used_weapon_how
     button: |
       **Describe in detail how they used or threatened to use it?**:
-      > ${ single_paragraph(used_firearm_how) }
+      > ${ single_paragraph(used_weapon_how) }
   - Edit: danger_more_abuse
     button: |
       **Is there danger of more abuse?**:
@@ -1724,21 +1727,6 @@ review:
     button: |
       **Date of signature**:
       ${ signature_date }
-  - Edit: family_member_description
-    button: |
-      **In a word, what is your relationship to this family member**:
-      ${ family_member_description }
-  - Edit: family_member
-    button: |
-      **Is the defendant a member of your family?**:
-      ${ word(yesno(family_member)) }
-#  - Edit: spouses.revisit
-#    button: |
-#      **Spouses**
-#
-#      % for item in spouses:
-#        * ${ item }
-#      % endfor
   - Edit: is_spouse
     button: |
       **Is the defendant your spouse?**:
@@ -1747,14 +1735,21 @@ review:
     button: |
       **Is the defendant an ex-spouse (former spouse)?**:
       ${ word(yesno(ex_spouse)) }
-  - Edit: other_relationship
+  - Edit: family_member
     button: |
-      **Does the defendant have a different relationship to you?**:
-      ${ word(yesno(other_relationship)) }
-  - Edit: other_relationship_description
+      **Is the defendant a member of your family?**:
+      ${ word(yesno(family_member)) }
+  - Edit: family_member_description
     button: |
-      **In a word, what is that relationship?**:
-      ${ other_relationship_description }
+      **In a word, what is your relationship to this family member**:
+      ${ family_member_description }
+#  - Edit: spouses.revisit
+#    button: |
+#      **Spouses**
+#
+#      % for item in spouses:
+#        * ${ item }
+#      % endfor
   - Edit: live_together
     button: |
       **Is the defendant someone you have been living with or sharing occupancy?**:
@@ -1767,6 +1762,14 @@ review:
     button: |
       **Is the defendant someone you have dated?**:
       ${ word(yesno(dating)) }
+  - Edit: other_relationship
+    button: |
+      **Does the defendant have a different relationship to you?**:
+      ${ word(yesno(other_relationship)) }
+  - Edit: other_relationship_description
+    button: |
+      **In a word, what is that relationship?**:
+      ${ other_relationship_description }
   - Edit: existing_order_divorce
     button: |
       **Is there an existing order or a pending court proceeding for divorce or separation?**:
@@ -1883,10 +1886,10 @@ review:
     button: |
       **Is there danger of more abuse to you?**:
       ${ word(yesno(danger_more_abuse_who["users1"])) }
-  - Edit: used_firearm_yes
+  - Edit: used_weapon
     button: |
-      **Did the defendant use, display or threaten to use a gun/ firearm against you or against a family member?**:
-      ${ word(yesno(used_firearm_yes)) }
+      **Did the defendant use, display or threaten to use a gun/ firearm or other deadly weapon against you or against a family member?**:
+      ${ word(yesno(used_weapon)) }
   - Edit: incarcerated
     button: |
       **Is the defendant incarcerated and has been convicted of one of the crimes specified in 15 V.S.A. 1103 (c)(1)(B)?**:
@@ -2036,7 +2039,7 @@ review:
       % endfor
   - Edit: children1_relationship_users1
     button: |
-      **This child's -- ${ children1_name } -- relationship to you?**:
+      **This child's -- ${ children[0] } -- relationship to you?**:
       ${ children1_relationship_users1 }
   - Edit: children1_relationship_OP
     button: |
@@ -2669,12 +2672,11 @@ attachment:
       - "weapon8": ${ weapon8 }
       - "weapon8_location": ${ weapon8_location }
       - "extra_sheets_attached": ${ extra_sheets_attached }
-      - "used_firearm_yes": ${ used_firearm }
-      - "used_firearm_no": ${ not used_firearm }
-      - "used_firearm_how": ${ RFAaffidavit.safe_value("used_firearm_how") }
+      - "used_weapon_yes": ${ used_weapon }
+      - "used_weapon_no": ${ not used_weapon }
+      - "used_weapon_how": ${ RFAaffidavit.safe_value("used_weapon_how") }
       - "danger_more_abuse_yes": ${ danger_more_abuse }
       - "danger_more_abuse_no": ${ not danger_more_abuse }
-      - "danger_more_abuse": ${ not danger_more_abuse }
       - "danger_more_abuse_why": ${ RFAaffidavit.safe_value("danger_more_abuse_why") }
       - "other_parties1_military_yes": ${ other_parties1_military }
       - "other_parties1_military_no": ${ not other_parties1_military }
@@ -2759,12 +2761,6 @@ attachment:
       - "users1_address_city": ${ users[0].address.city }
       - "users1_address_state__1": ${ users[0].address.state }
       - "users1_address_state": ${ users[0].address.state }
-      - "signature_date__1": ${ format_date(signature_date, format='M/d/yyyy') }
-      - "date_complaint": ${ format_date(date_complaint, format='M/d/yyyy') }
-      #- "users1_signature__1": ${ users[0].signature }
-      #- "users1_signature": ${ x.signature }
-      - "users1_signature__1": ${ users[0].signature_if_final(i) }
-      - "users1_signature": ${ users[0].signature_if_final(i) }
       - "family_member_description": ${ family_member_description }
       - "family_member": ${ family_member }
       - "spouse": ${ is_spouse }
@@ -2811,7 +2807,7 @@ attachment:
       - "recent_incident_assault_users1": ${ recent_incident_assault_users1 }
       - "danger_more_abuse_children": ${ danger_more_abuse_who["children"] }
       - "danger_more_abuse_users1": ${ danger_more_abuse_who["users1"] }
-      - "used_firearm_yes__1": ${ used_firearm_yes }
+      - "used_firearm": ${ used_firearm }
       - "incarcerated": ${ incarcerated }
       - "users1_no_shelter": ${ users1_no_shelter }
       - "residence_shared_address": ${ residence_shared_address }
@@ -2863,6 +2859,8 @@ attachment:
       - "request_other_description": ${ request_other_description }
       - "request_other": ${ request_other }
       - "request_all_emergency": ${ request_all_emergency }
+      - "signature_date__2": ${ format_date(signature_date, format='M/d/yyyy') }
+      - "users1_signature": ${ users[0].signature_if_final(i) }
 ---
 attachment:
   name: 2 RFA-service-info
@@ -3001,8 +2999,8 @@ code: |
   RFAaffidavit.overflow_fields["serious_incident_description"].label = "Please describe the most serious incident with as much detail as possible."
   RFAaffidavit.overflow_fields["other_incident_description"].overflow_trigger = 2262
   RFAaffidavit.overflow_fields["other_incident_description"].label = "Please describe the any other incident(s) with as much detail as possible."
-  RFAaffidavit.overflow_fields["used_firearm_how"].overflow_trigger = 602
-  RFAaffidavit.overflow_fields["used_firearm_how"].label = "Describe in detail how they used or threatened to use it?"
+  RFAaffidavit.overflow_fields["used_weapon_how"].overflow_trigger = 602
+  RFAaffidavit.overflow_fields["used_weapon_how"].label = "Describe in detail how they used or threatened to use it?"
   RFAaffidavit.overflow_fields["danger_more_abuse_why"].overflow_trigger = 258
   RFAaffidavit.overflow_fields["danger_more_abuse_why"].label = "Explain why you think there is danger of more abuse. Be as specific as possible."
   RFAaffidavit.overflow_fields.gathered = True
