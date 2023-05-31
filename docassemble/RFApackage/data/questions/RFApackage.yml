@@ -1,7 +1,6 @@
 #####################################################################
 ####################### TO DO #######################
 #How do I merge to my main fork again in GitHub???
-#Work with Michelle on: We need to check off these boxes on paper form -- weapons : yes / no / I don't know. See attachment section and look for owns_weapons. We need to fix that. Also work on collecting location of each weapon in the proper way.
 #Did first pass on complaint. Now onto Affidavit.
 
 #####FOR LEMMA LEGAL TO WORK ON#####
@@ -22,7 +21,6 @@
 #if recent_incident_date is defined, then set recent_incident_yes to True so it gets a checkmark on the complaint
 #Work on the Review answers section. Show all fields. How show basic plaintiff and def info and addresses?
 #In downloads area, insert my static document (final version)
-#For weapons, how do I cycle through offering fields for more weapons until they are done?
 #Make nav on the left grey instead of looking like blue links. Make it not look like buttons. Top it with the words: Your progress
 #Update variable names in Edit and Publish sections for all the ones that I did checkboxes for, including: relationship_for_LE race skin hair hair_color
 #id: Relationship to defendant, require only one answer
@@ -143,10 +141,10 @@ code: |
   allowed_courts = interview_metadata["RFApackage"]["allowed courts"]
   user_role = "plaintiff"
   user_ask_role = "plaintiff"
-  nav.set_section("screening")
   weapons.gather()
-  RFApackage_download
   used_firearm
+  RFApackage_download
+  nav.set_section("screening")
   ##initial_screening_questions##
   extend_or_change
   if extend_or_change:
@@ -200,7 +198,6 @@ code: |
   users[0].birthdate
   users1_address_mailing
   users[0].phone_number
-  
   users[0].email
   set_progress(16)
   share_contact
@@ -253,6 +250,7 @@ code: |
   users[0].signature
   nav.set_section('get_docs')
   interview_order_RFApackage = True
+  
 ---
 sections:
   - intro: Introduction
@@ -879,7 +877,7 @@ fields:
     required: False
 ---
 objects:
-  - weapons: DAList.using(object_type=DAObject, complete_attribute="description")
+  - weapons: DAList.using(object_type=DAObject, complete_attribute="location")
 ---
 id: Gather weapons
 question: |
@@ -939,6 +937,9 @@ fields:
   - "Describe in detail how they used or threatened to use the weapon(s).": used_weapon_how
     input type: area
     show if: used_weapon
+    
+  - note: |
+      <h2 class="h3">Access to weapons
 
   - Does the defendant own or have access to guns/firearms or other deadly weapons?: weapons.there_are_any
     input type: radio
@@ -1576,7 +1577,8 @@ review:
       
   - Edit: weapons.revisit
     button: |
-      **List of weapons that defendant has access to**
+      **List of weapons that defendant has access to**:
+      
       % for item in weapons:
         * ${ item }
       % endfor
@@ -1628,81 +1630,81 @@ review:
     button: |
       **Please describe the any other incident(s) with as much detail as possible.**:
       > ${ single_paragraph(other_incident_description) }
-  - Edit: weapon1
-    button: |
-      **Description of the 1st weapon**:
-      ${ weapon1 }
-  - Edit: weapon1_location
-    button: |
-      **Location of the 1st weapon**:
-      ${ weapon1_location }
-  - Edit: weapon2
-    button: |
-      **Description of the 2nd weapon**:
-      ${ weapon2 }
-  - Edit: weapon2_location
-    button: |
-      **Location of the 2nd weapon**:
-      ${ weapon2_location }
-  - Edit: weapon3_location
-    button: |
-      **Location of the 3rd weapon**:
-      ${ weapon3_location }
-  - Edit: weapon3
-    button: |
-      **Description of the 3rd weapon**:
-      ${ weapon3 }
-  - Edit: weapon4_location
-    button: |
-      **Location of the 4th weapon**:
-      ${ weapon4_location }
-  - Edit: weapon4
-    button: |
-      **Description of the 4th weapon**:
-      ${ weapon4 }
-  - Edit: weapon5_location
-    button: |
-      **Location of the 5th weapon**:
-      ${ weapon5_location }
-  - Edit: weapon5
-    button: |
-      **Description of the 5th weapon**:
-      ${ weapon5 }
-  - Edit: weapon6_location
-    button: |
-      **Location of the 6th weapon**:
-      ${ weapon6_location }
-  - Edit: weapon6
-    button: |
-      **Description of the 6th weapon**:
-      ${ weapon6 }
-  - Edit: weapon7
-    button: |
-      **Description of the 7th weapon**:
-      ${ weapon7 }
-  - Edit: weapon7_location
-    button: |
-      **Location of the 7th weapon**:
-      ${ weapon7_location }
-  - Edit: weapon8
-    button: |
-      **Description of the 8th weapon**:
-      ${ weapon8 }
-  - Edit: weapon8_location
-    button: |
-      **Location of the 8th weapon**:
-      ${ weapon8_location }
+  #- Edit: weapons[0].description
+  #  button: |
+  #    **Description of the 1st weapon**:
+  #    ${ weapons[0].description }
+  #- Edit: weapons[0].location
+  #  button: |
+  #    **Location of the 1st weapon**:
+  #    ${ weapons[0].location }
+  #- Edit: weapons[1].description
+  #  button: |
+  #    **Description of the 2nd weapon**:
+  #    ${ weapons[1].description }
+  #- Edit: weapons[1].location
+  #  button: |
+  #    **Location of the 2nd weapon**:
+  #    ${ weapons[1].location }
+  #- Edit: weapons[2].description
+  #  button: |
+  #    **Description of the 3rd weapon**:
+  #    ${ weapons[2].description }
+  #- Edit: weapons[2].location
+  #  button: |
+  #    **Location of the 3rd weapon**:
+  #    ${ weapons[2].location }
+  #- Edit: weapons[3].description
+  #  button: |
+  #    **Description of the 4th weapon**:
+  #    ${ weapons[3].description }
+  #- Edit: weapons[3].location
+  #  button: |
+  #    **Location of the 4th weapon**:
+  #    ${ weapons[3].location }
+  #- Edit: weapons[4].description
+  #  button: |
+  #    **Description of the 5th weapon**:
+  #    ${ weapons[4].description }
+  #- Edit: weapons[4].location
+  #  button: |
+  #    **Location of the 5th weapon**:
+  #    ${ weapons[4].location }
+  #- Edit: weapons[5].description
+  #  button: |
+  #    **Description of the 6th weapon**:
+  #    ${ weapons[5].description }
+  #- Edit: weapons[5].location
+  #  button: |
+  #    **Location of the 6th weapon**:
+  #    ${ weapons[5].location }
+  #- Edit: weapons[6].description
+  #  button: |
+  #    **Description of the 7th weapon**:
+  #    ${ weapons[6].description }
+  #- Edit: weapons[6].location
+  #  button: |
+  #    **Location of the 7th weapon**:
+  #    ${ weapons[6].location }
+  #- Edit: weapons[7].description
+  #  button: |
+  #    **Description of the 8th weapon**:
+  #    ${ weapons[7].description }
+  #- Edit: weapons[7].location
+  #  button: |
+  #    **Location of the 8th weapon**:
+  #    ${ weapons[7].location }
   - Edit: extra_sheets_attached
     button: |
       **Are you attaching extra sheets with more weapons listed?**:
       ${ extra_sheets_attached }
   - Edit: used_firearm
     button: |
-      **Has the defendant used, displayed or threatened to use a gun/firearm against you or against a family member?**:
+      **Has the defendant used, displayed or threatened to use a **gun/firearm** against you or against a family member?**:
       ${ word(yesno(used_firearm)) }
   - Edit: used_weapon_how
     button: |
-      **Describe in detail how they used or threatened to use it?**:
+      **Describe in detail how they used or threatened to use the weapon?**:
       > ${ single_paragraph(used_weapon_how) }
   - Edit: danger_more_abuse
     button: |
@@ -1897,7 +1899,7 @@ review:
       ${ word(yesno(danger_more_abuse_who["users1"])) }
   - Edit: used_weapon
     button: |
-      **Did the defendant use, display or threaten to use a gun/ firearm or other deadly weapon against you or against a family member?**:
+      **Did the defendant use, display or threaten to use a **gun/ firearm or other deadly weapon** against you or against a family member?**:
       ${ word(yesno(used_weapon)) }
   - Edit: incarcerated
     button: |
@@ -2557,8 +2559,26 @@ edit:
 confirm: True
 
 ---
+continue button field: weapons.revisit
+question: |
+  Edit the list of weapons
+subquestion: |
+  ${ weapons.table }
 
-
+  ${ weapons.add_action() }
+---
+table: weapons.table
+rows: weapons
+columns:
+  - Description: |
+      row_item.description if defined("row_item.description") else ""
+  - Location: |
+      row_item.location if defined("row_item.location") else ""
+edit:
+  - description
+  - location
+confirm: True
+---
 #####################################################################
 ####################### DOWNLOAD #######################
 id: download RFApackage
@@ -2666,24 +2686,24 @@ attachment:
       - "other_incident_description": ${ RFAaffidavit.safe_value("other_incident_description") }
       - "weapon1": ${ weapons[0].description }
       - "weapon1_location": ${ weapons[0].location }
-      - "weapon2": ${ weapons[0].description }
-      - "weapon2_location": ${ weapons[0].location }
-      - "weapon3_location": ${ weapon3_location }
-      - "weapon3": ${ weapon3 }
-      - "weapon4_location": ${ weapon4_location }
-      - "weapon4": ${ weapon4 }
-      - "weapon5_location": ${ weapon5_location }
-      - "weapon5": ${ weapon5 }
-      - "weapon6_location": ${ weapon6_location }
-      - "weapon6": ${ weapon6 }
-      - "weapon7": ${ weapon7 }
-      - "weapon7_location": ${ weapon7_location }
-      - "weapon8": ${ weapon8 }
-      - "weapon8_location": ${ weapon8_location }
+      - "weapon2": ${ weapons[1].description }
+      - "weapon2_location": ${ weapons[1].location }
+      - "weapon3_location": ${ weapons[2].location }
+      - "weapon3": ${ weapons[2].description }
+      - "weapon4_location": ${ weapons[3].location }
+      - "weapon4": ${ weapons[3].description }
+      - "weapon5_location": ${ weapons[4].location }
+      - "weapon5": ${ weapons[4].description }
+      - "weapon6_location": ${ weapons[5].location }
+      - "weapon6": ${ weapons[5].description }
+      - "weapon7": ${ weapons[6].description }
+      - "weapon7_location": ${ weapons[6].location }
+      - "weapon8": ${ weapons[7].description }
+      - "weapon8_location": ${ weapons[7].location }
       - "extra_sheets_attached": ${ extra_sheets_attached }
       - "used_weapon_yes": ${ used_weapon }
       - "used_weapon_no": ${ not used_weapon }
-      - "used_weapon_how": ${ RFAaffidavit.safe_value("used_weapon_how") }
+      - "used_weapon_how": ${ used_weapon_how }
       - "danger_more_abuse_yes": ${ danger_more_abuse }
       - "danger_more_abuse_no": ${ not danger_more_abuse }
       - "danger_more_abuse_why": ${ RFAaffidavit.safe_value("danger_more_abuse_why") }
