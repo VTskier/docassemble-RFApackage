@@ -1,15 +1,18 @@
 #####################################################################
 ####################### TO DO #######################
-#How do I put this on my main fork again in GitHub???
+#How do I merge to my main fork again in GitHub???
 #Work with Michelle on: We need to check off these boxes on paper form -- weapons : yes / no / I don't know. See attachment section and look for owns_weapons. We need to fix that. Also work on collecting location of each weapon in the proper way.
 #Did first pass on complaint. Now onto Affidavit.
+
 #####FOR LEMMA LEGAL TO WORK ON#####
 #On Complaint and Affidavit attachments, include apartment in the address text that is printed on forms
 #On Complaint attachment, get child's relationship info to show on second page
 #In interview, why does this page show? id: preview RFApackage  before the page where they can view forms and hit edit button?
 #In interview, trial_court_address.address and .county was triggering the baked-in What court do you want to file in screen when it is not needed.
 
+#####END LEMMA LEGAL##########
 
+#What if user doesn't know Def birthdate or address?
 #NEED TO ADD FIELD FOR HOUSE NUMBER AND RENAME ON PDF TO house2. On PDF, too?
 #NEED TO ADD FIELD FOR HOUSE NUMBER AND RENAME ON PDF TO house3. On PDF, too?
 #Add these to review screen: The defendant has  has not used, displayed, or threatened to use a firearm; Do you feel that you are in immediate danger of further abuse from the defendant?  Yes  No 
@@ -142,6 +145,7 @@ code: |
   user_ask_role = "plaintiff"
   nav.set_section("screening")
   weapons.gather()
+  RFApackage_download
   used_firearm
   ##initial_screening_questions##
   extend_or_change
@@ -393,6 +397,7 @@ subquestion: |
 id: initial_screening_questions_1
 question: |
   See if this interview is right for your situation
+
 fields:
   - "Do you want to extend or change an existing RFA order?": extend_or_change
     datatype: yesnoradio
@@ -874,7 +879,7 @@ fields:
     required: False
 ---
 objects:
-  - weapons: DAList
+  - weapons: DAList.using(object_type=DAObject, complete_attribute="description")
 ---
 id: Gather weapons
 question: |
@@ -885,8 +890,8 @@ fields:
     choices:
       - Yes: True
       - No: False
-      - I don't know: False
-#We need to check off these boxes on paper form -- weapons : yes / no / I don't know. See attachment section and look for owns_weapons. We need to fix that.
+      - I don't know: None
+
 ---
 id: List of weapons
 question: |
@@ -894,9 +899,9 @@ question: |
 subquestion: |
   We'll create a list of the weapons -- one at a time.
 fields:
-  - Describe weapon (handgun, rifle, knife, etc.). Include the make and model if you know them.: weapons[i]
+  - Describe weapon (handgun, rifle, knife, etc.). Include the make and model if you know.: weapons[i].description
     maxlength: 76
-  - Where is this weapon located? (kitchen, car, friend's house, etc.): weapons_location
+  - Where is this weapon located? (kitchen, car, friend's house, etc.): weapons[i].location
     maxlength: 76
 
 ---
@@ -907,7 +912,7 @@ subquestion: |
   You have told us about these weapons:
   
   % for item in weapons:
-    * ${ item }
+    * ${ item.description }
   % endfor
 
 fields:
@@ -927,8 +932,8 @@ subquestion: |
 fields:
   - "Has the defendant used, displayed or threatened to use a **gun/firearm** against you or against another family member?": used_firearm
     datatype: yesnoradio
-
-  - "Has the defendant used, displayed or threatened to use a gun/firearm **or another deadly weapon** against you or another family member?": used_weapon
+  - note: The question above asks specifically about fireams (guns). This next question is found on a different form and it asks about **any** deadly weapons.
+  - "Has the defendant used, displayed or threatened to use a **gun/firearm or another deadly weapon** against you or another family member?": used_weapon
     datatype: yesnoradio
     
   - "Describe in detail how they used or threatened to use the weapon(s).": used_weapon_how
@@ -940,7 +945,7 @@ fields:
     choices:
       - Yes: True
       - No: False
-      - I don't know: False
+      - I don't know: None
 
 
 
@@ -1482,6 +1487,8 @@ fields:
 id: Signing some but not all of your forms
 question: |
   Signing some -- but not all -- of your forms
+subquestion: |
+  The Affidavit form requires the signature of a "Notary" or you can do that signature over the phone with the court. For that reason, we wait to sign the Affidavit form. We will give you instructions on the next steps after you finish this interview and see your forms.
 fields:
   - "Please type your name. This will appear under your signature.": printed_signature
     maxlength: 34
@@ -1530,6 +1537,8 @@ id: RFApackage review screen
 event: review_RFApackage
 question: |
   Review your answers
+subquestion: |
+  Edit your answers here and when you are done, scroll to the bottom and select "Resume."
 review:
   - Edit: docket_number
     button: |
@@ -1557,9 +1566,9 @@ review:
   - Edit: weapons.there_are_any
     button: |
       **Does the defendant have guns/firearms or deadly weapons?**:
-      % if weapons.there_are_any == True:
+      % if weapons.there_are_any is True:
       Yes
-      % elif weapons.there_are_any == False:
+      % elif weapons.there_are_any is False:
       No
       % else: 
       I don't know
@@ -2638,9 +2647,9 @@ attachment:
       - "other_parties1_address_state__2": ${ other_parties[0].address.state }
       - "other_parties1_address_zip__1": ${ other_parties[0].address.zip }
       - "other_parties1_address_zip": ${ other_parties[0].address.zip }
-      - "other_parties1_weapon_yes": ${ weapons.there_are_any }
-      - "other_parties1_weapon_no": ${ not weapons.there_are_any }
-      - "other_parties1_weapon_DK": ${ owns_weapons == None }
+      - "other_parties1_weapon_yes": ${ weapons.there_are_any == True}
+      - "other_parties1_weapon_no": ${ weapons.there_are_any == False }
+      - "other_parties1_weapon_DK": ${ weapons.there_are_any == None }
       - "recent_incident_date__1": ${ format_date(recent_incident_date, format='M/d/yyyy') }
       - "recent_incident_date": ${ format_date(recent_incident_date, format='M/d/yyyy') }
       - "recent_incident_time": ${ recent_incident_time }
@@ -2655,10 +2664,10 @@ attachment:
       - "serious_incident_state": ${ serious_incident_state }
       - "serious_incident_description": ${ RFAaffidavit.safe_value("serious_incident_description") }
       - "other_incident_description": ${ RFAaffidavit.safe_value("other_incident_description") }
-      - "weapon1": ${ weapon1 }
-      - "weapon1_location": ${ weapon1_location }
-      - "weapon2": ${ weapon2 }
-      - "weapon2_location": ${ weapon2_location }
+      - "weapon1": ${ weapons[0].description }
+      - "weapon1_location": ${ weapons[0].location }
+      - "weapon2": ${ weapons[0].description }
+      - "weapon2_location": ${ weapons[0].location }
       - "weapon3_location": ${ weapon3_location }
       - "weapon3": ${ weapon3 }
       - "weapon4_location": ${ weapon4_location }
