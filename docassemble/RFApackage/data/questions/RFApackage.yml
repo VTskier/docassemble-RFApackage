@@ -141,9 +141,6 @@ code: |
   allowed_courts = interview_metadata["RFApackage"]["allowed courts"]
   user_role = "plaintiff"
   user_ask_role = "plaintiff"
-  weapons.gather()
-  used_firearm
-  RFApackage_download
   nav.set_section("screening")
   ##initial_screening_questions##
   extend_or_change
@@ -221,7 +218,8 @@ code: |
   set_progress(50)
   danger_more_abuse
   nav.set_section('weapons')
-
+  weapons.gather()
+  used_firearm
   nav.set_section('order')
   set_progress(60)
   users1_no_shelter  
@@ -380,7 +378,7 @@ subquestion: |
   <h3 class="h4">Information you will need</h3>
   * To complete this interview, you will need to know the date or dates when the abuse occurred and give a detailed description of the abuse. This includes the most recent incident and the most serious incident. You will need to fully describe the incidents and make it clear how severe or how frequent the abuse has been.
   * You will need to give a safe address and telephone number where the court can reach you. If you don’t have one, ask an advocate from the [Vermont Network.](https://www.vtnetwork.org/get-help/)
-  * You will see important questions about weapons that are in the home. If you list what they are and where they are located, the court can order law enforcement to collect them to help keep you safe.
+  * You will see important questions about weapons that the defendant might have access to. If you list what they are and where they are located, the court can order law enforcement to collect them to help keep you safe.
   <h3 class="h4">After answering the questions</h3>
   * At the end you will get a chance to preview your forms and make changes if you need to. 
   * Then you can download, print and/or save a PDF of your completed forms.
@@ -674,8 +672,9 @@ question: |
   Relationship to defendant
 subquestion: |
   Choose the best description of your relationship to the person who is the abuser. That person is called the "defendant."
-  Select one.
 fields:
+  - note: |
+      Select one.
   - "Spouse": is_spouse
     datatype: yesno
   - "Ex-spouse (former spouse)": ex_spouse
@@ -688,11 +687,11 @@ fields:
     datatype: yesno
   - "A member of your family": family_member
     datatype: yesno
-  - "A different relationship to you": other_relationship
-    datatype: yesno
   - "In a word or two, what is your relationship to this family member": family_member_description
     maxlength: 16
     show if: family_member
+  - "A different relationship to you": other_relationship
+    datatype: yesno
   - "In a word or two, what is that other relationship?": other_relationship_description
     maxlength: 16
     show if: other_relationship
@@ -728,8 +727,11 @@ fields:
     datatype: yesno
   - "Check this box if defendant is a current member of the military": other_parties1_military
     datatype: yesno
-  - "Check this box if the defendant is incarcerated and has been convicted of one of the crimes specified in 15 V.S.A. 1103 (c)(1)(B)?": incarcerated
+  - "Check this box if the defendant is incarcerated (in jail) and has been convicted of one of the crimes specified in 15 V.S.A. 1103 (c)(1)(B)? See the list of crimes*, below.": incarcerated
     datatype: yesno
+  - note: |
+      *****  Those crimes are: murder, attempted murder, kidnapping, domestic assault, aggravated domestic assault, sexual assault, aggravated sexual assault, stalking, aggravated stalking, lewd or lascivious conduct with a child, use of a child in a sexual performance, or consenting to a sexual performance.
+
 ---
 id: Gather defendants address
 sets:
@@ -805,7 +807,7 @@ fields:
   - "What was the second date that they stalked you?": recent_incident_stalked_date1
     datatype: date
     show if: recent_incident_stalked
-  - "The defendant sexually assaulted you and/or the child/children. Sexual assault is defined in Vermont law here: 15 V.S.A 5131(5)": recent_incident_assault
+  - "The defendant sexually assaulted you and/or the child/children. Sexual assault is defined in Vermont law here: [15 V.S.A 5131(5)](https://legislature.vermont.gov/statutes/section/12/178/05131)": recent_incident_assault
     datatype: yesno
   - "The defendant sexually assault you": recent_incident_assault_users1
     datatype: yesno
@@ -1589,7 +1591,7 @@ review:
   - Edit: recent_incident_time
     button: |
       **What was the time of the most recent incident?**:
-      ${ recent_incident_time }
+      ${ format_time("recent_incident_time") }
   - Edit: recent_incident_town
     button: |
       **In what town was the most recent incident?**:
@@ -1613,7 +1615,7 @@ review:
   - Edit: serious_incident_time
     button: |
       **What was the time of the most serious incident?**:
-      ${ serious_incident_time }
+      ${ format_time("serious_incident_time") }
   - Edit: serious_incident_town
     button: |
       **In what town was the most serious incident?**:
@@ -2672,14 +2674,14 @@ attachment:
       - "other_parties1_weapon_DK": ${ weapons.there_are_any == None }
       - "recent_incident_date__1": ${ format_date(recent_incident_date, format='M/d/yyyy') }
       - "recent_incident_date": ${ format_date(recent_incident_date, format='M/d/yyyy') }
-      - "recent_incident_time": ${ recent_incident_time }
+      - "recent_incident_time": ${ format_time("recent_incident_time") }
       - "recent_incident_town": ${ recent_incident_town }
       - "recent_incident_state": ${ recent_incident_state }
       - "recent_incident_description": ${ RFAaffidavit.safe_value("recent_incident_description") }
       - "recent_incident_most_serious_yes": ${ recent_incident_most_serious }
       - "recent_incident_most_serious_no": ${ not recent_incident_most_serious }
       - "serious_incident_date": ${ format_date(serious_incident_date, format='M/d/yyyy') }
-      - "serious_incident_time": ${ serious_incident_time }
+      - "serious_incident_time": ${ format_time("serious_incident_time") }
       - "serious_incident_town": ${ serious_incident_town }
       - "serious_incident_state": ${ serious_incident_state }
       - "serious_incident_description": ${ RFAaffidavit.safe_value("serious_incident_description") }
