@@ -45,3 +45,47 @@ input.labelauty+label,
     --bs-btn-font-size: 1.2rem;
     --bs-btn-border-radius: 0.25rem;
 }
+#####side navigation -progress words- grey color and square background
+
+.nav-pills {
+    --bs-nav-pills-link-active-color: #797575;
+    --bs-nav-pills-link-active-bg: #797575;
+    --bs-nav-link-color: #797575;
+    --bs-nav-link-hover-color: #797575;
+    --bs-nav-link-disabled-color: #797575;
+}
+.nav-pills .nav-link {
+    border-radius: 0;
+}
+.nav .flex-column .nav-pills .danav .danav-vertical .danavlinks .nav-link {
+    color: #797575;
+}
+.nav-link .danavlink {
+    color: #797575;
+    --bs-nav-link-color: #797575;
+}
+.nav-link .danavlink .nav-link:focus, .nav-link:hover, .nav-link:visited {
+    color: #797575;   
+}
+.nav-link .danavlink .nav-link:focus, .nav-link:hover, .nav-link:visited {
+    color: #797575;   
+}
+
+.nav-pills .nav-link.active, .nav-pills .show>.nav-link {
+    background-color: #797575;
+}
+.nav-pills .nav-link {
+    color: #797575;
+}
+
+####account menu dropdown toggle color
+
+.navbar-nav .nav-link .dropdown-toggle .d-none .d-md-block  {
+    color: #797575;
+}
+
+.navbar-nav .nav-item .dropdown {
+    color: #797575;
+}
+
+

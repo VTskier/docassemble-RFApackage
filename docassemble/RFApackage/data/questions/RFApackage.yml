@@ -2,14 +2,15 @@
 ####################### TO DO #######################
 #How do I merge to my main fork again in GitHub???
 #Did first pass on complaint. Now onto Affidavit.
+#I think I want to show a Review Answers button on each screen
 
-#####FOR LEMMA LEGAL TO WORK ON#####
+#####FOR LEMMA TO WORK ON#####
 #On Complaint and Affidavit attachments, include apartment in the address text that is printed on forms
 #On Complaint attachment, get child's relationship info to show on second page
 #In interview, why does this page show? id: preview RFApackage  before the page where they can view forms and hit edit button?
 #In interview, trial_court_address.address and .county was triggering the baked-in What court do you want to file in screen when it is not needed.
 
-#####END LEMMA LEGAL##########
+#####END LEMMA ##########
 
 #What if user doesn't know Def birthdate or address?
 #NEED TO ADD FIELD FOR HOUSE NUMBER AND RENAME ON PDF TO house2. On PDF, too?
@@ -185,12 +186,12 @@ code: |
     if not defendant_lives_in_vermont:
       initial_screening_questions_5_exit_a
   
-  #docket_number
+  #main questions
   trial_court_name
+  set_progress(8)
   nav.set_section("about")
   users.gather()
   set_parts(subtitle=str(users))
-  set_progress(8)
   users[0].name.first
   users[0].birthdate
   users1_address_mailing
@@ -199,10 +200,10 @@ code: |
   set_progress(16)
   share_contact
   children.gather()
-  ex_spouse
   set_progress(24)
   #set_parts(subtitle=str(other_parties))
   nav.set_section('defendant')
+  ex_spouse
   other_parties.gather()
   set_progress(32)
   other_parties[0].birthdate
@@ -716,8 +717,9 @@ fields:
     datatype: yesno
   - "III": suffix_third
     datatype: yesno
-  - "List other names the defendant uses (aliases)": other_parties1_aliases
+  - "List any other names the defendant uses (aliases)": other_parties1_aliases
     maxlength: 85
+    required: False
 ---
 id: About the defendant
 question: |
