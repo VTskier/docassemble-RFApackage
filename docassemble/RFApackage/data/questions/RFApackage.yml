@@ -1,12 +1,10 @@
-
 ####################### TO DO #######################
-#How do I merge to my main fork again in GitHub???
+#People can use https://apps-dev.suffolklitlab.org/start/RFA_Demo/ to test my demo -- and I can keep working on this RFApackage. Then I can "update" the RFA "Package". That will update the RFADemo interview. (Go to Package Management in the login dropdown menu.)
 #Did first pass on complaint. Now onto Affidavit.
 
 
 #####FOR LEMMA TO WORK ON? #####
 #I think I want to show a Review Answers button on each screen
-#On Complaint and Affidavit attachments, include apartment in the address text that is printed on forms
 #On Complaint attachment, get child's relationship info to show on second page
 #In interview, why does this page show? id: preview RFApackage  before the page where they can view forms and hit edit button?
 #In interview, trial_court_address.address and .county was triggering the baked-in What court do you want to file in screen when it is not needed.
@@ -22,7 +20,6 @@
 #Add these to review screen: The defendant has  has not used, displayed, or threatened to use a firearm; Do you feel that you are in immediate danger of further abuse from the defendant?  Yes  No 
 #Work on getting all answers to show correctly on PDFs
 #How change line spacing for narrative answers in affidavit PDF
-#if recent_incident_date is defined, then set recent_incident_yes to True so it gets a checkmark on the complaint
 #On Affidavit, I tried to format time better like format_time("04:01:23", format='h:mm a')  but it gives an error message on the PDF
 #Work on the Review answers section. Show all fields. How show basic plaintiff and def info and addresses?
 #Update variable names in Edit and Publish sections for all the ones that I did checkboxes for, including: relationship_for_LE race skin hair hair_color
@@ -43,7 +40,6 @@
 #update is defendant your spouse question on complaint PDF to have this field name is_spouse
 #Fix field name on PDF and in interview --  other parties work phone (not word)
 #Add show if to the will you be forced from home question and those that follow it
-#  if recent_incident_date is defined, then set recent_incident_yes to True  figure out this so that checkbox gets checked automatically
 #For extra sheet of weapons, how do I do   if extra_sheet_weapons:   then set  extra_sheets_attached = 1
 # Also need to add weapons_overflow  as an overflow attachment
 
@@ -223,8 +219,10 @@ code: |
   set_progress(60)
   users1_no_shelter  
   request_not_abuse
-  get_kids_relationships
-  request_other
+  if request_temp_PRR:
+    get_kids_relationships
+  if other_request:
+    request_other_description
   request_all_emergency
   set_progress(70)
   existing_order
@@ -816,12 +814,6 @@ fields:
     datatype: yesno
     show if: recent_incident_assault
 ---
-code: |
-  if defined('recent_incident_date'):
-    recent_incident_yes = True
-  else:
-    recent_incident_yes = False
----
 id: Was recent most serious too
 question: |
   What happened
@@ -1076,6 +1068,7 @@ code: |
   for child in children: 
     child.custody_wanted
   get_kids_relationships = True
+  
     
 ---
 id: Childrens relationships
@@ -1094,17 +1087,15 @@ fields:
 ---
 id: Put something else in order
 question: |
-  Anything else to ask for in the RFA order
+  What else do you want to ask for in the RFA order
 fields:
   - "Do you want to ask the court for something else as part of the RFA order?": request_other
     datatype: yesnoradio
   - note: |
       Start with a phrase like: 'Order the defendant to ...' or 'Order me to get ...': 
-    show if: request_other
   - "Explain what else you'd like the RFA order to do": request_other_description
     maxlength: 70
     hint: Order the defendant to...
-    show if: request_other
 ---
 id: Emergency order
 question: |
@@ -1837,10 +1828,10 @@ review:
     button: |
       **What is the name of the other attorney for the existing order or a pending court proceeding -- if the defendant has one?**:
       ${ existing_order_OP_attorney }
-  - Edit: recent_incident_yes
-    button: |
-      **Has there been a recent incident of abuse?**:
-      ${ word(yesno(recent_incident_yes)) }
+#  - Edit: recent_incident_yes
+#    button: |
+#      **Has there been a recent incident of abuse?**:
+#      ${ word(yesno(recent_incident_yes)) }
   - Edit: recent_incident_users1
     button: |
       **Were you the target of the recent abuse?**:
@@ -2062,32 +2053,33 @@ review:
       ${ children1_relationship_users1 }
   - Edit: children1_relationship_OP
     button: |
-      **This child's -- ${ children1_name } -- relationship to the defendant?**:
+      **This child's -- ${ children[0] } -- relationship to the defendant?**:
       ${ children1_relationship_OP }
   - Edit: children2_relationship_users1
     button: |
-      **This child's relationship to you?**:
+      **This child's -- ${ children[1] } -- relationship to you?**:
       ${ children2_relationship_users1 }
   - Edit: children2_relationship_OP
     button: |
-      **This child's relationship to the defendant?**:
+      **This child's -- ${ children[1] } -- relationship to the defendant?**:
       ${ children2_relationship_OP }
   - Edit: children3_relationship_users1
     button: |
-      **This child's relationship to you?**:
+      **This child's -- ${ children[2] } --relationship to you?**:
       ${ children3_relationship_users1 }
   - Edit: children3_relationship_OP
     button: |
-      **This child's relationship to the defendant?**:
+      **This child's -- ${ children[2] } -- relationship to the defendant?**:
       ${ children3_relationship_OP }
-  - Edit: request_other_description
-    button: |
-      **Description of other request**:
-      ${ request_other_description }
   - Edit: request_other
     button: |
       **Request something else in the RFA order?**:
       ${ word(yesno(request_other)) }
+  - Edit: request_other_description
+    button: |
+      **Description of other request**:
+      ${ request_other_description }
+
   - Edit: request_all_emergency
     button: |
       **Do you want all of the previous requests to be put in place now -- in an emergency order? (Most people choose this to get protection right away.)**:
@@ -2827,7 +2819,7 @@ attachment:
       - "existing_order_county": ${ existing_order_county }
       - "existing_order_users_attorney": ${ existing_order_users_attorney }
       - "existing_order_OP_attorney": ${ existing_order_OP_attorney }
-      - "recent_incident_yes": ${ recent_incident_yes }
+      - "recent_incident_yes": ${ True }
       - "recent_incident_users1": ${ recent_incident_users1 }
       - "recent_incident_children": ${ recent_incident_children }
       - "recent_incident_children_names": ${ recent_incident_children_names }
@@ -2881,18 +2873,36 @@ attachment:
       - "request_no_contact_children": ${ request_no_contact_children }
       - "request_no_contact": ${ request_no_contact }
       - "request_temp_PRR": ${ request_temp_PRR }
-      - "children1_name": ${ children[0] }
-      - "children1_birthdate": ${ format_date(children[0].birthdate, format='M/d/yyyy') }
-      - "children1_relationship_users1": ${ children1_relationship_users1 }
-      - "children1_relationship_OP": ${ children1_relationship_OP }
-      - "children2_name": ${ children[1] }
-      - "children2_birthdate": ${ format_date(children[1].birthdate, format='M/d/yyyy') }
-      - "children2_relationship_users1": ${ children2_relationship_users1 }
-      - "children2_relationship_OP": ${ children2_relationship_OP }
-      - "children3_name": ${ children[2] }
-      - "children3_birthdate": ${ format_date(children[2].birthdate, format='M/d/yyyy') }
-      - "children3_relationship_users1": ${ children3_relationship_users1 }
-      - "children3_relationship_OP": ${ children3_relationship_OP }
+      - "children1_name": |
+          % if children[0].custody_wanted:
+          ${ children[0] }
+          % endif
+      - "children1_birthdate": |
+          % if children[0].custody_wanted:
+          ${ format_date(children[0].birthdate, format='M/d/yyyy') }
+          % endif
+      - "children1_relationship_users1": ${ children[0].relationship_users1 }
+      - "children1_relationship_OP": ${ children[0].relationship_OP }
+      - "children2_name": |
+          % if children[1].custody_wanted:
+          ${ children[1] }
+          % endif
+      - "children2_birthdate": |
+          % if children[1].custody_wanted:
+          ${ format_date(children[1].birthdate, format='M/d/yyyy') }
+          % endif      
+      - "children2_relationship_users1": ${ children[1].relationship_users1 }
+      - "children2_relationship_OP": ${ children[1].relationship_OP }
+      - "children3_name": |
+          % if children[2].custody_wanted:
+          ${ children[2] }
+          % endif      
+      - "children3_birthdate": |
+          % if children[2].custody_wanted:
+          ${ format_date(children[2].birthdate, format='M/d/yyyy') }
+          % endif      
+      - "children3_relationship_users1": ${ children[2].relationship_users1 }
+      - "children3_relationship_OP": ${ children[2].relationship_OP }
       - "request_other_description": ${ request_other_description }
       - "request_other": ${ request_other }
       - "request_all_emergency": ${ request_all_emergency }
