@@ -1,10 +1,11 @@
-#####################################################################
+
 ####################### TO DO #######################
 #How do I merge to my main fork again in GitHub???
 #Did first pass on complaint. Now onto Affidavit.
-#I think I want to show a Review Answers button on each screen
 
-#####FOR LEMMA TO WORK ON#####
+
+#####FOR LEMMA TO WORK ON? #####
+#I think I want to show a Review Answers button on each screen
 #On Complaint and Affidavit attachments, include apartment in the address text that is printed on forms
 #On Complaint attachment, get child's relationship info to show on second page
 #In interview, why does this page show? id: preview RFApackage  before the page where they can view forms and hit edit button?
@@ -13,16 +14,17 @@
 #####END LEMMA ##########
 
 #What if user doesn't know Def birthdate or address?
+#Why is background black when I look at this in Chrome on Android phone?
 #NEED TO ADD FIELD FOR HOUSE NUMBER AND RENAME ON PDF TO house2. On PDF, too?
 #NEED TO ADD FIELD FOR HOUSE NUMBER AND RENAME ON PDF TO house3. On PDF, too?
+#Customize address questions so it doesn't ask for unit/apt. on separate line. id: your address  sets:   How do I use sets? I think I want to print address on one line sometimes
+#Need to add Apt # to street address on Conf. Notification PDF, to full physical address on Complaint at top and at #5 on first page, to top of Affidavit
 #Add these to review screen: The defendant has  has not used, displayed, or threatened to use a firearm; Do you feel that you are in immediate danger of further abuse from the defendant?  Yes  No 
-#Test if the signature feature working
 #Work on getting all answers to show correctly on PDFs
 #How change line spacing for narrative answers in affidavit PDF
 #if recent_incident_date is defined, then set recent_incident_yes to True so it gets a checkmark on the complaint
+#On Affidavit, I tried to format time better like format_time("04:01:23", format='h:mm a')  but it gives an error message on the PDF
 #Work on the Review answers section. Show all fields. How show basic plaintiff and def info and addresses?
-#In downloads area, insert my static document (final version)
-#Make nav on the left grey instead of looking like blue links. Make it not look like buttons. Top it with the words: Your progress
 #Update variable names in Edit and Publish sections for all the ones that I did checkboxes for, including: relationship_for_LE race skin hair hair_color
 #id: Relationship to defendant, require only one answer
 #For id: What you want to ask for in the RFA order, require at least one checkmark
@@ -31,19 +33,15 @@
 #For id: Existing orders or court proceedings, only show the bottom questions if applicable
 #Other places the defendant might be, Use state abbreviations and default to VT
 #For id: Existing orders or court proceedings, I may need to change my variable names in the review section and print section, etc. because I changed how I set up the checkboxes -- like I did with (danger_more_abuse_who["children"] 
-#Why is background black when I look at this in Chrome on Android phone?
 #In footer, add vtcourt forms are offered by LSV
-#Use questions as asked by court, but also explain in plain language
 #Need to update all the Review and Attachment variables for get_kids_relationships
 #For id: What happened most recently, need to group the checkbox questions at the bottom.
 #On complaint and affidavit PDFs, make the dates show like this mm/dd/yyy so they fit (not written out)
 #Add these new fields to review and attachment sections; are they in the PDF?: other_parties1_street_address; other_parties1_city; other_parties1_state
 #Make sure house2 and house3 fields are in review and attachment sections; are they in the PDF?
-#Prep updated confidential contact form and then upload it
 #Re-do complaint PDF so it's a smaller size document. Should check marks look larger on PDF?
 #update is defendant your spouse question on complaint PDF to have this field name is_spouse
 #Fix field name on PDF and in interview --  other parties work phone (not word)
-#Customize address questions so it doesn't ask for unit/apt. on separate line. id: your address  sets:   How do I use sets? Dont want the unit number.
 #Add show if to the will you be forced from home question and those that follow it
 #  if recent_incident_date is defined, then set recent_incident_yes to True  figure out this so that checkbox gets checked automatically
 #For extra sheet of weapons, how do I do   if extra_sheet_weapons:   then set  extra_sheets_attached = 1
@@ -817,6 +815,12 @@ fields:
   - "The defendant sexually assault the child/children": recent_incident_assault_children
     datatype: yesno
     show if: recent_incident_assault
+---
+code: |
+  if defined('recent_incident_date'):
+    recent_incident_yes = True
+  else:
+    recent_incident_yes = False
 ---
 id: Was recent most serious too
 question: |
@@ -2660,9 +2664,9 @@ attachment:
       - "other_parties1_birthdate__1": ${ format_date(other_parties[0].birthdate, format='M/d/yyyy') }
       - "other_parties1_birthdate": ${ format_date(other_parties[0].birthdate, format='M/d/yyyy') }
       - "other_parties1_birthdate__2": ${ format_date(other_parties[0].birthdate, format='M/d/yyyy') }
-      - "other_parties1_address_address__1": ${ other_parties[0].address.address }
-      - "other_parties1_address_address": ${ other_parties[0].address.address }
-      - "other_parties1_address_address__2": ${ other_parties[0].address.address }
+      - "other_parties1_address_address__1": ${ other_parties[0].address.line_one() }
+      - "other_parties1_address_address": ${ other_parties[0].address.line_one() }
+      - "other_parties1_address_address__2": ${ other_parties[0].address.line_one() }
       - "other_parties1_address_city__1": ${ other_parties[0].address.city }
       - "other_parties1_address_city": ${ other_parties[0].address.city }
       - "other_parties1_address_city__2": ${ other_parties[0].address.city }
@@ -2774,9 +2778,9 @@ attachment:
       - "other_parties1_birthdate__1": ${ other_parties[0].birthdate.format() }
       - "other_parties1_birthdate": ${ format_date(other_parties[0].birthdate, format='M/d/yyyy') }
       - "other_parties1_birthdate__2": ${ other_parties[0].birthdate.format() }
-      - "other_parties1_address_address__1": ${ other_parties[0].address.address }
-      - "other_parties1_address_address": ${ other_parties[0].address.address }
-      - "other_parties1_address_address__2": ${ other_parties[0].address.address }
+      - "other_parties1_address_address__1": ${ other_parties[0].address.line_one() }
+      - "other_parties1_address_address": ${ other_parties[0].address.line_one() }
+      - "other_parties1_address_address__2": ${ other_parties[0].address.line_one() }
       - "other_parties1_address_city__1": ${ other_parties[0].address.city }
       - "other_parties1_address_city": ${ other_parties[0].address.city }
       - "other_parties1_address_city__2": ${ other_parties[0].address.city }
@@ -2908,9 +2912,9 @@ attachment:
       - "other_parties1_birthdate__1": ${ format_date(other_parties[0].birthdate, format='M/d/yyyy') }
       - "other_parties1_birthdate": ${ format_date(other_parties[0].birthdate, format='M/d/yyyy') }
       - "other_parties1_birthdate__2": ${ format_date(other_parties[0].birthdate, format='M/d/yyyy') }
-      - "other_parties1_address_address__1": ${ other_parties[0].address.address }
-      - "other_parties1_address_address": ${ other_parties[0].address.address }
-      - "other_parties1_address_address__2": ${ other_parties[0].address.address }
+      - "other_parties1_address_address__1": ${ other_parties[0].address.line_one() }
+      - "other_parties1_address_address": ${ other_parties[0].address.line_one() }
+      - "other_parties1_address_address__2": ${ other_parties[0].address.line_one() }
       - "other_parties1_address_city__1": ${ other_parties[0].address.city }
       - "other_parties1_address_city": ${ other_parties[0].address.city }
       - "other_parties1_address_city__2": ${ other_parties[0].address.city }
