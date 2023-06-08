@@ -1,17 +1,47 @@
-#####################################################################
-####################### TO DO #######################
 
-#On line 645, how can I loop through all the kids that were identified earlier in the interview (for getting PRR in the order)
-#On complaint and affidavit PDF, make the dates show like this mm/dd/yyy
-#Use questions as asked by court, but also explain in plain language
-#I added nav but now my Review button is gone. Is that normal? How is the nav supposed to work?
+####################### TO DO #######################
+#How do I merge to my main fork again in GitHub???
+#Did first pass on complaint. Now onto Affidavit.
+
+
+#####FOR LEMMA TO WORK ON? #####
+#I think I want to show a Review Answers button on each screen
+#On Complaint and Affidavit attachments, include apartment in the address text that is printed on forms
+#On Complaint attachment, get child's relationship info to show on second page
+#In interview, why does this page show? id: preview RFApackage  before the page where they can view forms and hit edit button?
+#In interview, trial_court_address.address and .county was triggering the baked-in What court do you want to file in screen when it is not needed.
+
+#####END LEMMA ##########
+
+#What if user doesn't know Def birthdate or address?
+#Why is background black when I look at this in Chrome on Android phone?
+#NEED TO ADD FIELD FOR HOUSE NUMBER AND RENAME ON PDF TO house2. On PDF, too?
+#NEED TO ADD FIELD FOR HOUSE NUMBER AND RENAME ON PDF TO house3. On PDF, too?
+#Customize address questions so it doesn't ask for unit/apt. on separate line. id: your address  sets:   How do I use sets? I think I want to print address on one line sometimes
+#Need to add Apt # to street address on Conf. Notification PDF, to full physical address on Complaint at top and at #5 on first page, to top of Affidavit
+#Add these to review screen: The defendant has  has not used, displayed, or threatened to use a firearm; Do you feel that you are in immediate danger of further abuse from the defendant?  Yes  No 
+#Work on getting all answers to show correctly on PDFs
+#How change line spacing for narrative answers in affidavit PDF
+#if recent_incident_date is defined, then set recent_incident_yes to True so it gets a checkmark on the complaint
+#On Affidavit, I tried to format time better like format_time("04:01:23", format='h:mm a')  but it gives an error message on the PDF
+#Work on the Review answers section. Show all fields. How show basic plaintiff and def info and addresses?
+#Update variable names in Edit and Publish sections for all the ones that I did checkboxes for, including: relationship_for_LE race skin hair hair_color
+#id: Relationship to defendant, require only one answer
+#For id: What you want to ask for in the RFA order, require at least one checkmark
+#For id: What you want to ask for in the RFA order, make subquestions required
+#For id: Childrens relationships, only show it if PRR was requested
+#For id: Existing orders or court proceedings, only show the bottom questions if applicable
+#Other places the defendant might be, Use state abbreviations and default to VT
+#For id: Existing orders or court proceedings, I may need to change my variable names in the review section and print section, etc. because I changed how I set up the checkboxes -- like I did with (danger_more_abuse_who["children"] 
+#In footer, add vtcourt forms are offered by LSV
+#Need to update all the Review and Attachment variables for get_kids_relationships
+#For id: What happened most recently, need to group the checkbox questions at the bottom.
+#On complaint and affidavit PDFs, make the dates show like this mm/dd/yyy so they fit (not written out)
 #Add these new fields to review and attachment sections; are they in the PDF?: other_parties1_street_address; other_parties1_city; other_parties1_state
 #Make sure house2 and house3 fields are in review and attachment sections; are they in the PDF?
-#Prep updated confidential contact form and then upload it
 #Re-do complaint PDF so it's a smaller size document. Should check marks look larger on PDF?
 #update is defendant your spouse question on complaint PDF to have this field name is_spouse
-#Fix field name on PDF and in interview   other parties work phone (not word)
-#Customize address questions so it doesn't ask for unit/apt. on separate line. id: your address  sets:   How do I use sets? Dont want the unit number.
+#Fix field name on PDF and in interview --  other parties work phone (not word)
 #Add show if to the will you be forced from home question and those that follow it
 #  if recent_incident_date is defined, then set recent_incident_yes to True  figure out this so that checkbox gets checked automatically
 #For extra sheet of weapons, how do I do   if extra_sheet_weapons:   then set  extra_sheets_attached = 1
@@ -26,11 +56,14 @@
 include:
   - docassemble.AssemblyLine:assembly_line.yml
 ---
+features:
+  css: style.css
+---
 metadata:
   title: |
-    Relief from Abuse (RFA)
-  short title: |
     Asking for a Relief from Abuse order (RFA) in Vermont
+  short title: |
+    Relief from Abuse (RFA)
   tags:
     - FA-07-00-00-00
   authors:
@@ -70,7 +103,6 @@ objects:
 ---
 images:
   big_logo: LSV_logo.png 
-
 ---
 code: |
   interview_metadata['main_interview_key'] =  'RFApackage'
@@ -97,9 +129,6 @@ objects:
   - other_parties: ALPeopleList.using(ask_number=True,target_number=1)
   - children: ALPeopleList.using(ask_number=True,complete_attribute="complete")
 ---
-sections:
-  - review_RFApackage: Review your answers
----
 
 #####################################################################
 #################### INTERVIEW ORDER #####################
@@ -109,18 +138,58 @@ id: interview_order_RFApackage
 code: |
   # Set the allowed courts for this interview
   allowed_courts = interview_metadata["RFApackage"]["allowed courts"]
-  nav.set_section("review_RFApackage")
   user_role = "plaintiff"
   user_ask_role = "plaintiff"
-  nav.set_section("intro")
-  Initial_screening_questions
-  used_firearm
-  docket_number
-  trial_court.address.address
+  nav.set_section("screening")
+  ##initial_screening_questions##
+  extend_or_change
+  if extend_or_change:
+    initial_screening_questions_1_exit
+    
+  relationship_question
+  if relationship_question == 'Family member':
+    under_16
+    if under_16:
+      initial_screening_questions_2_exit
+
+  if relationship_question == 'Current or former sexual partner':
+    under_16
+    if under_16:
+      initial_screening_questions_2_exit
+      
+  if relationship_question == 'Someone who lives with you or used to live with you':
+    under_16
+    if under_16:
+      initial_screening_questions_2_exit
+
+  if relationship_question == 'None of the above':
+    initial_screening_questions_2_exit_a
+    
+  who_needs_protection  
+  if who_needs_protection == 'I’m asking for an RFA order only for a child or children':
+    initial_screening_questions_3_exit
+      
+  plaintiff_lives_in_vermont
+  if plaintiff_lives_in_vermont:
+    defendant_lives_in_vermont
+    if defendant_lives_in_vermont:
+      initial_screening_questions_5_continue
+    if not defendant_lives_in_vermont:
+      initial_screening_questions_5_exit_b
+      
+  if not plaintiff_lives_in_vermont:
+    defendant_lives_in_vermont
+    if defendant_lives_in_vermont:
+      initial_screening_questions_5_continue
+    if not defendant_lives_in_vermont:
+      initial_screening_questions_5_exit_a
+  
+  #main questions
+  trial_court_name
+  set_progress(8)
   nav.set_section("about")
   users.gather()
   set_parts(subtitle=str(users))
-  set_progress(8)
   users[0].name.first
   users[0].birthdate
   users1_address_mailing
@@ -128,51 +197,61 @@ code: |
   users[0].email
   set_progress(16)
   share_contact
-  ex_spouse
+  children.gather()
   set_progress(24)
   #set_parts(subtitle=str(other_parties))
   nav.set_section('defendant')
+  ex_spouse
   other_parties.gather()
   set_progress(32)
   other_parties[0].birthdate
   other_parties[0].address.address
   other_parties[0].phone_number
-  set_progress(40)
-  children.gather()
+  incarcerated
   nav.set_section('incidents')
   recent_incident_date
+  set_progress(40)
   if not recent_incident_most_serious:
     serious_incident_date
-  other_incident_description
-  set_progress(40)
+  other_incident
+  set_progress(50)
   danger_more_abuse
   nav.set_section('weapons')
-  #used_firearm
+  weapons.gather()
+  used_firearm
   nav.set_section('order')
+  set_progress(60)
+  users1_no_shelter  
   request_not_abuse
+  get_kids_relationships
+  request_other
   request_all_emergency
-  set_progress(64)
-  existing_order_divorce
+  set_progress(70)
+  existing_order
   nav.set_section('service')
-  users1_no_shelter
   details_for_law_enforcement
   location_of_home
   vehicle_make
-  spouse_or_ex_spouse
+  relationship_for_LE
   employer
   house2
-  set_progress(72)
-  sex_female
-  hair_brown
   set_progress(80)
+  race
+  hair
+  set_progress(90)
   notify_served
+  nav.set_section("review_RFApackage")
+  RFApackage_preview_question
   nav.set_section('signature')
   printed_signature
-  signature_date
+  users[0].signature
+  nav.set_section('get_docs')
   interview_order_RFApackage = True
+  
 ---
 sections:
   - intro: Introduction
+  - screening: Is this interview right for you
   - about: About you
   - defendant: About the defendant
   - incidents: What happened
@@ -180,6 +259,9 @@ sections:
   - order: What you want in the RFA order
   - service: Info for law enforcement to serve the order
   - signature: Signature
+  - review_RFApackage: Edit your answers
+  - get_docs: Get your documents
+#progressive: False
 ##################
 ---
 code: |
@@ -196,6 +278,7 @@ comment: |
   Delete mandatory: True to include in another interview
 mandatory: True
 code: |
+  nav.set_section("intro")
   al_intro_screen
   RFApackage_intro
   RFApackage_intro_2
@@ -211,43 +294,296 @@ code: |
   )
   RFApackage_download
 ---
-id: RFApackage
+id: basic questions intro screen
+decoration: form-lineal
+question: |
+  **${interview_short_title} in Vermont**
+
+subquestion: |  
+
+  <div class="border-around-text">
+  <p>Welcome to ${ AL_ORGANIZATION_TITLE}.</p>
+  
+  <p>${ AL_ORGANIZATION_TITLE } can help you complete and download forms in 3 steps:</p>
+  <ul><li><b>Step 1:</b> Answer questions that will fill in court forms for you.</li>
+  <li><b>Step 2:</b> Preview the completed forms.</li>
+  <li><b>Step 3:</b> Download, save or print the final forms. You will need to mail, email, efile or deliver them to the court on your own.</li></ul>
+  </div>  
+  
+  <i class="fas fa-file-text fa-2x"></i> This guided interview will produce a complete package of 4 forms needed to ask the court for a Relief from Abuse (RFA) order in Vermont: the Complaint, Affidavit, Confidential Notification form and Protection Order Service Information form. Learn more about RFA orders and this interview on the next screen.
+  
+  <i class="fas fa-clock fa-2x"></i> It may take you over 1 hour to complete this interview. Consider creating a free account so you can save your progress. At any time choose "sign up" in the menu above, or "register" below.
+  
+  <i class="fas fa-share-nodes fa-2x"></i> Use the Share feature at the bottom of the page to share your progress with a trusted friend or advocate.
+  
+  <i class="fas fa-sign-out-alt fa-2x"></i> After saving or printing your work, log out and close your web browser.
+  
+  VTCourtForms interviews were created by Legal Services Vermont with support from the Legal Services Corporation. It is free to use this program. This site is not a lawyer. Visit our [VTLawHelp.org website](https://vtlawhelp.org) if you have legal questions.
+  
+  [FILE big_logo, 30%, Legal Services Vermont logo]
+
+#  Tap the {green words} in any screen for a definition or more information.
+  
+#  % if chat_partners_available().help:
+#  Live help is currently available in this interview. Click the speech bubble
+#  (:comment-alt:) in the navigation bar to connect to a live advocate for help.
+#  % endif
+fields:
+  - To continue, please accept our [terms of use](https://vtlawhelp.org/vlh-privacy).: acknowledged_information_use
+    datatype: checkboxes
+    none of the above: False    
+    minlength: 1
+    choices:
+      - I accept the terms of use.
+    validation messages:
+      minlength: |
+        You cannot continue unless you agree to the terms of use.        
+continue button field: al_intro_screen
+#terms:
+#  green words: |
+#    Green words are legal terms or a short way of referring to something that needs more explanation. #The definition or explanation pops up when you tap the green words.
+#right: |
+#  % if user_has_saved_answers:
+#  ${fa_icon("bell", color="primary", size="sm")}
+#  Saved answers available!  
+  
+#  ${action_button_html(url_action('load_answer'), icon="folder-open", label=word("View answers"), #size="sm" )}
+#  % endif    
+  
+---
+id: RFApackage_intro
 continue button field: RFApackage_intro
 question: |
   What to know before you start
 subquestion: |
-  Here are some important things to know about asking the court for a Relief from Abuse order (RFA):
+  Some important things to know about asking the court for a Relief from Abuse order (RFA) in Vermont:
   
   * There is no charge for an RFA order. It is free. 
-  * For details on the whole RFA process, visit the RFA Roadmap on the VTLawHelp.org website. 
-  * Even when the courts are closed, it’s after hours, or it’s a weekend or holiday, you can start a Relief from Abuse case. You may be able to get a temporary order right away to help keep you safe. At these times, you can email these forms or simply call and ask for help. Contact local police for help or call the Vermont courts’ answering service at 1-800-540-9990. Say that you need help applying for a Relief from Abuse order over the phone. If you call the answering service, you need to leave a message with a number where they can call you back within an hour.
-  * Applying for an RFA order can be a very dangerous time. Work with an advocate from the Vermont Network to create a safety plan — whether you end up asking for an RFA or not.
+  * **Even when the courts are closed, it’s after hours, or it’s a weekend or holiday, you can start a Relief from Abuse case.** You may be able to get a temporary order right away to help keep you safe. At these times, you can email these forms or simply call and ask for help. Call the Vermont courts’ answering service at 1-800-540-9990. Say that you need help applying for a Relief from Abuse order over the phone. If you call, you need to leave a message with a number where they can call you back within an hour.
+  * Applying for an RFA order can be a very dangerous time. Work with an advocate from the [Vermont Network](https://www.vtnetwork.org/get-help/) to create a safety plan — whether you end up asking for an RFA or not.
+  * For details on the whole RFA process, visit the [RFA Roadmap on the VTLawHelp.org website.](https://vtlawhelp.org/roadmap/relief-from-abuse/step-1)
 ---
-id: RFApackage2
+id: RFApackage_intro_2
 continue button field: RFApackage_intro_2
 question: |
   About using this guided interview
 subquestion: |  
   * Make sure you are in a safe place. It takes time to work through this interview. It may take 1 hour or more.
   * If you are in danger right now, dial 911.
-  * Consider creating an account and saving your work along the way. You could even share a link with an advocate. Look in the upper-right corner of the screen to create an account.
-  * Use this guided interview if you are asking for an RFA order for you, or both you and your children. (There are different forms for asking for an RFA only on behalf of a child or children.)
-  * The forms you make with this interview can only be used in Vermont.
+  * Use this interview if you are asking for an RFA order for you, **or** both you and your children. (There are different forms for [asking for an RFA only on behalf of a child or children.](https://vtlawhelp.org/roadmap/relief-from-abuse/step-3))
+  * The forms in this interview can only be used in Vermont.
+  * Consider creating an account and saving your work along the way. You could log in later to review your answers with an advocate. Choose “sign up” in the menu above, or “register” below.
+  * Click "Share" at the bottom of this page to share a link to your progress with someone you trust. Important: The person you share this link with will be able to see and edit your answers.
+  <h3 class="h4">Information you will need</h3>
   * To complete this interview, you will need to know the date or dates when the abuse occurred and give a detailed description of the abuse. This includes the most recent incident and the most serious incident. You will need to fully describe the incidents and make it clear how severe or how frequent the abuse has been.
-  * You will need to give a safe address and telephone number where the court can reach you. If you don’t have one, ask an advocate from the Vermont Network.
-  * You will see important questions about weapons that are in the home. If you list what they are and where they are located, the court can order law enforcement to collect them to help keep you safe. 
+  * You will need to give a safe address and telephone number where the court can reach you. If you don’t have one, ask an advocate from the [Vermont Network.](https://www.vtnetwork.org/get-help/)
+  * You will see important questions about weapons that the defendant might have access to. If you list what they are and where they are located, the court can order law enforcement to collect them to help keep you safe.
+  <h3 class="h4">After answering the questions</h3>
   * At the end you will get a chance to preview your forms and make changes if you need to. 
   * Then you can download, print and/or save a PDF of your completed forms.
   * You will also get an instruction sheet about how to get the completed forms to the court – this includes emailing them or dropping them off at your local family court.
   
-  First, let’s make sure this is the right interview for your situation.
+  Next, let’s make sure this is the right interview for your situation.
+  
+  
+  
+  
 ---
-id: Initial screening questions
+id: initial_screening_questions_1
 question: |
-  Initial screening questions
+  See if this interview is right for your situation
+
+fields:
+  - "Do you want to extend or change an existing RFA order?": extend_or_change
+    datatype: yesnoradio
+---
+id: initial_screening_questions_1_exit
+question: |
+  Stop
 subquestion: |
-  (to be created)
-continue button field: Initial_screening_questions
+  <i class="fas fa-hand-paper fa-3x" aria-hidden="true"></i>  **Stop.** In this situation, these are **not** the right forms to fill out. **Do not use this interview.** 
+  
+  [Find the right forms to extend or change an existing RFA order on this page of the VTLawHelp.org website.](https://vtlawhelp.org/roadmap/relief-from-abuse/step-6) You can also find out who to contact for help.
+continue button field: initial_screening_questions_1_exit
+buttons:
+  - Exit: exit
+    url: https://vtlawhelp.org
+---
+id: initial_screening_questions_2
+question: |
+  See if this interview is right for your situation
+fields:
+  - "What is your relationship to the person who has abused you or is abusing you?": relationship_question
+    input type: radio
+    choices:
+      - Family member
+      - Current or former sexual partner
+      - Someone you date or used to date
+      - Someone who lives with you or used to live with you
+      - None of the above
+---
+id: initial_screening_questions_2_a
+question: |
+  See if this interview is right for your situation
+fields:
+  - "Are you under age 16?": under_16
+    datatype: yesnoradio
+---    
+id: initial_screening_questions_2_exit
+question: |
+  Stop
+subquestion: |
+  <i class="fas fa-hand-paper fa-3x" aria-hidden="true"></i>  **Stop.** In this situation, if you are under age 16, these are **not** the right forms to fill out. **Do not use this interview.**
+  
+  [Learn about your options on this page of the VTLawHelp.org website.](https://vtlawhelp.org/protection-minors) You can also find out who to contact for help.
+continue button field: initial_screening_questions_2_exit
+buttons:
+  - Exit: exit
+    url: https://vtlawhelp.org
+---    
+id: initial_screening_questions_2_exit_a
+question: |
+  Stop
+subquestion: |
+  <i class="fas fa-hand-paper fa-3x" aria-hidden="true"></i>  **Stop.** In this situation, these are **not** the right forms to fill out. **Do not use this interview.**
+  
+  [On this page of the VTLawHelp.org website](https://vtlawhelp.org/stalking-and-sexual-assault), learn about other options that include getting an Order Against Sexual Assault or an Order Against Stalking. You can also find out who to contact for help.
+continue button field: initial_screening_questions_2_exit_a
+buttons:
+  - Exit: exit
+    url: https://vtlawhelp.org
+---
+id: initial_screening_questions_3
+question: |
+  See if this interview is right for your situation
+fields:
+  - "Who needs protection from abuse?": who_needs_protection
+    input type: radio
+    choices:
+      - I need this order to protect me
+      - I need this order to protect me and my child or children
+      - I’m asking for an RFA order only for a child or children
+---
+id: initial_screening_questions_3_exit
+question: |
+  Stop
+subquestion: |
+  <i class="fas fa-hand-paper fa-3x" aria-hidden="true"></i>  **Stop.** In this situation, these are **not** the right forms to fill out. **Do not use this interview.**
+  
+  [On this page of the VTLawHelp.org website](https://vtlawhelp.org/roadmap/relief-from-abuse/step-3), learn about the other forms to use when asking for an RFA order **only** on behalf of a child or children. You can also find out who to contact for help.
+continue button field: initial_screening_questions_3_exit
+buttons:
+  - Exit: exit
+    url: https://vtlawhelp.org
+---
+id: initial_screening_questions_4
+question: |
+  See if this interview is right for your situation
+fields:
+  - "Do you live in Vermont?": plaintiff_lives_in_vermont
+    datatype: yesnoradio
+---
+id: initial_screening_questions_5
+question: |
+  See if this interview is right for your situation
+fields:
+  - "Does the defendant live in Vermont?": defendant_lives_in_vermont
+    datatype: yesnoradio
+  - note: The 'defendant' is the person who is abusing you.
+---
+id: initial_screening_questions_5_continue
+question: |
+  Continue
+subquestion: |
+  <i class="fas fa-check fa-3x" style="color: #429a3c;" aria-hidden="true"></i>  Yes, you can use this interview to fill out these forms. Let's get started.
+continue button field: initial_screening_questions_5_continue
+buttons:
+  - Start the interview: continue
+---
+id: initial_screening_questions_5_exit_a
+question: |
+  Stop
+subquestion: |
+  <i class="fas fa-hand-paper fa-3x" aria-hidden="true"></i>  **Stop.** **Do not use this interview.**
+  
+  In this situation, these may **not** be the right forms to fill out. Consult with a lawyer or legal aid organization in your state or the defendant’s state.
+continue button field: initial_screening_questions_5_exit_a
+buttons:
+  - Exit: exit
+    url: https://vtlawhelp.org
+---
+id: initial_screening_questions_5_exit_b
+question: |
+  Stop
+subquestion: |
+  <i class="fas fa-hand-paper fa-3x" aria-hidden="true"></i>  **Stop.** It’s time to stop and ask for advice! If the defendant is not currently a Vermont resident, then there may be a question as to whether Vermont has jurisdiction over the defendant. 
+  
+  Vermont needs to have jurisdiction over the defendant to make the Relief from Abuse order work. Consult with a lawyer, like the lawyers at [Legal Services Vermont and Vermont Legal Aid](https://vtlawhelp.org). 
+  
+  Find out whether you should use these forms or not. If you get the green light from a lawyer, come back and answer Yes to this question so you can start the guided interview.
+continue button field: initial_screening_questions_5_exit_b
+buttons:
+  - Exit: exit
+    url: https://vtlawhelp.org
+---
+id: choose a court
+question: |
+  Choose a Family Court
+fields:
+  - note: |
+      Choose the county where you will file your forms to ask for a RFA order. 
+      
+      It can be:
+      
+      * the county you live in, or 
+      * the county the other person lives in (the defendant).
+      
+      Not sure what county? [Check this list of cities and towns to find the county.](https://en.m.wikipedia.org/wiki/List_of_municipalities_in_Vermont#Cities)
+  - County: trial_court_name
+    choices:
+      - Addison
+      - Bennington
+      - Caledonia
+      - Chittenden
+      - Essex
+      - Franklin
+      - Grand Isle
+      - Lamoille
+      - Orange
+      - Orleans
+      - Rutland
+      - Washington
+      - Windham
+      - Windsor
+ #% if al_form_type == 'starts_case':
+  #What court do you want to file in?
+  #% elif al_form_type == 'appeal':
+  #What is the name of the trial court your case was originally filed in?
+  #% else:
+  #What court is your case in?
+  #% endif
+  #subquestion: |
+  #% if not al_form_type == 'starts_case':
+  #Look at your court paperwork. Match the name listed there.
+  #% endif
+  ##${ collapse_template(how_to_pick_court_help_template) }
+
+  
+  #- Address: trial_court_address.address
+  #  address autocomplete: True
+  #  required: False
+  #- Suite: trial_court_address.unit
+  #  required: False
+  #- City: trial_court_address.city
+  #  required: False
+  #- State: trial_court_address.state
+  #  required: False
+  #- Postal code: trial_court_address.zip    
+  #  required: False
+---
+#I had to set this because the automated AL.court bundle wanted to define the court address and county, when I didn't need that at this time. AL.court bundle will be needed to efile. 
+code: |
+  trial_court_address.county = trial_court_name
 ---
 id: About you
 question: |
@@ -264,13 +600,19 @@ sets:
 question: |
   What is your address?
 subquestion: |
-  Use an address where it is safe for the court to contact you.
+  Use an address where it is safe for the court to contact you. You can [talk with an advocate](https://vtnetwork.org/) about how to get a safer mailing address. 
 fields:
   - code: |
-      users[0].address_fields(default_state=AL_DEFAULT_STATE)  
-  - "If you have a PO Box, or your mailing address is different than your street address, enter it here. (Example: P.O. Box 111)": users1_address_mailing
+      users[0].address_fields(default_state=AL_DEFAULT_STATE)
+  - note: |
+      If you have a P.O. Box, or your mailing address is different than your street address, enter it below. (Example: P.O. Box 11111, Burlington, VT 05401)
+  - "Mailing address": users1_address_mailing
     maxlength: 42
     required: False
+  - note: |
+      <h2 class="h3">Reach Up Benefits</h2>
+  - "Check this box if you get Reach Up benefits from the state": reach_up_users1
+    datatype: yesno    
 continue button field: About_you
 ---
 id: Gather users contact information
@@ -305,13 +647,33 @@ fields:
   - "I consent to the release of my address and contact information.": share_contact
     datatype: yesnoradio
 ---
+id: how many children
+question: |
+  % if al_form_type in ['starts_case','existing_case','appeal']:
+  Are any children involved in this case? 
+  % else:
+  Are any children involved in this matter?
+  % endif  
+fields:
+  - note: |
+      Include children under 18 who have been affected by abuse. Also include children who you would like to ask for temporary custody of.
+  - no label: children.there_are_any
+    datatype: yesnoradio
+  - How many?: children.target_number
+    datatype: integer
+    show if: children.there_are_any
+validation code: |
+  if not children.there_are_any:
+    children.target_number = 0
+---
 id: Relationship to defendant
 question: |
   Relationship to defendant
 subquestion: |
   Choose the best description of your relationship to the person who is the abuser. That person is called the "defendant."
-  Select one.
 fields:
+  - note: |
+      Select one.
   - "Spouse": is_spouse
     datatype: yesno
   - "Ex-spouse (former spouse)": ex_spouse
@@ -324,11 +686,11 @@ fields:
     datatype: yesno
   - "A member of your family": family_member
     datatype: yesno
-  - "A different relationship to you": other_relationship
-    datatype: yesno
   - "In a word or two, what is your relationship to this family member": family_member_description
     maxlength: 16
     show if: family_member
+  - "A different relationship to you": other_relationship
+    datatype: yesno
   - "In a word or two, what is that other relationship?": other_relationship_description
     maxlength: 16
     show if: other_relationship
@@ -353,8 +715,9 @@ fields:
     datatype: yesno
   - "III": suffix_third
     datatype: yesno
-  - "List other names the defendant uses (aliases)": other_parties1_aliases
+  - "List any other names the defendant uses (aliases)": other_parties1_aliases
     maxlength: 85
+    required: False
 ---
 id: About the defendant
 question: |
@@ -364,8 +727,11 @@ fields:
     datatype: yesno
   - "Check this box if defendant is a current member of the military": other_parties1_military
     datatype: yesno
-  - "Check this box if the defendant is incarcerated and has been convicted of one of the crimes specified in 15 V.S.A. 1103 (c)(1)(B)?": incarcerated
+  - "Check this box if the defendant is incarcerated (in jail) and has been convicted of one of the crimes specified in 15 V.S.A. 1103 (c)(1)(B)? See the list of crimes*, below.": incarcerated
     datatype: yesno
+  - note: |
+      *****  Those crimes are: murder, attempted murder, kidnapping, domestic assault, aggravated domestic assault, sexual assault, aggravated sexual assault, stalking, aggravated stalking, lewd or lascivious conduct with a child, use of a child in a sexual performance, or consenting to a sexual performance.
+
 ---
 id: Gather defendants address
 sets:
@@ -374,20 +740,20 @@ sets:
   - other_parties[i].address.zip
   - other_parties[i].address.state
 question: |
-  What is the defendants address?
+  What is the defendant's address?
 fields:
   - code: |
       other_parties[0].address_fields(default_state=AL_DEFAULT_STATE)  
 ---
 id: Gather defendants phone numbers
 question: |
-  What are the defendants phone numbers?
+  What are the defendant's phone numbers?
 fields:  
   - Home phone: other_parties[0].phone_number
     required: False
   - Cell phone: other_parties[0].mobile_number
     required: False
-  - Work phone: other_parties1_word_phone_number
+  - Work phone: other_parties1_work_phone_number
     required: False
   - Other phone: other_parties1_other_phone_number
     required: False    
@@ -396,7 +762,9 @@ id: What happened most recently
 question: |
   What happened -- most recently
 subquestion: |
-  Describe the most recent incident of abuse. Be as detailed as possible. The judge needs to know exactly what happened.
+  This is where you will describe the **most recent** incident of abuse. Be as detailed as possible. The judge needs to know exactly what happened. If you don't give enough details, you may not get a RFA order.
+  
+  See the [VTLawHelp.org legal help website](https://vtlawhelp.org/roadmap/relief-from-abuse/step-3#forms) for tips on what to include in your description. This information will be part of your "Affidavit".
 fields:
   - "What was the date of the most recent incident?": recent_incident_date
     datatype: date
@@ -410,7 +778,8 @@ fields:
   - "Please describe the most recent incident with as much detail as possible.": recent_incident_description
     input type: area
     rows: 20
-  - note: Check all that apply to this incident
+  - note: |
+      Check all that apply to this incident:
   - You were the target of the recent abuse: recent_incident_users1
     datatype: yesno
   - Your children were the target of the recent abuse: recent_incident_children
@@ -424,7 +793,7 @@ fields:
     datatype: yesno
   - "The defendant abused the child/children -- meaning they physically injured or otherwise treated the child(ren) in a manner which placed child(ren's) life, health, development or welfare in jeopardy.": recent_incident_abused
     datatype: yesno
-  - "The defendant stalked you and/or the child/children. Stalking is defined in Vermont law here: 12 V.S.A 5131(6)": recent_incident_stalked
+  - "The defendant stalked you and/or the child/children. Stalking is defined in Vermont law here: [12 V.S.A 5131(6)](https://legislature.vermont.gov/statutes/section/12/178/05131)": recent_incident_stalked
     datatype: yesno
   - "The defendant stalked you": recent_incident_stalked_users1
     datatype: yesno
@@ -432,13 +801,13 @@ fields:
   - "The defendant stalked the child/children": recent_incident_stalked_children
     datatype: yesno
     show if: recent_incident_stalked
-  - "On what date did they first stalk you?": recent_incident_stalked_date2
+  - "Vermont law says it is stalking if has happened two times or more. On what date did they first stalk you?": recent_incident_stalked_date2
     datatype: date
     show if: recent_incident_stalked
   - "What was the second date that they stalked you?": recent_incident_stalked_date1
     datatype: date
     show if: recent_incident_stalked
-  - "The defendant sexually assaulted you and/or the child/children. Sexual assault is defined in Vermont law here: 15 V.S.A 5131(5)": recent_incident_assault
+  - "The defendant sexually assaulted you and/or the child/children. Sexual assault is defined in Vermont law here: [15 V.S.A 5131(5)](https://legislature.vermont.gov/statutes/section/12/178/05131)": recent_incident_assault
     datatype: yesno
   - "The defendant sexually assault you": recent_incident_assault_users1
     datatype: yesno
@@ -447,18 +816,24 @@ fields:
     datatype: yesno
     show if: recent_incident_assault
 ---
+code: |
+  if defined('recent_incident_date'):
+    recent_incident_yes = True
+  else:
+    recent_incident_yes = False
+---
 id: Was recent most serious too
 question: |
   What happened
 fields:
-  - "Was the recent incident you described also the most serious incident that has happened?": recent_incident_most_serious
+  - "Was the recent incident you described also the **most serious** incident that has happened?": recent_incident_most_serious
     datatype: yesnoradio
 ---
 id: What happened most serious
 question: |
   What happened -- most serious
 subquestion: |
-  Describe the most serious incident of abuse. Again, be as detailed as possible. The judge needs to know exactly what happened.
+  Describe the **most serious** incident of abuse. Again, be as detailed as possible. The judge needs to know exactly what happened.
 fields:
   - "What was the date of the most serious incident?": serious_incident_date
     datatype: date
@@ -472,9 +847,6 @@ fields:
   - "Please describe the most serious incident with as much detail as possible.": serious_incident_description
     input type: area
     rows: 20
----
-#code: |
-#  if recent_incident_date is defined, then set recent_incident_yes to True
 ---
 id: What happened other incidents
 question: |
@@ -497,108 +869,116 @@ subquestion: |
 fields:
   - "Is there immediate danger of more abuse from the defendant?": danger_more_abuse
     datatype: yesnoradio
-  - "There is danger of more abuse to you": danger_more_abuse_users1
-    datatype: yesno
+    
+  - "Select all that apply": danger_more_abuse_who
+    datatype: checkboxes
     show if: danger_more_abuse
-  - "There is danger of more abuse to the child/children": danger_more_abuse_children
-    datatype: yesno
-    show if: danger_more_abuse
-  - "If yes, please include any information not already described before. Be as specific as possible.": danger_more_abuse_why
+    none of the above: False
+    minlength: 1
+    choices:
+      - "There is danger of more abuse to you": users1
+      - "There is danger of more abuse to the child/children": children
+    
+  - "Include any information not already described before. Be as specific as possible.": danger_more_abuse_why
     input type: area
     show if: danger_more_abuse
     required: False
 ---
-id: Weapons
+objects:
+  - weapons: DAList.using(object_type=DAObject, complete_attribute="location")
+---
+id: Gather weapons
 question: |
-  Weapons
-subquestion: |
-  Weapons can make this a dangerous time for you and/or your children. If you let the court know about weapons, they may be able to collect them from the defendant as part of the court order. This can help keep you safe.
+  Gather list of weapons
 fields:
-  - "Has the defendant used or threatened to use a gun/firearm or another deadly weapon against you or another family member?": used_firearm
-    datatype: yesnoradio
-
-  - "Describe in detail how they used or threatened to use the weapon(s).": used_firearm_how
-    input type: area
-    show if: used_firearm
-
-  - Does the defendant own or have access to guns/firearms or other deadly weapons?: owns_weapons
+  - Does the defendant own or have access to guns/firearms or other deadly weapons?: weapons.there_are_any
     input type: radio
     choices:
       - Yes: True
       - No: False
       - I don't know: None
 
-  - Description of the 1st weapon: weapon1
+---
+id: List of weapons
+question: |
+  List of weapons
+subquestion: |
+  We'll create a list of the weapons -- one at a time.
+fields:
+  - Describe weapon (handgun, rifle, knife, etc.). Include the make and model if you know.: weapons[i].description
     maxlength: 76
-    show if: owns_weapons
+  - Where is this weapon located? (kitchen, car, friend's house, etc.): weapons[i].location
+    maxlength: 76
 
-  - "Location of the 1st weapon": weapon1_location
-    maxlength: 76
-    show if: owns_weapons
+---
+id: Another weapon
+question: |
+  List of weapons
+subquestion: |
+  You have told us about these weapons:
+  
+  % for item in weapons:
+    * ${ item.description }
+  % endfor
 
-  - "Description of the 2nd weapon": weapon2
-    maxlength: 76
-    hide if: 
-      variable: weapon1
-      is: None
-  - "Location of the 2nd weapon": weapon2_location
-    maxlength: 76
-    hide if: 
-      variable: weapon1
-      is: None
-comment: |
-  - "Description of the 3rd weapon": weapon3
-    maxlength: 76
-    show if: weapon2
-  - "Location of the 3rd weapon": weapon3_location
-    maxlength: 76
-    show if: weapon2
-  - "Description of the 4th weapon": weapon4
-    maxlength: 76
-    show if: weapon3
-  - "Location of the 4th weapon": weapon4_location
-    maxlength: 76
-    show if: weapon3
-  - "Description of the 5th weapon": weapon5
-    maxlength: 76
-    show if: weapon4
-  - "Location of the 5th weapon": weapon5_location
-    maxlength: 76
-    show if: weapon4
-  - "Description of the 6th weapon": weapon6
-    maxlength: 76
-    show if: weapon5
-  - "Location of the 6th weapon": weapon6_location
-    maxlength: 76
-    show if: weapon5
-  - "Description of the 7th weapon": weapon7
-    maxlength: 76
-    show if: weapon6
-  - "Location of the 7th weapon": weapon7_location
-    maxlength: 76
-    show if: weapon6
-  - "Description of the 8th weapon": weapon8
-    maxlength: 76
-    show if: weapon7
-  - "Location of the 8th weapon": weapon8_location
-    maxlength: 76
-    show if: weapon7
-  - "Check this box if you have more weapons to list. You can enter them here and it will be attached  as an extra sheet.": extra_sheet_weapons
-    datatype: yesno
-    show if: weapon8
-    #  if extra_sheet_weapons: 
-    #    extra_sheets_attached = 1 
-  - Other weapons: weapons_overflow
+fields:
+  - Do you know about any other guns/firearms or other deadly weapons?: weapons.there_is_another
+    input type: radio
+    choices:
+      - Yes: True
+      - No: False
+      - I don't know: False
+
+---
+id: Weapons
+question: |
+  Weapons
+subquestion: |
+  Weapons can make this a more dangerous time for you and/or your children. If you let the court know about weapons, they may be able to collect the weapons from the defendant as part of the court order. This can help keep you safe.
+fields:
+  - "Has the defendant used, displayed or threatened to use a **gun/firearm** against you or against another family member?": used_firearm
+    datatype: yesnoradio
+  - note: The question above asks specifically about fireams (guns). This next question is found on a different form and it asks about **any** deadly weapons.
+  - "Has the defendant used, displayed or threatened to use a **gun/firearm or another deadly weapon** against you or another family member?": used_weapon
+    datatype: yesnoradio
+    
+  - "Describe in detail how they used or threatened to use the weapon(s).": used_weapon_how
     input type: area
-    rows: 4
-    show if: extra_sheet_weapons
-continue button field: weapons_info
+    show if: used_weapon
+    
+  - note: |
+      <h2 class="h3">Access to weapons
+
+  - Does the defendant own or have access to guns/firearms or other deadly weapons?: weapons.there_are_any
+    input type: radio
+    choices:
+      - Yes: True
+      - No: False
+      - I don't know: None
+
+
+
+
+#  - "Check this box if you have more weapons to list. You can enter them here and it will be attached  as an extra sheet.": extra_sheet_weapons
+#    datatype: yesno
+#    show if: weapon8
+#    #  if extra_sheet_weapons: 
+#    #    extra_sheets_attached = 1 
+#  - Other weapons: weapons_overflow
+#    input type: area
+#    rows: 4
+#    show if: extra_sheet_weapons
+#continue button field: weapons_info
 ---
 id: What you want to ask for in the RFA order
 question: |
   What you want to ask for in the RFA order
 subquestion: |
-  **Choose all that apply to you.** This is a list of things that you can ask the court for. If approved, they will be part of the Relief from Abuse order. You can also add other things at the bottom.
+  **Choose all that apply to you.** 
+  
+  This is a list of things that you can ask the court for. If approved, they will be part of the Relief from Abuse order. 
+  
+  You can also ask for other things on an upcoming screen -- things that are specific to your situation.
   
   I want the court to:
 fields:
@@ -607,9 +987,13 @@ fields:
   - "I want the order to protect me from this.": request_not_abuse_users1
     datatype: yesno
     show if: request_not_abuse
-  - "I want the order to protect my child/children.": request_not_abuse_children
+  - "I want the order to protect my child/children from this.": request_not_abuse_children
     datatype: yesno
     show if: request_not_abuse
+  - note: |
+      ---
+    show if: request_not_abuse
+    
   - "Order the defendant to not stalk or sexually assault me or my child/children": request_no_stalking_assault
     datatype: yesno
   - "I want the order to stop stalking.": request_no_stalking
@@ -618,19 +1002,23 @@ fields:
   - "I want the order to stop sexual assault.": request_no_assault
     datatype: yesno
     show if: request_no_stalking_assault
-  - "I want the order to protect me.": request_no_assault_users1
+  - "I want the order to protect me from this.": request_no_assault_users1
     datatype: yesno
     show if: request_no_stalking_assault
-  - "I want the order to protect my child/children.": request_no_assault_children
+  - "I want the order to protect my child/children from this.": request_no_assault_children
     datatype: yesno
     show if: request_no_stalking_assault
+  - note: |
+      ---
+    show if: request_no_stalking_assault
+    
   - "Order the defendant to immediately leave the residence, and to order sole possession to me": request_leave
     datatype: yesno
-  - "Order the defendant not to possess or purchase firearms for the duration of the order": request_no_firearms
+  - "Order the defendant not to possess or purchase guns/firearms for the duration of the order": request_no_firearms
     datatype: yesno
   - "Order the defendant to surrender immediately to law enforcement all guns/firearms that they own, possess or control": request_surrender_firearms
     datatype: yesno
-  - "Order the defendant to pay your temporary living expenses": request_living_expenses
+  - "Order the defendant to pay my temporary living expenses": request_living_expenses
     datatype: yesno
   - "Order the defendant to pay temporary child support": request_child_support
     datatype: yesno
@@ -641,53 +1029,80 @@ fields:
     show if: request_no_pet_harm
   - "I want the order to protect the pets owned by my child/children.": request_no_pet_children
     datatype: yesno
+    show if: request_no_pet_harm    
+  - note: |
+      ---
     show if: request_no_pet_harm
+    
   - "Order me to get temporary possession and control of the pet(s)": request_control_of_pet
     datatype: yesno
-    show if: request_no_pet_harm
+    show if: request_no_pet_harm  
   - "Order the defendant to stay a certain distance away": request_stay_away
     datatype: yesno
   - "How many feet away?": request_stay_away_feet
     maxlength: 5
     show if: request_stay_away
-  - "I want the order to protect me.": request_stay_away_users1
+  - "I want the order to protect me from this.": request_stay_away_users1
     datatype: yesno
     show if: request_stay_away
-  - "I want the order to protect my child/children.": request_stay_away_children
+  - "I want the order to protect my child/children from this.": request_stay_away_children
     datatype: yesno
     show if: request_stay_away
+  - note: |
+      ---
+    show if: request_stay_away
+    
   - "Order the defendant to not contact me or my child/children in any way": request_no_contact
     datatype: yesno
-  - "I want the order to protect me.": request_no_contact_users1
+  - "I want the order to protect me from this.": request_no_contact_users1
     datatype: yesno
     show if: request_no_contact
-  - "I want the order to protect my child/children.": request_no_contact_children
+  - "I want the order to protect my child/children from this.": request_no_contact_children
     datatype: yesno
     show if: request_no_contact
-  - "Award temporary Parental Rights and Responsibilities (custody) of our child/children to me or someone else. (Child(ren) of you and the defendant)": request_temp_PRR
-    datatype: yesno
-  - "I want custody of my child named ${children[1].name.first}.": children1_PRR
-    datatype: yesno
+  - note: |
+      ---
+    show if: request_no_contact
+
+  - "Award temporary Parental Rights and Responsibilities (custody) of our child/children to me or someone else. (The child(ren) of you and the defendant.)": request_temp_PRR
+    datatype: yesno  
+  - note: If you choose custody, we will ask for the names of the children on the next screen.
     show if: request_temp_PRR
-  - "In 1 or 2 words, what is ${children[1].name.first}'s relationship to you?": children1_relationship_users1
-    maxlength: 19
-    show if: children1_PRR
-  - "What is ${children[1].name.first}'s relationship to the defendant?": children1_relationship_OP
-    maxlength: 21
-    show if: children1_PRR
-#  - "This child's relationship to you?": children2_relationship_users1
-#    maxlength: 19
-#  - "This child's relationship to the defendant?": children2_relationship_OP
-#    maxlength: 21
-#  - "This child's relationship to you?": children3_relationship_users1
-#    maxlength: 19
-#  - "This child's relationship to the defendant?": children3_relationship_OP
-#    maxlength: 21
-  - "Order something else as part of the RFA order": request_other
+    
+  - "I want to ask for something else. (You can write what you want on an upcoming screen.)": other_request
     datatype: yesno
-  - "Explain what else you'd like the RFA order to do.": request_other_description
-    input type: area
-    rows: 2
+---
+code: |
+  for child in children: 
+    child.custody_wanted
+  get_kids_relationships = True
+    
+---
+id: Childrens relationships
+generic object: Individual     
+question: |
+  Custody of ${x.name.first}
+fields:
+  - I want temporary custody of ${x.name.first}: x.custody_wanted
+    datatype: yesnoradio
+  - "In 1 or 2 words, what is ${x.name.first}'s relationship to you?": x.relationship_users1
+    maxlength: 19
+    show if: x.custody_wanted
+  - "What is ${x.name.first}'s relationship to the defendant?": x.relationship_OP
+    maxlength: 21
+    show if: x.custody_wanted
+---
+id: Put something else in order
+question: |
+  Anything else to ask for in the RFA order
+fields:
+  - "Do you want to ask the court for something else as part of the RFA order?": request_other
+    datatype: yesnoradio
+  - note: |
+      Start with a phrase like: 'Order the defendant to ...' or 'Order me to get ...': 
+    show if: request_other
+  - "Explain what else you'd like the RFA order to do": request_other_description
+    maxlength: 70
     hint: Order the defendant to...
     show if: request_other
 ---
@@ -707,39 +1122,40 @@ subquestion: |
   Is there an existing court order or a pending court proceeding involving you, the defendant, and/or your child or children? 
   
   Don't include things you plan to do. Only include things that have been submitted to the court already.
-fields:
-  - note: Select all that apply.
-  - "For divorce or separation?": existing_order_divorce
-    datatype: yesno
-  - "For a civil union dissolution?": dissolution
-    datatype: yesno
-  - "For Relief from Abuse?": existing_order_RFA
-    datatype: yesno
-  - "For a criminal matter?": criminal_proceeding
-    datatype: yesno
-  - "For parentage?": parentage_order
-    datatype: yesno
-  - "For guardianship?": guardianship_order
-    datatype: yesno
-  - "For a juvenile (DCF) matter?": juvenile_order
-    datatype: yesno
-  - "For child support?": child_support_order
-    datatype: yesno
+fields:  
+  - "Select all that apply": existing_order
+    datatype: checkboxes
+    none of the above: False
+    required: False
+    choices:
+      - "For divorce or separation?": existing_order_divorce
+      - "For a civil union dissolution?": dissolution
+      - "For Relief from Abuse?": existing_order_RFA
+      - "For a criminal matter?": criminal_proceeding
+      - "For parentage?": parentage_order
+      - "For guardianship?": guardianship_order
+      - "For a juvenile (DCF) matter?": juvenile_order
+      - "For child support?": child_support_order
+      
   - "In what state(s) is the existing order or a pending court proceeding?": existing_order_state
     maxlength: 34
+    required: False
   - "In what county/counties is the existing order or a pending court proceeding?": existing_order_county
     maxlength: 36
+    required: False
   - "What is the name of your attorney for the existing order or a pending court proceeding -- if you have one?": existing_order_users_attorney
     maxlength: 25
+    required: False
   - "What is the name of the other attorney for the existing order or a pending court proceeding -- if the defendant has one?": existing_order_OP_attorney
     maxlength: 25
+    required: False
 
 ---
 id: About your home
 question: |
-  About your home
+  Shelter or a place to stay?
 subquestion: |
-  Will you be forced from your home and be without shelter -- unless the defendant is ordered to leave your home?
+  Have you been or will you be forced from your home -- and be without shelter -- unless the defendant is ordered to leave your home?
 fields:
   - no label: users1_no_shelter
     datatype: yesnoradio
@@ -780,16 +1196,15 @@ subquestion: |
   You may notice a couple similar questions -- but asked in a new way -- as you provide details for the law enforcement form, which is called the Protection Order Service Information form.
 continue button field: details_for_law_enforcement
 ---
-#Shall I make separate blocks for 1 - if the defendant can be found at their shared home and 2- if the defendant is living in another location?
 id: About the home
 question: |
   The defendant's home address at this time
 subquestion: |
   Tell law enforcement where the defendant lives at this time. If they live with you, provide that address and information. If you don't know an answer, say I don't know.  
 fields:
-  - "The house or building number on the street (Example: Enter 10 if it's 10 Main Street.)": house
+  - "The house or building number on the street (Example: Enter '10' if it's 10 Main Street.)": house
     maxlength: 10
-  - "Street or Town Road (Example: Enter Main Street)": other_parties1_street_address
+  - "Name of the street or Town Road number (Example: Enter 'Main Street')": other_parties1_street_address
     maxlength: 28
   - "Town / city": other_parties1_city
     maxlength: 23
@@ -798,14 +1213,13 @@ fields:
   - "If you don't have a street address, describe the location of the home.": location_of_home
     input type: area
     required: False
-  - "Describe what the defendant's home looks like.": description_of_home
+  - "Describe what the defendant's home looks like. If it's an apartment, include the apartment number.": description_of_home
     input type: area
     maxlength: 220
   - "Best days and times to contact the defendant at home.": best_contact_time
     input type: area
     maxlength: 220
 ---
-#How make all of these not required?
 id: About the defendant's vehicle
 question: |
   The defendant's vehicle (their car or truck)
@@ -814,14 +1228,19 @@ subquestion: |
 fields:
   - "What brand car or truck do they drive? (Ford, Honda, etc.)": vehicle_make
     maxlength: 19
+    required: False
   - "What model car or truck? (F-150, Civic)": vehicle_model
     maxlength: 17
+    required: False
   - "Color of car or truck": vehicle_color
     maxlength: 13
+    required: False
   - "Vehicle plate number": vehicle_plate
     maxlength: 14
+    required: False
   - "Vehicle year": vehicle_year
     maxlength: 6
+    required: False
 ---
 
 id: More on your relationship to defendant
@@ -829,19 +1248,18 @@ question: |
   More on your relationship to defendant
 subquestion: |
   Law enforcement asks these specific questions on their confidential form.
-  
-  Check all that apply to you.
-fields:
-  - "I am the spouse or ex-spouse (former spouse) of the defendant.": spouse_or_ex_spouse
-    datatype: yesno
-  - "The defendant and I have lived together while having a sexual relationship together.": lived_together
-    datatype: yesno
-  - "The defendant and I have a child or children in common.": had_kids_together
-    datatype: yesno
-  - "I am the defendant’s child or step-child, or I am filing on behalf of that child or step-child.": defendants_child
-    datatype: yesno
-  - "I am the child of the plaintiff who currently or has in the past lived with the defendant while having a sexual relationship together, or I am filing on behalf of that child.": plaintiffs_child
-    datatype: yesno
+fields:  
+  - "Select any that apply to you.": relationship_for_LE
+    datatype: checkboxes
+    none of the above: False
+    required: False
+    choices:  
+      - "I am the spouse or ex-spouse (former spouse) of the defendant.": spouse_or_ex_spouse
+      - "The defendant and I have lived together while having a sexual relationship together.": lived_together
+      - "The defendant and I have a child or children in common.": had_kids_together
+      - "I am the defendant’s child or step-child, **or** I am filing on behalf of that child or step-child.": defendants_child
+      - "I am the child of a person who currently or has in the past lived with the defendant while having a sexual relationship together, **or** I am filing on behalf of that child.": plaintiffs_child
+
 ---
 id: Defendant s work information
 question: |
@@ -851,24 +1269,34 @@ subquestion: |
 fields:
   - "Defendant's employer": employer
     maxlength: 36
+    required: False
   - "Their employers street address": employers_street_address
     maxlength: 29
+    required: False
   - "Employers city and state": employers_city_state
     maxlength: 36
+    required: False
   - "Work hours on Mondays": work_mondays
     maxlength: 11
+    required: False
   - "Work hours on Tuesdays": work_tues
     maxlength: 11
+    required: False
   - "Work hours on Wednesdays": work_weds
     maxlength: 11
+    required: False
   - "Work hours on Thursdays": work_thurs
     maxlength: 11
+    required: False
   - "Work hours on Fridays": work_fri
     maxlength: 11
+    required: False
   - "Work hours on Saturdays": work_sat
     maxlength: 11
+    required: False
   - "Work hours on Sundays": work_sun
     maxlength: 11
+    required: False
 ---
 #Make all these not required
 id: Other places the defendant might be
@@ -879,25 +1307,30 @@ subquestion: |
 fields:
   - note: |
       <h2 class="h4">Other location:</h2>
-  - "The house or building number on the street (Example: Enter 10 if it's 10 Main Street.)": house2
+  - "The house or building number on the street (Example: Enter '10' if it's 10 Main Street.)": house2
     maxlength: 10
-  - "Street or Town Road (Example: Enter Main Street)": other_location_street_address
+    required: False
+  - "Street or Town Road (Example: Enter 'Main Street')": other_location_street_address
     maxlength: 28
+    required: False
   - "Town / city": other_location_city
     maxlength: 23
+    required: False
   - "State": other_location_state
     maxlength: 5
+    required: False
   - "Phone number at that location": other_location_phone
     maxlength: 13
+    required: False
   - "I have another place to list.": other_location2
     datatype: yesno
   - note: |
       <h2 class="h4">Another location:</h2>
     show if: other_location2
-  - "The house or building number on the street (Example: Enter 10 if it's 10 Main Street.)": house3
+  - "The house or building number on the street (Example: Enter '10' if it's 10 Main Street.)": house3
     maxlength: 10
     show if: other_location2
-  - "Street or Town Road (Example: Enter Main Street).": other_location2_street_address
+  - "Street or Town Road (Example: Enter 'Main Street').": other_location2_street_address
     maxlength: 27
     show if: other_location2
   - "Town / city": other_location2_city
@@ -914,10 +1347,10 @@ id: What the defendant looks like
 question: |
   What the defendant looks like
 subquestion: |
-  What follows are questions that will help law enforcement identify the defendant so they can serve the RFA order.
+  These are questions that will help law enforcement identify the defendant so they can serve the RFA order.
 fields:
   - note: |
-      <h2 class="h4">Sex/gender:</h2>
+      <h2 class="h4">Defendant's sex/gender:</h2>
       Note that law enforcement only offers these two checkboxes at this time.
   - "Female": sex_female
     datatype: yesno
@@ -925,26 +1358,29 @@ fields:
     datatype: yesno
   - note: |
       <h2 class="h4">Race:</h2>
-  - "White": race_white
-    datatype: yesno
-  - "African-American": race_black
-    datatype: yesno
-  - "Native American": race_native
-    datatype: yesno
-  - "Asian": race_asian
-    datatype: yesno
-  - "Other": race_other
-    datatype: yesno
+  - "Select one.": race
+    datatype: checkboxes
+    none of the above: False
+    minlength: 1
+    maxlength: 1
+    choices:        
+      - "White": race_white
+      - "African-American": race_black
+      - "Native American": race_native
+      - "Asian": race_asian
+      - "Other": race_other
   - note: |
       <h2 class="h4">Skin color/tone:</h2>
-  - "Light": skin_light
-    datatype: yesno
-  - "Medium": skin_medium
-    datatype: yesno
-  - "Dark": skin_dark
-    datatype: yesno
-  - "Other": skin_other
-    datatype: yesno
+  - "Select one.": skin
+    datatype: checkboxes
+    none of the above: False
+    minlength: 1
+    maxlength: 1
+    choices:              
+      - "Light": skin_light
+      - "Medium": skin_medium
+      - "Dark": skin_dark
+      - "Other": skin_other
   - note: |
       <h2 class="h4">Height:</h2>
   - "Height -- feet": other_parties1_height_ft
@@ -980,85 +1416,101 @@ id: More about what the defendant looks like
 question: |
   More about what the defendant looks like
 fields:
-  - "Brown": hair_brown
-    datatype: yesno
-  - "Blond": hair_blond
-    datatype: yesno
-  - "Black": hair_black
-    datatype: yesno
-  - "Red": hair_red
-    datatype: yesno
-  - "Gray / white": hair_gray
-    datatype: yesno
-  - "Bald": hair_bald
-    datatype: yesno
-  - "Other": hair_other
-    datatype: yesno
-  - "Short": hair_short
-    datatype: yesno
-  - "Medium": hair_medium
-    datatype: yesno
-  - "Long": hair_long
-    datatype: yesno
+  - note: |
+      <h2 class="h4">Hair length:</h2>
+  - "Select one.": hair
+    datatype: checkboxes
+    none of the above: False
+    minlength: 1
+    maxlength: 1
+    choices:  
+      - "Short": hair_short
+      - "Medium": hair_medium
+      - "Long": hair_long
+      - "Bald": hair_bald
+  - note: |
+      <h2 class="h4">Hair color:</h2>
+  - "Select one.": hair_color
+    datatype: checkboxes
+    none of the above: False
+    minlength: 1
+    choices:  
+      - "Brown": hair_brown
+      - "Blond": hair_blond
+      - "Black": hair_black
+      - "Red": hair_red
+      - "Gray / white": hair_gray
+      - "Bald": hair_bald_color
+      - "Other": hair_other
+  - note: |
+      <h2 class="h4">Facial hair:</h2>
   - "Beard": hair_beard
     datatype: yesno
   - "Mustache": hair_mustache
     datatype: yesno
+  - note: |
+      <h2 class="h4">Other identifiers:</h2>
   - "Tattoos": tattoos
     datatype: yesno
-  - "Where are the tattoos located?": tattoos_location
+    required: False
+  - "Where are the tattoos? What design(s)?": tattoos_location
     maxlength: 74
+    show if: tattoos
   - "Scars or marks": scars
     datatype: yesno
-  - "Where are the scars located?": scars_location
+  - "Where are the scars?": scars_location
     maxlength: 74
+    show if: scars
   - "Body piercing / earrings": piercing
     datatype: yesno
-  - "Where are the piercings located?": piercing_location
+  - "Where are the piercings?": piercing_location
     maxlength: 74
+    show if: piercing
   - "Other identifying marks": other_marks
     datatype: yesno
-  - "Where are the marks located?": marks_location
+  - "What are they and where are they?": marks_location
     maxlength: 74
+    show if: other_marks
 ---
 id: When law enforcement serves the order to the defendant
 question: |
-  When law enforcement serves the order to the defendant
+  When law enforcement serves (delivers) the order to the defendant
 fields:
-  - "Notify served": notify_served
-    datatype: yesno
-  - "Users1 notify phone number": users1_notify_phone_number
+  - "If you get a RFA order, do you wish to be notified after the order is served?": notify_served
+    datatype: yesnoradio
+  - "What phone number should law enforcement call to notify you?": users1_notify_phone_number
     maxlength: 45
-  - "y.) Will the defendant try to avoid being served this order?": avoid_served
-    datatype: yesno
+    show if: notify_served
+  - "Will the defendant try to avoid being served this order?": avoid_served
+    datatype: yesnoradio
   - "Does the defendant have guard dogs or vicious dogs?": guard_dog
-    datatype: yesno
+    datatype: yesnoradio
   - "Is the defendant likely to be under the influence of drugs or alcohol?": under_infl
-    datatype: yesno
+    datatype: yesnoradio
   - "Will the officer who serves this order be in any danger?": danger_for_officer
-    datatype: yesno
+    datatype: yesnoradio
   - "Why will the officer be in danger?": danger_for_officer_why
     input type: area
----
-id: Misc that I need to put in the right spots
-question: |
-  Extra details
-fields:
-  - "If you have one, what is your work phone number?": users1_work_phone_number
-    maxlength: 24
-    required: False
-  - "Check this box if you get Reach Up benefits from the state": reach_up_users1
-    datatype: yesno
-
+    show if: danger_for_officer
 ---
 id: Signing some but not all of your forms
 question: |
   Signing some -- but not all -- of your forms
+subquestion: |
+  The Affidavit form requires the signature of a "Notary" or you can do that signature over the phone with the court. For that reason, we wait to sign the Affidavit form. We will give you instructions on the next steps after you finish this interview and see your forms.
 fields:
   - "Please type your name. This will appear under your signature.": printed_signature
     maxlength: 34
-  - "Date of signature of complaint form": date
-    maxlength: 24
+  - "Date of your signature for these forms": date
+    datatype: date
+    required: False
+    default: |
+      ${ today() }
+  -  note: |
+      You can change this date later or leave it blank for now if you want.
+      
+
+  
 ---
 id: preview RFApackage
 question: |
@@ -1066,7 +1518,7 @@ question: |
 subquestion: |
   Here is a preview of the form you will sign on the next page.   
   
-  ${ al_court_bundle.as_pdf(key='preview') }
+  #${ al_court_bundle.as_pdf(key='preview') }
 
   Click the image to open it in a new tab. Click the "Edit answers" button
   to edit your answers.
@@ -1094,43 +1546,50 @@ id: RFApackage review screen
 event: review_RFApackage
 question: |
   Review your answers
+subquestion: |
+  Edit your answers here and when you are done, scroll to the bottom and select "Resume."
 review:
   - Edit: docket_number
     button: |
       **Docket number**:
       ${ docket_number }
-  - Edit: trial_court
+  - Edit: trial_court_name
     button: |
-      **Trial court**
-  
-      % if defined("trial_court.address.county"):
-      * address: ${ trial_court.address.block() }
-      % endif
+      **You want to file in Family Court of this county:**
+      ${ trial_court_name }
   - Edit: users.revisit
     button: |
-      **Users**
+      **User -- usually you**
 
       % for item in users:
         * ${ item }
       % endfor
   - Edit: other_parties.revisit
     button: |
-      **Other parties**
+      **Other party -- the defendant**
 
       % for item in other_parties:
         * ${ item }
       % endfor
 
-  - Edit: owns_weapons
+  - Edit: weapons.there_are_any
     button: |
-      **Does the defendant have guns/firearms or weapons?**:
-      % if owns_weapons is True:
+      **Does the defendant have guns/firearms or deadly weapons?**:
+      % if weapons.there_are_any is True:
       Yes
-      % elif owns_weapons is False:
+      % elif weapons.there_are_any is False:
       No
       % else: 
       I don't know
       % endif
+      
+  - Edit: weapons.revisit
+    button: |
+      **List of weapons that defendant has access to**:
+      
+      % for item in weapons:
+        * ${ item }
+      % endfor
   - Edit: recent_incident_date
     button: |
       **What was the date of the most recent incident?**:
@@ -1179,82 +1638,82 @@ review:
     button: |
       **Please describe the any other incident(s) with as much detail as possible.**:
       > ${ single_paragraph(other_incident_description) }
-  - Edit: weapon1
-    button: |
-      **Description of the 1st weapon**:
-      ${ weapon1 }
-  - Edit: weapon1_location
-    button: |
-      **Location of the 1st weapon**:
-      ${ weapon1_location }
-  - Edit: weapon2
-    button: |
-      **Description of the 2nd weapon**:
-      ${ weapon2 }
-  - Edit: weapon2_location
-    button: |
-      **Location of the 2nd weapon**:
-      ${ weapon2_location }
-  - Edit: weapon3_location
-    button: |
-      **Location of the 3rd weapon**:
-      ${ weapon3_location }
-  - Edit: weapon3
-    button: |
-      **Description of the 3rd weapon**:
-      ${ weapon3 }
-  - Edit: weapon4_location
-    button: |
-      **Location of the 4th weapon**:
-      ${ weapon4_location }
-  - Edit: weapon4
-    button: |
-      **Description of the 4th weapon**:
-      ${ weapon4 }
-  - Edit: weapon5_location
-    button: |
-      **Location of the 5th weapon**:
-      ${ weapon5_location }
-  - Edit: weapon5
-    button: |
-      **Description of the 5th weapon**:
-      ${ weapon5 }
-  - Edit: weapon6_location
-    button: |
-      **Location of the 6th weapon**:
-      ${ weapon6_location }
-  - Edit: weapon6
-    button: |
-      **Description of the 6th weapon**:
-      ${ weapon6 }
-  - Edit: weapon7
-    button: |
-      **Description of the 7th weapon**:
-      ${ weapon7 }
-  - Edit: weapon7_location
-    button: |
-      **Location of the 7th weapon**:
-      ${ weapon7_location }
-  - Edit: weapon8
-    button: |
-      **Description of the 8th weapon**:
-      ${ weapon8 }
-  - Edit: weapon8_location
-    button: |
-      **Location of the 8th weapon**:
-      ${ weapon8_location }
+  #- Edit: weapons[0].description
+  #  button: |
+  #    **Description of the 1st weapon**:
+  #    ${ weapons[0].description }
+  #- Edit: weapons[0].location
+  #  button: |
+  #    **Location of the 1st weapon**:
+  #    ${ weapons[0].location }
+  #- Edit: weapons[1].description
+  #  button: |
+  #    **Description of the 2nd weapon**:
+  #    ${ weapons[1].description }
+  #- Edit: weapons[1].location
+  #  button: |
+  #    **Location of the 2nd weapon**:
+  #    ${ weapons[1].location }
+  #- Edit: weapons[2].description
+  #  button: |
+  #    **Description of the 3rd weapon**:
+  #    ${ weapons[2].description }
+  #- Edit: weapons[2].location
+  #  button: |
+  #    **Location of the 3rd weapon**:
+  #    ${ weapons[2].location }
+  #- Edit: weapons[3].description
+  #  button: |
+  #    **Description of the 4th weapon**:
+  #    ${ weapons[3].description }
+  #- Edit: weapons[3].location
+  #  button: |
+  #    **Location of the 4th weapon**:
+  #    ${ weapons[3].location }
+  #- Edit: weapons[4].description
+  #  button: |
+  #    **Description of the 5th weapon**:
+  #    ${ weapons[4].description }
+  #- Edit: weapons[4].location
+  #  button: |
+  #    **Location of the 5th weapon**:
+  #    ${ weapons[4].location }
+  #- Edit: weapons[5].description
+  #  button: |
+  #    **Description of the 6th weapon**:
+  #    ${ weapons[5].description }
+  #- Edit: weapons[5].location
+  #  button: |
+  #    **Location of the 6th weapon**:
+  #    ${ weapons[5].location }
+  #- Edit: weapons[6].description
+  #  button: |
+  #    **Description of the 7th weapon**:
+  #    ${ weapons[6].description }
+  #- Edit: weapons[6].location
+  #  button: |
+  #    **Location of the 7th weapon**:
+  #    ${ weapons[6].location }
+  #- Edit: weapons[7].description
+  #  button: |
+  #    **Description of the 8th weapon**:
+  #    ${ weapons[7].description }
+  #- Edit: weapons[7].location
+  #  button: |
+  #    **Location of the 8th weapon**:
+  #    ${ weapons[7].location }
   - Edit: extra_sheets_attached
     button: |
       **Are you attaching extra sheets with more weapons listed?**:
       ${ extra_sheets_attached }
   - Edit: used_firearm
     button: |
-      **Has the defendant used, displayed or threatened to use a gun/firearm or deadly weapon against you?**:
+      **Has the defendant used, displayed or threatened to use a **gun/firearm** against you or against a family member?**:
       ${ word(yesno(used_firearm)) }
-  - Edit: used_firearm_how
+  - Edit: used_weapon_how
     button: |
-      **Describe in detail how they used or threatened to use it?**:
-      > ${ single_paragraph(used_firearm_how) }
+      **Describe in detail how they used or threatened to use the weapon?**:
+      > ${ single_paragraph(used_weapon_how) }
   - Edit: danger_more_abuse
     button: |
       **Is there danger of more abuse?**:
@@ -1287,21 +1746,6 @@ review:
     button: |
       **Date of signature**:
       ${ signature_date }
-  - Edit: family_member_description
-    button: |
-      **In a word, what is your relationship to this family member**:
-      ${ family_member_description }
-  - Edit: family_member
-    button: |
-      **Is the defendant a member of your family?**:
-      ${ word(yesno(family_member)) }
-#  - Edit: spouses.revisit
-#    button: |
-#      **Spouses**
-#
-#      % for item in spouses:
-#        * ${ item }
-#      % endfor
   - Edit: is_spouse
     button: |
       **Is the defendant your spouse?**:
@@ -1310,14 +1754,21 @@ review:
     button: |
       **Is the defendant an ex-spouse (former spouse)?**:
       ${ word(yesno(ex_spouse)) }
-  - Edit: other_relationship
+  - Edit: family_member
     button: |
-      **Does the defendant have a different relationship to you?**:
-      ${ word(yesno(other_relationship)) }
-  - Edit: other_relationship_description
+      **Is the defendant a member of your family?**:
+      ${ word(yesno(family_member)) }
+  - Edit: family_member_description
     button: |
-      **In a word, what is that relationship?**:
-      ${ other_relationship_description }
+      **In a word, what is your relationship to this family member**:
+      ${ family_member_description }
+#  - Edit: spouses.revisit
+#    button: |
+#      **Spouses**
+#
+#      % for item in spouses:
+#        * ${ item }
+#      % endfor
   - Edit: live_together
     button: |
       **Is the defendant someone you have been living with or sharing occupancy?**:
@@ -1330,6 +1781,14 @@ review:
     button: |
       **Is the defendant someone you have dated?**:
       ${ word(yesno(dating)) }
+  - Edit: other_relationship
+    button: |
+      **Does the defendant have a different relationship to you?**:
+      ${ word(yesno(other_relationship)) }
+  - Edit: other_relationship_description
+    button: |
+      **In a word, what is that relationship?**:
+      ${ other_relationship_description }
   - Edit: existing_order_divorce
     button: |
       **Is there an existing order or a pending court proceeding for divorce or separation?**:
@@ -1406,18 +1865,18 @@ review:
     button: |
       **Did the defendant abuse the child/children -- physically injured or otherwise treated the child(ren) in a manner which placed their life, health, development or welfare in jeopardy?**:
       ${ word(yesno(recent_incident_abused)) }
-  - Edit: recent_incident_stalked_users1
+  - Edit: recent_incident_stalked
     button: |
       **Did the defendant stalk you or the child/children?**:
-      ${ word(yesno(recent_incident_stalked_users1)) }
+      ${ word(yesno(recent_incident_stalked)) }
   - Edit: recent_incident_stalked_children
     button: |
       **Did the defendant stalk the child/children?**:
       ${ word(yesno(recent_incident_stalked_children)) }
-  - Edit: recent_incident_stalked
+  - Edit: recent_incident_stalked_users1
     button: |
       **Did the defendant stalk you?**:
-      ${ word(yesno(recent_incident_stalked)) }
+      ${ word(yesno(recent_incident_stalked_users1)) }
   - Edit: recent_incident_stalked_date2
     button: |
       **On what date did they first stalk you?**:
@@ -1438,18 +1897,18 @@ review:
     button: |
       **Did the defendant sexually assault you?**:
       ${ word(yesno(recent_incident_assault_users1)) }
-  - Edit: danger_more_abuse_children
+  - Edit: danger_more_abuse_who
     button: |
       **Is there danger of more abuse to the child/children?**:
-      ${ word(yesno(danger_more_abuse_children)) }
-  - Edit: danger_more_abuse_users1
+      ${ word(yesno(danger_more_abuse_who["children"])) }
+  - Edit: danger_more_abuse_who
     button: |
       **Is there danger of more abuse to you?**:
-      ${ word(yesno(danger_more_abuse_users1)) }
-  - Edit: used_firearm_yes
+      ${ word(yesno(danger_more_abuse_who["users1"])) }
+  - Edit: used_weapon
     button: |
-      **Did the defendant use, display or threaten to use a gun/ firearm against you or against a family member?**:
-      ${ word(yesno(used_firearm_yes)) }
+      **Did the defendant use, display or threaten to use a **gun/ firearm or other deadly weapon** against you or against a family member?**:
+      ${ word(yesno(used_weapon)) }
   - Edit: incarcerated
     button: |
       **Is the defendant incarcerated and has been convicted of one of the crimes specified in 15 V.S.A. 1103 (c)(1)(B)?**:
@@ -1484,11 +1943,11 @@ review:
       ${ word(yesno(residence_of_both)) }
   - Edit: reach_up_users1
     button: |
-      **Do you get Reach Up benefits?**:
+      **Do you get Reach Up benefits from the state?**:
       ${ word(yesno(reach_up_users1)) }
   - Edit: reach_up_OP
     button: |
-      **Does the defendant get Reach Up benefits?**:
+      **Does the defendant get Reach Up benefits from the state?**:
       ${ word(yesno(reach_up_OP)) }
   - Edit: request_not_abuse_children
     button: |
@@ -1536,7 +1995,7 @@ review:
       ${ word(yesno(request_surrender_firearms)) }
   - Edit: request_living_expenses
     button: |
-      **Do you want the court to order the defendant?? to pay your temporary living expenses?**:
+      **Do you want the court to order the defendant to pay your temporary living expenses?**:
       ${ word(yesno(request_living_expenses)) }
   - Edit: request_child_support
     button: |
@@ -1599,11 +2058,11 @@ review:
       % endfor
   - Edit: children1_relationship_users1
     button: |
-      **This child's relationship to you?**:
+      **This child's -- ${ children[0] } -- relationship to you?**:
       ${ children1_relationship_users1 }
   - Edit: children1_relationship_OP
     button: |
-      **This child's relationship to the defendant?**:
+      **This child's -- ${ children1_name } -- relationship to the defendant?**:
       ${ children1_relationship_OP }
   - Edit: children2_relationship_users1
     button: |
@@ -1623,11 +2082,11 @@ review:
       ${ children3_relationship_OP }
   - Edit: request_other_description
     button: |
-      **PRR other description**:
+      **Description of other request**:
       ${ request_other_description }
   - Edit: request_other
     button: |
-      **PRR other?**:
+      **Request something else in the RFA order?**:
       ${ word(yesno(request_other)) }
   - Edit: request_all_emergency
     button: |
@@ -1635,7 +2094,7 @@ review:
       ${ word(yesno(request_all_emergency)) }
   - Edit: date
     button: |
-      **Date of signature of complaint form**:
+      **Date of your signature on complaint form**:
       ${ date }
   - Edit: users1_notify_phone_number
     button: |
@@ -1643,7 +2102,7 @@ review:
       ${ users1_notify_phone_number }
   - Edit: notify_served
     button: |
-      **Notify served**:
+      **If you get a RFA order, do you wish to be notified after the order is served?**:
       ${ word(yesno(notify_served)) }
   - Edit: spouse_or_ex_spouse
     button: |
@@ -1797,10 +2256,10 @@ review:
     button: |
       **Gray / white**:
       ${ word(yesno(hair_gray)) }
-  - Edit: hair_bald
+  - Edit: hair_bald_color
     button: |
       **Bald**:
-      ${ word(yesno(hair_bald)) }
+      ${ word(yesno(hair_bald_color)) }
   - Edit: hair_other
     button: |
       **Other**:
@@ -1817,6 +2276,10 @@ review:
     button: |
       **Long**:
       ${ word(yesno(hair_long)) }
+  - Edit: hair_bald
+    button: |
+      **Bald**:
+      ${ word(yesno(hair_bald)) }
   - Edit: hair_beard
     button: |
       **Beard**:
@@ -1857,13 +2320,13 @@ review:
     button: |
       **Where are the marks located?**:
       ${ marks_location }
-  - Edit: other_parties1_word_phone_number
+  - Edit: other_parties1_work_phone_number
     button: |
-      **Defendant's work phone number FIX NAME OF FIELD**:
-      ${ other_parties1_word_phone_number }
+      **Defendant's work phone**:
+      ${ other_parties1_work_phone_number }
   - Edit: other_parties1_other_phone_number
     button: |
-      **Defendant's other phone number**:
+      **Defendant's other phone**:
       ${ other_parties1_other_phone_number }
   - Edit: house
     button: |
@@ -1923,31 +2386,39 @@ review:
       ${ work_sun }
   - Edit: other_location_street_address
     button: |
-      **Where would they be if not at home or work? List the street address of another location. NEED TO ADD FIELD FOR HOUSE NUMBER AND RENAME ON PDF TO house2.**:
+      **Where would they be if not at home or work? List the street address of another location.**:
       ${ other_location_street_address }
+  - Edit: house2
+    button: |
+      **House or building number on the street**:
+      ${ house2 }
   - Edit: other_location_city
     button: |
-      **Town / city**:
+      **Town / city of that other location**:
       ${ other_location_city }
   - Edit: other_location_state
     button: |
-      **State**:
+      **State of that other location**:
       ${ other_location_state }
   - Edit: other_location_phone
     button: |
-      **Phone number at that location**:
+      **Phone number at that other location**:
       ${ other_location_phone }
   - Edit: other_location2_street_address
     button: |
-      **List another street address if there is another location. NEED TO ADD FIELD FOR HOUSE NUMBER AND RENAME ON PDF TO house3.**:
+      **List another street address if there is another location.**:
       ${ other_location2_street_address }
+  - Edit: house3
+    button: |
+      **House or building number on the street**:
+      ${ house3 }
   - Edit: other_location2_city
     button: |
-      **Town / city**:
+      **Town / city of that location**:
       ${ other_location2_city }
   - Edit: other_location2_state
     button: |
-      **State**:
+      **State of that location**:
       ${ other_location2_state }
   - Edit: other_location2_phone
     button: |
@@ -1975,7 +2446,7 @@ review:
       ${ vehicle_color }
   - Edit: avoid_served
     button: |
-      **y.) Will the defendant try to avoid being served this order?**:
+      **Will the defendant try to avoid being served this order?**:
       ${ word(yesno(avoid_served)) }
   - Edit: guard_dog
     button: |
@@ -1993,18 +2464,10 @@ review:
     button: |
       **Why will the officer be in danger?**:
       > ${ single_paragraph(danger_for_officer_why) }
-  - Edit: house2
-    button: |
-      **House or building number on the street**:
-      ${ house2 }
-  - Edit: house3
-    button: |
-      **House or building number on the street**:
-      ${ house3 }
 ---
 continue button field: users.revisit
 question: |
-  Edit users
+  Edit user(s)
 subquestion: |
   ${ users.table }
 
@@ -2037,7 +2500,7 @@ confirm: True
 ---
 continue button field: other_parties.revisit
 question: |
-  Edit other_parties
+  Edit other party / parties
 subquestion: |
   ${ other_parties.table }
 
@@ -2104,20 +2567,42 @@ edit:
 confirm: True
 
 ---
+continue button field: weapons.revisit
+question: |
+  Edit the list of weapons
+subquestion: |
+  ${ weapons.table }
 
-
+  ${ weapons.add_action() }
+---
+table: weapons.table
+rows: weapons
+columns:
+  - Description: |
+      row_item.description if defined("row_item.description") else ""
+  - Location: |
+      row_item.location if defined("row_item.location") else ""
+edit:
+  - description
+  - location
+confirm: True
+---
 #####################################################################
 ####################### DOWNLOAD #######################
 id: download RFApackage
 event: RFApackage_download
 question: |
-  All done
+  Review your forms and download and/or print them
 subquestion: |
-  Thank you ${users}. Your form is ready to download and deliver.
+  The interview is done. Your forms are ready to view.
   
-  View, download and send your form below. Click the "Edit answers" button to fix any mistakes.
+  Select the "Edit your answers" button to fix any mistakes. Then, download your forms and the instructions sheet for the next steps to take. You can email the filled-in PDF forms to yourself or someone else, too.
+  
+  Consider creating a free account so you can save your progress. At any time choose "sign up" in the menu above, or "register" below.
+  
+  You can also use the Share feature to share a link to your interview with a trusted person. Important: If you use the Share feature, that person will be able to see and edit your answers online.
 
-  ${ action_button_html(url_action('review_RFApackage'), label='Edit answers', color='info') }
+  ${ action_button_html(url_action('review_RFApackage'), label='Edit your answers', color='info') }
   
   
   ${ al_user_bundle.download_list_html() }
@@ -2129,16 +2614,16 @@ progress: 100
 ---
 # ALDocument objects specify the metadata for each template
 objects:
-  - RFApackage_Post_interview_instructions: ALDocument.using(title="Instructions", filename="RFApackage_next_steps.docx", enabled=True, has_addendum=False)
-  - RFAaffidavit: ALDocument.using(title="3 rfa-affidavit", filename="3_RFA-affidavit", enabled=True, has_addendum=True, default_overflow_message=AL_DEFAULT_OVERFLOW_MESSAGE)
-  - RFAconfidentialcontactinfo: ALDocument.using(title="4 rfa-confidential-contact-info", filename="4_RFA-confidential-contact-info", enabled=True, has_addendum=True, default_overflow_message=AL_DEFAULT_OVERFLOW_MESSAGE)
-  - RFAcomplaint: ALDocument.using(title="1 rfa-complaint", filename="1_RFA-complaint", enabled=True, has_addendum=True, default_overflow_message=AL_DEFAULT_OVERFLOW_MESSAGE)
-  - RFAserviceinfo: ALDocument.using(title="2 rfa-service-info", filename="2_RFA-service-info", enabled=True, has_addendum=True, default_overflow_message=AL_DEFAULT_OVERFLOW_MESSAGE)
+  - RFAcomplaint: ALDocument.using(title="RFA Complaint", filename="1_RFA-complaint", enabled=True, has_addendum=True, default_overflow_message=AL_DEFAULT_OVERFLOW_MESSAGE)
+  - RFAaffidavit: ALDocument.using(title="RFA Affidavit", filename="3_RFA-affidavit", enabled=True, has_addendum=True, default_overflow_message=AL_DEFAULT_OVERFLOW_MESSAGE)
+  - RFAconfidentialcontactinfo: ALDocument.using(title="RFA Confidential Contact Info", filename="4_RFA-confidential-contact-info", enabled=True, has_addendum=True, default_overflow_message=AL_DEFAULT_OVERFLOW_MESSAGE)
+  - RFAserviceinfo: ALDocument.using(title="Protection Order Service Info", filename="2_RFA-service-info", enabled=True, has_addendum=True, default_overflow_message=AL_DEFAULT_OVERFLOW_MESSAGE)
+  - RFApackage_Post_interview_instructions: ALDocument.using(title="Instructions for Next Steps to Take", filename="RFApackage_next_steps.docx", enabled=True, has_addendum=False)
 ---
 # Bundles group the ALDocuments into separate downloads, such as for court and for the user
 objects:
-  - al_user_bundle: ALDocumentBundle.using(elements=[RFApackage_Post_interview_instructions, RFAaffidavit, RFAconfidentialcontactinfo, RFAcomplaint, RFAserviceinfo], filename="RFApackage", title="All forms to download for your records", enabled=True)
-  - al_court_bundle: ALDocumentBundle.using(elements=[RFAaffidavit, RFAconfidentialcontactinfo, RFAcomplaint, RFAserviceinfo],  filename="RFApackage", title="All forms to deliver to court", enabled=True)
+  - al_user_bundle: ALDocumentBundle.using(elements=[RFApackage_Post_interview_instructions, RFAaffidavit, RFAconfidentialcontactinfo, RFAcomplaint, RFAserviceinfo], filename="RFApackage", title="Download all forms", enabled=True)
+  #- al_court_bundle: ALDocumentBundle.using(elements=[RFAaffidavit, RFAconfidentialcontactinfo, RFAcomplaint, RFAserviceinfo],  filename="RFApackage", title="All forms to deliver to court", enabled=True)
 ---
 
 
@@ -2166,22 +2651,22 @@ attachment:
       - "docket_number": ${ docket_number }
       - "trial_court_county__1": ${ trial_court.address.county }
       - "trial_court_county__2": ${ trial_court.address.county }
-      - "trial_court_county": ${ trial_court.address.county }
+      - "trial_court_county": ${ trial_court_name }
       - "users1_name__1": ${ users[0] }
       - "users1_name__2": ${ users[0] }
       - "users1_name": ${ users[0] }
-      - "users1_birthdate__1": ${ users[0].birthdate.format() }
-      - "users1_birthdate": ${ users[0].birthdate.format() }
-      - "users1_birthdate__2": ${ users[0].birthdate.format() }
+      - "users1_birthdate__1": ${ format_date(users[0].birthdate, format='M/d/yyyy') }
+      - "users1_birthdate": ${ format_date(users[0].birthdate, format='M/d/yyyy') }
+      - "users1_birthdate__2": ${ format_date(users[0].birthdate, format='M/d/yyyy') }
       - "other_parties1_name__1": ${ other_parties[0] }
       - "other_parties1_name__2": ${ other_parties[0] }
       - "other_parties1_name": ${ other_parties[0] }
-      - "other_parties1_birthdate__1": ${ other_parties[0].birthdate.format() }
-      - "other_parties1_birthdate": ${ other_parties[0].birthdate.format() }
-      - "other_parties1_birthdate__2": ${ other_parties[0].birthdate.format() }
-      - "other_parties1_address_address__1": ${ other_parties[0].address.address }
-      - "other_parties1_address_address": ${ other_parties[0].address.address }
-      - "other_parties1_address_address__2": ${ other_parties[0].address.address }
+      - "other_parties1_birthdate__1": ${ format_date(other_parties[0].birthdate, format='M/d/yyyy') }
+      - "other_parties1_birthdate": ${ format_date(other_parties[0].birthdate, format='M/d/yyyy') }
+      - "other_parties1_birthdate__2": ${ format_date(other_parties[0].birthdate, format='M/d/yyyy') }
+      - "other_parties1_address_address__1": ${ other_parties[0].address.line_one() }
+      - "other_parties1_address_address": ${ other_parties[0].address.line_one() }
+      - "other_parties1_address_address__2": ${ other_parties[0].address.line_one() }
       - "other_parties1_address_city__1": ${ other_parties[0].address.city }
       - "other_parties1_address_city": ${ other_parties[0].address.city }
       - "other_parties1_address_city__2": ${ other_parties[0].address.city }
@@ -2190,46 +2675,45 @@ attachment:
       - "other_parties1_address_state__2": ${ other_parties[0].address.state }
       - "other_parties1_address_zip__1": ${ other_parties[0].address.zip }
       - "other_parties1_address_zip": ${ other_parties[0].address.zip }
-      - "other_parties1_weapon_yes": ${ owns_weapons }
-      - "other_parties1_weapon_no": ${ not owns_weapons }
-      - "other_parties1_weapon_DK": ${ owns_weapons == None }
-      - "recent_incident_date__1": ${ recent_incident_date.format() }
-      - "recent_incident_date": ${ recent_incident_date.format() }
+      - "other_parties1_weapon_yes": ${ weapons.there_are_any == True}
+      - "other_parties1_weapon_no": ${ weapons.there_are_any == False }
+      - "other_parties1_weapon_DK": ${ weapons.there_are_any == None }
+      - "recent_incident_date__1": ${ format_date(recent_incident_date, format='M/d/yyyy') }
+      - "recent_incident_date": ${ format_date(recent_incident_date, format='M/d/yyyy') }
       - "recent_incident_time": ${ recent_incident_time }
       - "recent_incident_town": ${ recent_incident_town }
       - "recent_incident_state": ${ recent_incident_state }
       - "recent_incident_description": ${ RFAaffidavit.safe_value("recent_incident_description") }
       - "recent_incident_most_serious_yes": ${ recent_incident_most_serious }
       - "recent_incident_most_serious_no": ${ not recent_incident_most_serious }
-      - "serious_incident_date": ${ serious_incident_date.format() }
+      - "serious_incident_date": ${ format_date(serious_incident_date, format='M/d/yyyy') }
       - "serious_incident_time": ${ serious_incident_time }
       - "serious_incident_town": ${ serious_incident_town }
       - "serious_incident_state": ${ serious_incident_state }
       - "serious_incident_description": ${ RFAaffidavit.safe_value("serious_incident_description") }
       - "other_incident_description": ${ RFAaffidavit.safe_value("other_incident_description") }
-      - "weapon1": ${ weapon1 }
-      - "weapon1_location": ${ weapon1_location }
-      - "weapon2": ${ weapon2 }
-      - "weapon2_location": ${ weapon2_location }
-      - "weapon3_location": ${ weapon3_location }
-      - "weapon3": ${ weapon3 }
-      - "weapon4_location": ${ weapon4_location }
-      - "weapon4": ${ weapon4 }
-      - "weapon5_location": ${ weapon5_location }
-      - "weapon5": ${ weapon5 }
-      - "weapon6_location": ${ weapon6_location }
-      - "weapon6": ${ weapon6 }
-      - "weapon7": ${ weapon7 }
-      - "weapon7_location": ${ weapon7_location }
-      - "weapon8": ${ weapon8 }
-      - "weapon8_location": ${ weapon8_location }
+      - "weapon1": ${ weapons[0].description }
+      - "weapon1_location": ${ weapons[0].location }
+      - "weapon2": ${ weapons[1].description }
+      - "weapon2_location": ${ weapons[1].location }
+      - "weapon3_location": ${ weapons[2].location }
+      - "weapon3": ${ weapons[2].description }
+      - "weapon4_location": ${ weapons[3].location }
+      - "weapon4": ${ weapons[3].description }
+      - "weapon5_location": ${ weapons[4].location }
+      - "weapon5": ${ weapons[4].description }
+      - "weapon6_location": ${ weapons[5].location }
+      - "weapon6": ${ weapons[5].description }
+      - "weapon7": ${ weapons[6].description }
+      - "weapon7_location": ${ weapons[6].location }
+      - "weapon8": ${ weapons[7].description }
+      - "weapon8_location": ${ weapons[7].location }
       - "extra_sheets_attached": ${ extra_sheets_attached }
-      - "used_firearm_yes": ${ used_firearm }
-      - "used_firearm_no": ${ not used_firearm }
-      - "used_firearm_how": ${ RFAaffidavit.safe_value("used_firearm_how") }
+      - "used_weapon_yes": ${ used_weapon }
+      - "used_weapon_no": ${ not used_weapon }
+      - "used_weapon_how": ${ used_weapon_how }
       - "danger_more_abuse_yes": ${ danger_more_abuse }
       - "danger_more_abuse_no": ${ not danger_more_abuse }
-      - "danger_more_abuse": ${ not danger_more_abuse }
       - "danger_more_abuse_why": ${ RFAaffidavit.safe_value("danger_more_abuse_why") }
       - "other_parties1_military_yes": ${ other_parties1_military }
       - "other_parties1_military_no": ${ not other_parties1_military }
@@ -2247,7 +2731,7 @@ attachment:
       - "docket_number": ${ docket_number }
       - "trial_court_county__1": ${ trial_court.address.county }
       - "trial_court_county__2": ${ trial_court.address.county }
-      - "trial_court_county": ${ trial_court.address.county }
+      - "trial_court_county": ${ trial_court_name }
       - "users1_name__1": ${ users[0] }
       - "users1_name__2": ${ users[0] }
       - "users1_name": ${ users[0] }
@@ -2260,12 +2744,12 @@ attachment:
       - "users1_address_state": ${ users[0].address.state }
       - "users1_address_zip__1": ${ users[0].address.zip }
       - "users1_phone_number": ${ users[0].phone_number }
-      - "users1_work_phone_number": ${ users[0].work_phone_number }
+      - "users1_work_phone_number": ${ users1_work_phone_number }
       - "users1_email": ${ users[0].email }
       - "share_contact_yes": ${ share_contact }
       - "share_contact_no": ${ not share_contact }
-      - "signature_date__1": ${ signature_date }
-      - "signature_date": ${ signature_date }
+      - "signature_date__1": ${ format_date(signature_date, format='M/d/yyyy') }
+      - "signature_date": ${ format_date(signature_date, format='M/d/yyyy') }
       - "users1_signature__1": ${ users[0].signature_if_final(i) }
       - "users1_signature": ${ users[0].signature_if_final(i) }
 ---
@@ -2281,22 +2765,22 @@ attachment:
       - "docket_number": ${ docket_number }
       - "trial_court_county__1": ${ trial_court.address.county }
       - "trial_court_county__2": ${ trial_court.address.county }
-      - "trial_court_county": ${ trial_court.address.county }
+      - "trial_court_county": ${ trial_court_name }
       - "users1_name__1": ${ users[0] }
       - "users1_name__2": ${ users[0] }
       - "users1_name": ${ users[0] }
       - "users1_birthdate__1": ${ users[0].birthdate.format() }
-      - "users1_birthdate": ${ users[0].birthdate.format() }
+      - "users1_birthdate": ${ format_date(users[0].birthdate, format='M/d/yyyy') }
       - "users1_birthdate__2": ${ users[0].birthdate.format() }
       - "other_parties1_name__1": ${ other_parties[0] }
       - "other_parties1_name__2": ${ other_parties[0] }
       - "other_parties1_name": ${ other_parties[0] }
       - "other_parties1_birthdate__1": ${ other_parties[0].birthdate.format() }
-      - "other_parties1_birthdate": ${ other_parties[0].birthdate.format() }
+      - "other_parties1_birthdate": ${ format_date(other_parties[0].birthdate, format='M/d/yyyy') }
       - "other_parties1_birthdate__2": ${ other_parties[0].birthdate.format() }
-      - "other_parties1_address_address__1": ${ other_parties[0].address.address }
-      - "other_parties1_address_address": ${ other_parties[0].address.address }
-      - "other_parties1_address_address__2": ${ other_parties[0].address.address }
+      - "other_parties1_address_address__1": ${ other_parties[0].address.line_one() }
+      - "other_parties1_address_address": ${ other_parties[0].address.line_one() }
+      - "other_parties1_address_address__2": ${ other_parties[0].address.line_one() }
       - "other_parties1_address_city__1": ${ other_parties[0].address.city }
       - "other_parties1_address_city": ${ other_parties[0].address.city }
       - "other_parties1_address_city__2": ${ other_parties[0].address.city }
@@ -2306,23 +2790,17 @@ attachment:
       - "other_parties1_address_zip__1": ${ other_parties[0].address.zip }
       - "other_parties1_address_zip": ${ other_parties[0].address.zip }
       - "recent_incident_date__1": ${ recent_incident_date.format() }
-      - "recent_incident_date": ${ recent_incident_date.format() }
-      - "danger_more_abuse_yes": ${ danger_more_abuse }
-      - "danger_more_abuse_no": ${ not danger_more_abuse }
-      - "danger_more_abuse": ${ not danger_more_abuse }
+      - "recent_incident_date": ${ format_date(recent_incident_date, format='M/d/yyyy') }
+      - "danger_more_abuse": ${ danger_more_abuse }
       - "users1_address_address__1": ${ users[0].address.address }
       - "users1_address_address": ${ users[0].address.address }
       - "users1_address_city__1": ${ users[0].address.city }
       - "users1_address_city": ${ users[0].address.city }
       - "users1_address_state__1": ${ users[0].address.state }
       - "users1_address_state": ${ users[0].address.state }
-      - "signature_date__1": ${ signature_date }
-      - "signature_date": ${ signature_date }
-      - "users1_signature__1": ${ users[0].signature_if_final(i) }
-      - "users1_signature": ${ users[0].signature_if_final(i) }
       - "family_member_description": ${ family_member_description }
       - "family_member": ${ family_member }
-      - "is_spouse": ${ is_spouse }
+      - "spouse": ${ is_spouse }
       - "other_relationship_description": ${ other_relationship_description }
       - "ex_spouse": ${ ex_spouse }
       - "other_relationship": ${ other_relationship }
@@ -2359,14 +2837,14 @@ attachment:
       - "recent_incident_stalked_users1": ${ recent_incident_stalked_users1 }
       - "recent_incident_stalked_children": ${ recent_incident_stalked_children }
       - "recent_incident_stalked": ${ recent_incident_stalked }
-      - "recent_incident_stalked_date2": ${ recent_incident_stalked_date2 }
-      - "recent_incident_stalked_date1": ${ recent_incident_stalked_date1 }
+      - "recent_incident_stalked_date2": ${ format_date(recent_incident_stalked_date2, format='M/d/yyyy') }
+      - "recent_incident_stalked_date1": ${ format_date(recent_incident_stalked_date1, format='M/d/yyyy') }
       - "recent_incident_assault_children": ${ recent_incident_assault_children }
       - "recent_incident_assault_": ${ recent_incident_assault }
       - "recent_incident_assault_users1": ${ recent_incident_assault_users1 }
-      - "danger_more_abuse_children": ${ danger_more_abuse_children }
-      - "danger_more_abuse_users1": ${ danger_more_abuse_users1 }
-      - "used_firearm_yes__1": ${ used_firearm_yes }
+      - "danger_more_abuse_children": ${ danger_more_abuse_who["children"] }
+      - "danger_more_abuse_users1": ${ danger_more_abuse_who["users1"] }
+      - "used_firearm": ${ used_firearm }
       - "incarcerated": ${ incarcerated }
       - "users1_no_shelter": ${ users1_no_shelter }
       - "residence_shared_address": ${ residence_shared_address }
@@ -2404,20 +2882,22 @@ attachment:
       - "request_no_contact": ${ request_no_contact }
       - "request_temp_PRR": ${ request_temp_PRR }
       - "children1_name": ${ children[0] }
-      - "children1_birthdate": ${ children[0].birthdate.format() }
+      - "children1_birthdate": ${ format_date(children[0].birthdate, format='M/d/yyyy') }
       - "children1_relationship_users1": ${ children1_relationship_users1 }
       - "children1_relationship_OP": ${ children1_relationship_OP }
       - "children2_name": ${ children[1] }
-      - "children2_birthdate": ${ children[1].birthdate.format() }
+      - "children2_birthdate": ${ format_date(children[1].birthdate, format='M/d/yyyy') }
       - "children2_relationship_users1": ${ children2_relationship_users1 }
       - "children2_relationship_OP": ${ children2_relationship_OP }
       - "children3_name": ${ children[2] }
-      - "children3_birthdate": ${ children[2].birthdate.format() }
+      - "children3_birthdate": ${ format_date(children[2].birthdate, format='M/d/yyyy') }
       - "children3_relationship_users1": ${ children3_relationship_users1 }
       - "children3_relationship_OP": ${ children3_relationship_OP }
       - "request_other_description": ${ request_other_description }
       - "request_other": ${ request_other }
       - "request_all_emergency": ${ request_all_emergency }
+      - "signature_date__2": ${ format_date(signature_date, format='M/d/yyyy') }
+      - "users1_signature": ${ users[0].signature_if_final(i) }
 ---
 attachment:
   name: 2 RFA-service-info
@@ -2426,22 +2906,22 @@ attachment:
   skip undefined: True
   pdf template file: 2_RFA-service-info.pdf
   fields:
-      - "users1_birthdate__1": ${ users[0].birthdate.format() }
-      - "users1_birthdate": ${ users[0].birthdate.format() }
-      - "users1_birthdate__2": ${ users[0].birthdate.format() }
-      - "other_parties1_birthdate__1": ${ other_parties[0].birthdate.format() }
-      - "other_parties1_birthdate": ${ other_parties[0].birthdate.format() }
-      - "other_parties1_birthdate__2": ${ other_parties[0].birthdate.format() }
-      - "other_parties1_address_address__1": ${ other_parties[0].address.address }
-      - "other_parties1_address_address": ${ other_parties[0].address.address }
-      - "other_parties1_address_address__2": ${ other_parties[0].address.address }
+      - "users1_birthdate__1": ${ format_date(users[0].birthdate, format='M/d/yyyy') }
+      - "users1_birthdate": ${ format_date(users[0].birthdate, format='M/d/yyyy') }
+      - "users1_birthdate__2": ${ format_date(users[0].birthdate, format='M/d/yyyy') }
+      - "other_parties1_birthdate__1": ${ format_date(other_parties[0].birthdate, format='M/d/yyyy') }
+      - "other_parties1_birthdate": ${ format_date(other_parties[0].birthdate, format='M/d/yyyy') }
+      - "other_parties1_birthdate__2": ${ format_date(other_parties[0].birthdate, format='M/d/yyyy') }
+      - "other_parties1_address_address__1": ${ other_parties[0].address.line_one() }
+      - "other_parties1_address_address": ${ other_parties[0].address.line_one() }
+      - "other_parties1_address_address__2": ${ other_parties[0].address.line_one() }
       - "other_parties1_address_city__1": ${ other_parties[0].address.city }
       - "other_parties1_address_city": ${ other_parties[0].address.city }
       - "other_parties1_address_city__2": ${ other_parties[0].address.city }
       - "other_parties1_address_state__1": ${ other_parties[0].address.state }
       - "other_parties1_address_state": ${ other_parties[0].address.state }
       - "other_parties1_address_state__2": ${ other_parties[0].address.state }
-      - "date": ${ date }
+      - "date": ${ format_date(date, format='M/d/yyyy') }
       - "users1_name_last": ${ users[0].name.last }
       - "users1_name_first": ${ users[0].name.first }
       - "users1_name_middle": ${ users[0].name.middle }
@@ -2459,8 +2939,8 @@ attachment:
       - "suffix_second": ${ suffix_second }
       - "suffix_third": ${ suffix_third }
       - "other_parties1_name_last": ${ other_parties[0].name.last }
-      - "other_parties1_first_last": ${ other_parties1_first_last }
-      - "other_parties1_middle_last": ${ other_parties1_middle_last }
+      - "other_parties1_name_first": ${ other_parties[0].name.first }
+      - "other_parties1_name_middle": ${ other_parties[0].name.middle }
       - "other_parties1_age": ${ other_parties[0].age_in_years() }
       - "other_parties1_aliases": ${ other_parties1_aliases }
       - "sex_female": ${ sex_female }
@@ -2490,7 +2970,7 @@ attachment:
       - "hair_black": ${ hair_black }
       - "hair_red": ${ hair_red }
       - "hair_gray": ${ hair_gray }
-      - "hair_bald": ${ hair_bald }
+      - "hair_bald": ${ hair_bald_color }
       - "hair_bald__1": ${ hair_bald }
       - "hair_other": ${ hair_other }
       - "hair_short": ${ hair_short }
@@ -2508,7 +2988,7 @@ attachment:
       - "marks_location": ${ marks_location }
       - "other_parties1_phone_number": ${ other_parties[0].phone_number }
       - "other_parties1_mobile_number": ${ other_parties[0].mobile_number }
-      - "other_parties1_word_phone_number": ${ other_parties1_word_phone_number }
+      - "other_parties1_word_phone_number": ${ other_parties1_work_phone_number }
       - "other_parties1_other_phone_number": ${ other_parties1_other_phone_number }
       - "house": ${ house }
       - "house__1": ${ house }
@@ -2556,8 +3036,8 @@ code: |
   RFAaffidavit.overflow_fields["serious_incident_description"].label = "Please describe the most serious incident with as much detail as possible."
   RFAaffidavit.overflow_fields["other_incident_description"].overflow_trigger = 2262
   RFAaffidavit.overflow_fields["other_incident_description"].label = "Please describe the any other incident(s) with as much detail as possible."
-  RFAaffidavit.overflow_fields["used_firearm_how"].overflow_trigger = 602
-  RFAaffidavit.overflow_fields["used_firearm_how"].label = "Describe in detail how they used or threatened to use it?"
+  RFAaffidavit.overflow_fields["used_weapon_how"].overflow_trigger = 602
+  RFAaffidavit.overflow_fields["used_weapon_how"].label = "Describe in detail how they used or threatened to use it?"
   RFAaffidavit.overflow_fields["danger_more_abuse_why"].overflow_trigger = 258
   RFAaffidavit.overflow_fields["danger_more_abuse_why"].label = "Explain why you think there is danger of more abuse. Be as specific as possible."
   RFAaffidavit.overflow_fields.gathered = True
