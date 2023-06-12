@@ -1,45 +1,34 @@
-####################### TO DO #######################
+
 #People can use https://apps-dev.suffolklitlab.org/start/RFA_Demo/ to test my demo -- and I can keep working on this RFApackage. Then I can "update" the RFA "Package". That will update the RFADemo interview. (Go to Package Management in the login dropdown menu.)
 
-
-#####FOR LEMMA TO WORK ON? #####
-#I think I want to show a Review Answers button on each screen
+####################### TO DO #######################
+#####FOR LEMMA TO WORK ON #####
+#Please do not edit the PDF templates. I have worked on them for accessibility. I can edit them if needed :)
+#Work on getting all answers to show correctly on PDFs.
+#Clean up the Review answers screen. It's missing some fields/variables. If you add the missing ones, Kris could reorganize them in the general order of the interview.
 #Customize address questions so people type in Apt. or Unit before their #. I want to print address on one line sometimes and all I see now is C instead of Apt. C. (On Conf. Notification PDF, to full physical address on Complaint at top and at #5 on first page, to top of Affidavit)
+#For id: Relationship to defendant, require only one answer
+#For id: What you want to ask for in the RFA order, require at least one checkmark
+#For id: What you want to ask for in the RFA order, make subquestions required
+#For id: Existing orders or court proceedings, only show the bottom questions if the user has checked one of the checkboxes
 #How change line spacing for multi-line narrative answers in affidavit PDF?
 #On Affidavit, I tried to format time better like format_time("04:01:23", format='h:mm a')  but it gives an error message on the PDF
 #For extra sheet of weapons, how do I do   if extra_sheet_weapons:   then set  extra_sheets_attached = 1
 # Also need to add weapons_overflow  as an overflow attachment
-#In interview, why does this page show? id: preview RFApackage  before the page where they can view forms and hit edit button?
+#In interview, why does this page show? id: preview RFApackage  before the page where they can view forms and hit edit button? Do I need that?
 #In interview, trial_court_address.address and .county was triggering the baked-in What court do you want to file in screen. I ask a simple county question instead. But for efiling we should probably set up VT Courts list properly, right?
+#I'd like to offer a "Edit your answers" link in the upper-right dropdown menu (the account dropdown menu options). It should go to the review screen.
 #I currently have NOT customized our Next Steps document. It's a static file. The one thing we could do is to add the address, phone and email for the county family court that they selected.
 
 #####END LEMMA ##########
 
-#Kris is fixing this problem below with ${ word(yesno(existing_order["existing_order_divorce"])) }  and ${ existing_order["existing_order_divorce"] }
-#For id: Existing orders or court proceedings, I may need to change my variable names in the review section and print section, etc. because I changed how I set up the checkboxes -- like I did with (danger_more_abuse_who["children"] ----maybe this is why they aren't these getting checked on Complaint? - "For divorce or separation?": existing_order_divorce  - "For a civil union dissolution?": dissolution  - "For Relief from Abuse?": existing_order_RFA etc.
-#For id: Existing orders or court proceedings, only show the bottom questions if applicable
-
-#Work on getting all answers to show correctly on PDFs
-#Work on the Review answers section. Show all fields.
+#####KRIS TO WORK ON########
 #Ask Laura: What if user doesn't know Def birthdate or address?
 #Why is background black when I look at this in Chrome on Android phone?
-#NEED TO ADD FIELD FOR HOUSE NUMBER AND RENAME ON PDF TO house2. On PDF, too?
-#NEED TO ADD FIELD FOR HOUSE NUMBER AND RENAME ON PDF TO house3. On PDF, too?
-
-#Update variable names in Edit and Publish sections for all the ones that I did checkboxes for, including: relationship_for_LE race skin hair hair_color
-#For id: Relationship to defendant, require only one answer
-#For id: What you want to ask for in the RFA order, require at least one checkmark
-#For id: What you want to ask for in the RFA order, make subquestions required
+#Update variable names in Edit and Publish sections for all the ones that I did checkboxes for, including:  skin color   hair length   hair_color  eye color - choose one
 #Other places the defendant might be, Use state abbreviations and default to VT
-#Need to update all the Review and Attachment variables for get_kids_relationships
-#For id: What happened most recently, need to group the checkbox questions at the bottom.
-#On complaint and affidavit PDFs, make the dates show like this mm/dd/yyy so they fit (not written out)
-#Add these new fields to review and attachment sections; are they in the PDF?: other_parties1_street_address; other_parties1_city; other_parties1_state
-#Make sure house2 and house3 fields are in review and attachment sections; are they in the PDF?
 #Re-do complaint PDF so it's a smaller size document? Should check marks look larger on PDF?
-#Add show if to the will you be forced from home question and those that follow it
-#Add these to review screen: The defendant has  has not used, displayed, or threatened to use a firearm; Do you feel that you are in immediate danger of further abuse from the defendant?  Yes  No
-#In footer, add vtcourt forms are offered by LSV
+#In footer, add vtcourt forms are offered by LSV?
 
 #####################################################################
 ---
@@ -175,8 +164,9 @@ code: |
       initial_screening_questions_5_exit_a
   
   #main questions
-  #Kris is working on existing order questions
-  existing_order
+  race
+  hair
+  recent_incident_date
   trial_court_name
   set_progress(8)
   nav.set_section("about")
@@ -221,7 +211,7 @@ code: |
     request_other_description
   request_all_emergency
   set_progress(70)
-  #existing_order
+  existing_order
   nav.set_section('service')
   details_for_law_enforcement
   location_of_home
@@ -230,8 +220,8 @@ code: |
   employer
   house2
   set_progress(80)
-  race
-  hair
+  #race
+  #hair
   set_progress(90)
   notify_served
   nav.set_section("review_RFApackage")
@@ -483,7 +473,7 @@ question: |
 fields:
   - "Does the defendant live in Vermont?": defendant_lives_in_vermont
     datatype: yesnoradio
-  - note: The 'defendant' is the person who is abusing you.
+  - note: The "defendant" is the person who is abusing you.
 ---
 id: initial_screening_questions_5_continue
 question: |
@@ -772,15 +762,18 @@ fields:
   - "Please describe the most recent incident with as much detail as possible.": recent_incident_description
     input type: area
     rows: 20
-  - note: |
-      Check all that apply to this incident:
   - You were the target of the recent abuse: recent_incident_users1
-    datatype: yesno
+    datatype: yesnoradio
   - Your children were the target of the recent abuse: recent_incident_children
-    datatype: yesno
+    datatype: yesnoradio
   - "What are the names of the children who were the target of the recent abuse? List their names with commas in between.": recent_incident_children_names
     maxlength: 63
     show if: recent_incident_children
+  - note: |
+      ---
+    show if: recent_incident_children
+  - note: |
+      Check all that apply to this incident. Select at least one statement.
   - "The defendant caused or attempted to cause physical harm": recent_incident_harm
     datatype: yesno
   - "The defendant placed you and/or them in fear of imminent serious physical harm": recent_incident_fear
@@ -790,10 +783,10 @@ fields:
   - "The defendant stalked you and/or the child/children. Stalking is defined in Vermont law here: [12 V.S.A 5131(6)](https://legislature.vermont.gov/statutes/section/12/178/05131)": recent_incident_stalked
     datatype: yesno
   - "The defendant stalked you": recent_incident_stalked_users1
-    datatype: yesno
+    datatype: yesnoradio
     show if: recent_incident_stalked
   - "The defendant stalked the child/children": recent_incident_stalked_children
-    datatype: yesno
+    datatype: yesnoradio
     show if: recent_incident_stalked
   - "Vermont law says it is stalking if has happened two times or more. On what date did they first stalk you?": recent_incident_stalked_date2
     datatype: date
@@ -801,13 +794,19 @@ fields:
   - "What was the second date that they stalked you?": recent_incident_stalked_date1
     datatype: date
     show if: recent_incident_stalked
+  - note: |
+      ---
+    show if: recent_incident_stalked
   - "The defendant sexually assaulted you and/or the child/children. Sexual assault is defined in Vermont law here: [15 V.S.A 5131(5)](https://legislature.vermont.gov/statutes/section/12/178/05131)": recent_incident_assault
     datatype: yesno
   - "The defendant sexually assault you": recent_incident_assault_users1
-    datatype: yesno
+    datatype: yesnoradio
     show if: recent_incident_assault
   - "The defendant sexually assault the child/children": recent_incident_assault_children
-    datatype: yesno
+    datatype: yesnoradio
+    show if: recent_incident_assault
+  - note: |
+      ---
     show if: recent_incident_assault
 ---
 id: Was recent most serious too
@@ -1625,77 +1624,17 @@ review:
     button: |
       **Please describe the any other incident(s) with as much detail as possible.**:
       > ${ single_paragraph(other_incident_description) }
-  #- Edit: weapons[0].description
-  #  button: |
-  #    **Description of the 1st weapon**:
-  #    ${ weapons[0].description }
-  #- Edit: weapons[0].location
-  #  button: |
-  #    **Location of the 1st weapon**:
-  #    ${ weapons[0].location }
-  #- Edit: weapons[1].description
-  #  button: |
-  #    **Description of the 2nd weapon**:
-  #    ${ weapons[1].description }
-  #- Edit: weapons[1].location
-  #  button: |
-  #    **Location of the 2nd weapon**:
-  #    ${ weapons[1].location }
-  #- Edit: weapons[2].description
-  #  button: |
-  #    **Description of the 3rd weapon**:
-  #    ${ weapons[2].description }
-  #- Edit: weapons[2].location
-  #  button: |
-  #    **Location of the 3rd weapon**:
-  #    ${ weapons[2].location }
-  #- Edit: weapons[3].description
-  #  button: |
-  #    **Description of the 4th weapon**:
-  #    ${ weapons[3].description }
-  #- Edit: weapons[3].location
-  #  button: |
-  #    **Location of the 4th weapon**:
-  #    ${ weapons[3].location }
-  #- Edit: weapons[4].description
-  #  button: |
-  #    **Description of the 5th weapon**:
-  #    ${ weapons[4].description }
-  #- Edit: weapons[4].location
-  #  button: |
-  #    **Location of the 5th weapon**:
-  #    ${ weapons[4].location }
-  #- Edit: weapons[5].description
-  #  button: |
-  #    **Description of the 6th weapon**:
-  #    ${ weapons[5].description }
-  #- Edit: weapons[5].location
-  #  button: |
-  #    **Location of the 6th weapon**:
-  #    ${ weapons[5].location }
-  #- Edit: weapons[6].description
-  #  button: |
-  #    **Description of the 7th weapon**:
-  #    ${ weapons[6].description }
-  #- Edit: weapons[6].location
-  #  button: |
-  #    **Location of the 7th weapon**:
-  #    ${ weapons[6].location }
-  #- Edit: weapons[7].description
-  #  button: |
-  #    **Description of the 8th weapon**:
-  #    ${ weapons[7].description }
-  #- Edit: weapons[7].location
-  #  button: |
-  #    **Location of the 8th weapon**:
-  #    ${ weapons[7].location }
   - Edit: extra_sheets_attached
     button: |
       **Are you attaching extra sheets with more weapons listed?**:
       ${ extra_sheets_attached }
+  - Edit: used_weapon
+    button: |
+      **Has defendant used, displayed or threatened to use a gun/firearm OR another deadly weapon against you or another family member?**": 
+      ${ word(yesno(used_weapon)) }
   - Edit: used_firearm
     button: |
-      **Has the defendant used, displayed or threatened to use a **gun/firearm** against you or against a family member?**:
+      **Has the defendant used, displayed or threatened to use a gun/firearm against you or against a family member?**:
       ${ word(yesno(used_firearm)) }
   - Edit: used_weapon_how
     button: |
@@ -2046,27 +1985,27 @@ review:
   - Edit: children1_relationship_users1
     button: |
       **This child's -- ${ children[0] } -- relationship to you?**:
-      ${ children1_relationship_users1 }
+      ${ children[0].relationship_users1 }
   - Edit: children1_relationship_OP
     button: |
       **This child's -- ${ children[0] } -- relationship to the defendant?**:
-      ${ children1_relationship_OP }
+      ${ children[0].relationship_OP }
   - Edit: children2_relationship_users1
     button: |
       **This child's -- ${ children[1] } -- relationship to you?**:
-      ${ children2_relationship_users1 }
+      ${ children[1].relationship_users1 }
   - Edit: children2_relationship_OP
     button: |
       **This child's -- ${ children[1] } -- relationship to the defendant?**:
-      ${ children2_relationship_OP }
+      ${ children[1].relationship_OP }
   - Edit: children3_relationship_users1
     button: |
       **This child's -- ${ children[2] } --relationship to you?**:
-      ${ children3_relationship_users1 }
+      ${ children[2].relationship_users1 }
   - Edit: children3_relationship_OP
     button: |
       **This child's -- ${ children[2] } -- relationship to the defendant?**:
-      ${ children3_relationship_OP }
+      ${ children[2].relationship_OP }
   - Edit: other_request
     button: |
       **Request something else in the RFA order?**:
@@ -2095,23 +2034,23 @@ review:
   - Edit: spouse_or_ex_spouse
     button: |
       **I am the spouse or ex-spouse (former spouse) of the defendant.**:
-      ${ word(yesno(spouse_or_ex_spouse)) }
+      ${ word(yesno(relationship_for_LE["spouse_or_ex_spouse"])) }
   - Edit: lived_together
     button: |
       **The defendant and I have lived together while having a sexual relationship together.**:
-      ${ word(yesno(lived_together)) }
+      ${ word(yesno(relationship_for_LE["lived_together"])) }
   - Edit: had_kids_together
     button: |
       **The defendant and I have a child or children in common.**:
-      ${ word(yesno(had_kids_together)) }
+      ${ word(yesno(relationship_for_LE["had_kids_together"])) }
   - Edit: defendants_child
     button: |
       **I am the defendant’s child or step-child, or I am filing on behalf of that child or step-child.**:
-      ${ word(yesno(defendants_child)) }
+      ${ word(yesno(relationship_for_LE["defendants_child"])) }
   - Edit: plaintiffs_child
     button: |
       **I am the child of the plaintiff who currently or has in the past lived with the defendant while having a sexual relationship together, or I am filing on behalf of that child.**:
-      ${ word(yesno(plaintiffs_child)) }
+      ${ word(yesno(relationship_for_LE["plaintiffs_child"])) }
   - Edit: suffix_sr
     button: |
       **Sr.**:
@@ -2147,23 +2086,23 @@ review:
   - Edit: race_white
     button: |
       **White**:
-      ${ word(yesno(race_white)) }
+      ${ word(yesno(race["race_white"])) }
   - Edit: race_black
     button: |
       **African-American**:
-      ${ word(yesno(race_black)) }
+      ${ word(yesno(race["race_black"])) }
   - Edit: race_native
     button: |
       **Native American**:
-      ${ word(yesno(race_native)) }
+      ${ word(yesno(race["race_native"])) }
   - Edit: race_asian
     button: |
       **Asian**:
-      ${ word(yesno(race_asian)) }
+      ${ word(yesno(race["race_asian"])) }
   - Edit: race_other
     button: |
       **Other**:
-      ${ word(yesno(race_other)) }
+      ${ word(yesno(race["race_other"])) }
   - Edit: skin_light
     button: |
       **Light**:
@@ -2318,7 +2257,7 @@ review:
       ${ other_parties1_other_phone_number }
   - Edit: house
     button: |
-      **The house or building number on the street (Example: Enter 10 if it's 10 Main Street.)**:
+      **Defendant's house or building number on the street (Example: Enter 10 if it's 10 Main Street.)**:
       ${ house }
   - Edit: location_of_home
     button: |
@@ -2509,7 +2448,7 @@ columns:
       row_item.mobile_number if defined("row_item.mobile_number") else ""
   - House number: |
       row_item.house if defined("row_item.house") else ""
-  - House number: |
+  - Street name: |
       row_item.other_parties1_street_only if defined("row_item.other_parties1_street_only") else ""
   
 edit:
@@ -2939,11 +2878,11 @@ attachment:
       - "users1_notify_phone_number": ${ users1_notify_phone_number }
       - "notify_served_yes": ${ notify_served }
       - "notify_served_no": ${ not notify_served }
-      - "spouse_or_ex_spouse": ${ spouse_or_ex_spouse }
-      - "lived_together": ${ lived_together }
-      - "had_kids_together": ${ had_kids_together }
-      - "defendants_child": ${ defendants_child }
-      - "plaintiffs_child": ${ plaintiffs_child }
+      - "spouse_or_ex_spouse": ${ relationship_for_LE["spouse_or_ex_spouse"] }
+      - "lived_together": ${ relationship_for_LE["lived_together"] }
+      - "had_kids_together": ${ relationship_for_LE["had_kids_together"] }
+      - "defendants_child": ${ relationship_for_LE["defendants_child"] }
+      - "plaintiffs_child": ${ relationship_for_LE["plaintiffs_child"] }
       - "suffix_sr": ${ suffix_sr }
       - "suffix_jr": ${ suffix_jr }
       - "suffix_first": ${ suffix_first }
@@ -2956,11 +2895,11 @@ attachment:
       - "other_parties1_aliases": ${ other_parties1_aliases }
       - "sex_female": ${ sex_female }
       - "sex_male": ${ sex_male }
-      - "race_white": ${ race_white }
-      - "race_black": ${ race_black }
-      - "race_native": ${ race_native }
-      - "race_asian": ${ race_asian }
-      - "race_other": ${ race_other }
+      - "race_white": ${ race["race_white"] }
+      - "race_black": ${ race["race_black"] }
+      - "race_native": ${ race["race_native"] }
+      - "race_asian": ${ race["race_asian"] }
+      - "race_other": ${ race["race_other"] }
       - "skin_light": ${ skin_light }
       - "skin_medium": ${ skin_medium }
       - "skin_dark": ${ skin_dark }
