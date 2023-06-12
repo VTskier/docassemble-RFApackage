@@ -4,7 +4,7 @@
 
 #####FOR LEMMA TO WORK ON? #####
 #I think I want to show a Review Answers button on each screen
-#Customize address question so people type in Apt. or Unit before their #. I want to print address on one line sometimes and all I see now is C instead of Apt. C. (On Conf. Notification PDF, to full physical address on Complaint at top and at #5 on first page, to top of Affidavit)
+#Customize address questions so people type in Apt. or Unit before their #. I want to print address on one line sometimes and all I see now is C instead of Apt. C. (On Conf. Notification PDF, to full physical address on Complaint at top and at #5 on first page, to top of Affidavit)
 #How change line spacing for multi-line narrative answers in affidavit PDF?
 #On Affidavit, I tried to format time better like format_time("04:01:23", format='h:mm a')  but it gives an error message on the PDF
 #For extra sheet of weapons, how do I do   if extra_sheet_weapons:   then set  extra_sheets_attached = 1
@@ -1779,35 +1779,35 @@ review:
   - Edit: existing_order_divorce
     button: |
       **Is there an existing order or a pending court proceeding for divorce or separation?**:
-      ${ word(yesno(existing_order_divorce)) }
+      ${ word(yesno(existing_order["existing_order_divorce"])) }  
   - Edit: dissolution
     button: |
       **Is there an existing order or a pending court proceeding for a civil union dissolution?**:
-      ${ word(yesno(dissolution)) }
+      ${ word(yesno(existing_order["dissolution"])) }
   - Edit: existing_order_RFA
     button: |
       **Is there an existing order or a pending court proceeding for Relief from Abuse?**:
-      ${ word(yesno(existing_order_RFA)) }
+      ${ word(yesno(existing_order["existing_order_RFA"])) }
   - Edit: criminal_proceeding
     button: |
       **Is there an existing order or a pending court proceeding for a criminal matter?**:
-      ${ word(yesno(criminal_proceeding)) }
+      ${ word(yesno(existing_order["criminal_proceeding"])) }
   - Edit: parentage_order
     button: |
       **Is there an existing order or a pending court proceeding for parentage?**:
-      ${ word(yesno(parentage_order)) }
+      ${ word(yesno(existing_order["parentage_order"])) }
   - Edit: guardianship_order
     button: |
       **Is there an existing order or a pending court proceeding for guardianship?**:
-      ${ word(yesno(guardianship_order)) }
+      ${ word(yesno(existing_order["guardianship_order"])) }
   - Edit: juvenile_order
     button: |
       **Is there an existing order or a pending court proceeding for a juvenile (DCF) matter?**:
-      ${ word(yesno(juvenile_order)) }
+      ${ word(yesno(existing_order["juvenile_order"])) }
   - Edit: child_support_order
     button: |
       **Is there an existing order or a pending court proceeding for child support?**:
-      ${ word(yesno(child_support_order)) }
+      ${ word(yesno(existing_order["child_support_order"])) }
   - Edit: existing_order_state
     button: |
       **In what state is the existing order or a pending court proceeding?**:
@@ -2802,20 +2802,20 @@ attachment:
       - "dating": ${ dating }
       - "existing_order_divorce_yes": ${ existing_order["existing_order_divorce"] }
       - "existing_order_divorce_no": ${ not existing_order["existing_order_divorce"] }
-      - "dissolution_yes": ${ dissolution }
-      - "dissolution_no": ${ not dissolution }
-      - "existing_order_RFA_yes": ${ existing_order_RFA }
-      - "existing_order_RFA_no": ${ not existing_order_RFA }
-      - "criminal_proceeding_yes": ${ criminal_proceeding }
-      - "criminal_proceeding_no": ${ not criminal_proceeding }
-      - "parentage_order_yes": ${ parentage_order }
-      - "parentage_order_no": ${ not parentage_order }
-      - "guardianship_order_yes": ${ guardianship_order }
-      - "guardianship_order_no": ${ not guardianship_order }
-      - "juvenile_order_yes": ${ juvenile_order }
-      - "juvenile_order_no": ${ not juvenile_order }
-      - "child_support_order_yes": ${ child_support_order }
-      - "child_support_order_no": ${ not child_support_order }
+      - "dissolution_yes": ${ existing_order["dissolution"] }
+      - "dissolution_no": ${ not existing_order["dissolution"] }
+      - "existing_order_RFA_yes": ${ existing_order["existing_order_RFA"] }
+      - "existing_order_RFA_no": ${ not existing_order["existing_order_RFA"] }
+      - "criminal_proceeding_yes": ${ existing_order["criminal_proceeding"] }
+      - "criminal_proceeding_no": ${ not existing_order["criminal_proceeding"] }
+      - "parentage_order_yes": ${ existing_order["parentage_order"] }
+      - "parentage_order_no": ${ not existing_order["parentage_order"] }
+      - "guardianship_order_yes": ${ existing_order["guardianship_order"] }
+      - "guardianship_order_no": ${ not existing_order["guardianship_order"] }
+      - "juvenile_order_yes": ${ existing_order["juvenile_order"] }
+      - "juvenile_order_no": ${ not existing_order["juvenile_order"] }
+      - "child_support_order_yes": ${ existing_order["child_support_order"] }
+      - "child_support_order_no": ${ not existing_order["child_support_order"] }
       - "existing_order_state": ${ existing_order_state }
       - "existing_order_county": ${ existing_order_county }
       - "existing_order_users_attorney": ${ existing_order_users_attorney }
