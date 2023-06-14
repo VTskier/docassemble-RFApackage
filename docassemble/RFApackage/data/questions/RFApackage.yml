@@ -1,36 +1,7 @@
-
+#######################
 #People can use https://apps-dev.suffolklitlab.org/start/RFA_Demo/ to test my demo -- and I can keep working on this RFApackage. Then I can "update" the RFA "Package". That will update the RFADemo interview. (Go to Package Management in the login dropdown menu.)
+#######################
 
-####################### TO DO #######################
-#####FOR LEMMA TO WORK ON #####
-#Please do not edit the PDF templates. I have worked on them for accessibility. I can edit them if needed :)
-#Work on getting all answers to show correctly on PDFs.
-#Clean up the Review answers screen. It's missing some fields/variables. If you add the missing ones, Kris could reorganize them in the general order of the interview.
-#Customize address questions so people type in Apt. or Unit before their #. I want to print address on one line sometimes and all I see now is C instead of Apt. C. (On Conf. Notification PDF, to full physical address on Complaint at top and at #5 on first page, to top of Affidavit)
-#For id: Relationship to defendant, require only one answer
-#For id: What you want to ask for in the RFA order, require at least one checkmark
-#For id: What you want to ask for in the RFA order, make subquestions required
-#For id: Existing orders or court proceedings, only show the bottom questions if the user has checked one of the checkboxes
-#How change line spacing for multi-line narrative answers in affidavit PDF?
-#On Affidavit, I tried to format time better like format_time("04:01:23", format='h:mm a')  but it gives an error message on the PDF
-#For extra sheet of weapons, how do I do   if extra_sheet_weapons:   then set  extra_sheets_attached = 1
-# Also need to add weapons_overflow  as an overflow attachment
-#In interview, why does this page show? id: preview RFApackage  before the page where they can view forms and hit edit button? Do I need that?
-#In interview, trial_court_address.address and .county was triggering the baked-in What court do you want to file in screen. I ask a simple county question instead. But for efiling we should probably set up VT Courts list properly, right?
-#I'd like to offer a "Edit your answers" link in the upper-right dropdown menu (the account dropdown menu options). It should go to the review screen.
-#I currently have NOT customized our Next Steps document. It's a static file. The one thing we could do is to add the address, phone and email for the county family court that they selected.
-
-#####END LEMMA ##########
-
-#####KRIS TO WORK ON########
-#Ask Laura: What if user doesn't know Def birthdate or address?
-#Why is background black when I look at this in Chrome on Android phone?
-#Update variable names in Edit and Publish sections for all the ones that I did checkboxes for, including:  skin color   hair length   hair_color  eye color - choose one
-#Other places the defendant might be, Use state abbreviations and default to VT
-#Re-do complaint PDF so it's a smaller size document? Should check marks look larger on PDF?
-#In footer, add vtcourt forms are offered by LSV?
-
-#####################################################################
 ---
 include:
   - docassemble.AssemblyLine:assembly_line.yml
