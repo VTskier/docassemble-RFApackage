@@ -1,7 +1,35 @@
-#######################
 #People can use https://apps-dev.suffolklitlab.org/start/RFA_Demo/ to test my demo -- and I can keep working on this RFApackage. Then I can "update" the RFA "Package". That will update the RFADemo interview. (Go to Package Management in the login dropdown menu.)
-#######################
 
+####################### TO DO #######################
+#####FOR LEMMA TO WORK ON #####
+#Please do not edit the PDF templates. I have worked on them for accessibility. I can edit them if needed :)
+#Work on getting all answers to show correctly on PDFs.
+#Clean up the Review answers screen. It's missing some fields/variables. If you add the missing ones, Kris could reorganize them in the general order of the interview.
+#Customize address questions so people type in Apt. or Unit before their #. I want to print address on one line sometimes and all I see now is C instead of Apt. C. (On Conf. Notification PDF, to full physical address on Complaint at top and at #5 on first page, to top of Affidavit)
+#For id: Relationship to defendant, require only one answer
+#For id: What you want to ask for in the RFA order, require at least one checkmark
+#For id: What you want to ask for in the RFA order, make subquestions required
+#For id: Existing orders or court proceedings, only show the bottom questions if the user has checked one of the checkboxes
+#How change line spacing for multi-line narrative answers in affidavit PDF?
+#On Affidavit, I tried to format time better like format_time("04:01:23", format='h:mm a')  but it gives an error message on the PDF
+#For extra sheet of weapons, how do I do   if extra_sheet_weapons:   then set  extra_sheets_attached = 1
+# Also need to add weapons_overflow  as an overflow attachment
+#In interview, why does this page show? id: preview RFApackage  before the page where they can view forms and hit edit button? Do I need that?
+#In interview, trial_court_address.address and .county was triggering the baked-in What court do you want to file in screen. I ask a simple county question instead. But for efiling we should probably set up VT Courts list properly, right?
+#I'd like to offer a "Edit your answers" link in the upper-right dropdown menu (the account dropdown menu options). It should go to the review screen.
+#I currently have NOT customized our Next Steps document. It's a static file. The one thing we could do is to add the address, phone and email for the county family court that they selected.
+
+#####END LEMMA ##########
+
+#####KRIS TO WORK ON########
+#Ask Laura: What if user doesn't know Def birthdate or address?
+#Why is background black when I look at this in Chrome on Android phone?
+#Update variable names in Edit and Publish sections for all the ones that I did checkboxes for, including:  skin color   hair length   hair_color  eye color - choose one
+#Other places the defendant might be, Use state abbreviations and default to VT
+#Re-do complaint PDF so it's a smaller size document? Should check marks look larger on PDF?
+#In footer, add vtcourt forms are offered by LSV?
+
+#####################################################################
 ---
 include:
   - docassemble.AssemblyLine:assembly_line.yml
@@ -66,7 +94,7 @@ code: |
   AL_DEFAULT_STATE = "VT"
 ---
 code: |
-  github_repo_name =  'docassemble-Rfapackage'
+  github_repo_name =  'docassemble-RFApackage'
 ---
 code: |
   interview_short_title = "Ask the court for a Relief from Abuse (RFA) order"
@@ -135,6 +163,9 @@ code: |
       initial_screening_questions_5_exit_a
   
   #main questions
+  race
+  hair
+  recent_incident_date
   trial_court_name
   set_progress(8)
   nav.set_section("about")
@@ -188,8 +219,8 @@ code: |
   employer
   house2
   set_progress(80)
-  race
-  hair
+  #race
+  #hair
   set_progress(90)
   notify_served
   nav.set_section("review_RFApackage")
@@ -646,6 +677,9 @@ fields:
   - "In a word or two, what is that other relationship?": other_relationship_description
     maxlength: 16
     show if: other_relationship
+validation code: |
+  if [is_spouse, ex_spouse, live_together, sexual_relationship, dating, family_member].count(True) != 1:
+    validation_error("Please select only one option.")
 ---
 id: Gather defendant name
 sets:
@@ -910,10 +944,7 @@ fields:
       - Yes: True
       - No: False
       - I don't know: None
-
-
-
-
+      
 #  - "Check this box if you have more weapons to list. You can enter them here and it will be attached  as an extra sheet.": extra_sheet_weapons
 #    datatype: yesno
 #    show if: weapon8
@@ -1026,6 +1057,27 @@ fields:
     
   - "I want to ask for something else. (You can write what you want on an upcoming screen.)": other_request
     datatype: yesno
+
+validation code: |
+  
+  if request_not_abuse and not (request_not_abuse_users1 or request_not_abuse_children ):
+        validation_error("Please answer at least one of the options.")
+        
+  if request_no_stalking_assault and not (request_no_stalking or request_no_assault or request_no_assault_users1 or request_no_assault_children):
+        validation_error("Please answer at least one of the options.")
+  
+  if request_no_pet_harm and not (request_no_pet_users1 or request_no_pet_children or request_control_of_pet):
+        validation_error("Please answer at least one of the options.") 
+        
+  if request_stay_away and request_stay_away_feet and not (request_stay_away_users1 or request_stay_away_children):
+        validation_error("Please answer at least one of the options.")
+
+  if request_no_contact and not (request_no_contact_users1 or request_no_contact_children):
+        validation_error("Please answer at least one of the options.") 
+
+  if not (request_not_abuse or request_no_stalking_assault or request_leave or request_no_firearms or request_surrender_firearms or request_living_expenses or request_child_support or request_no_pet_harm or request_stay_away or request_no_contact or other_request or request_temp_PRR):
+    validation_error("Please select at least one option.")
+
 ---
 code: |
   for child in children: 
@@ -1094,15 +1146,27 @@ fields:
   - "In what state(s) is the existing order or a pending court proceeding?": existing_order_state
     maxlength: 34
     required: False
+    js show if: |
+      val("existing_order['existing_order_divorce']") || val("existing_order['dissolution']") || val("existing_order['existing_order_RFA']") || val("existing_order['criminal_proceeding']") || val("existing_order['parentage_order']") || val("existing_order['guardianship_order']") || val("existing_order['juvenile_order']") || val("existing_order['child_support_order']") 
+        
+    
   - "In what county/counties is the existing order or a pending court proceeding?": existing_order_county
     maxlength: 36
     required: False
+    js show if: |
+        val("existing_order['existing_order_divorce']") || val("existing_order['dissolution']") || val("existing_order['existing_order_RFA']") || val("existing_order['criminal_proceeding']") || val("existing_order['parentage_order']") || val("existing_order['guardianship_order']") || val("existing_order['juvenile_order']") || val("existing_order['child_support_order']")
+    
   - "What is the name of your attorney for the existing order or a pending court proceeding -- if you have one?": existing_order_users_attorney
     maxlength: 25
     required: False
+    js show if: |
+        val("existing_order['existing_order_divorce']") || val("existing_order['dissolution']") || val("existing_order['existing_order_RFA']") || val("existing_order['criminal_proceeding']") || val("existing_order['parentage_order']") || val("existing_order['guardianship_order']") || val("existing_order['juvenile_order']") || val("existing_order['child_support_order']")
+     
   - "What is the name of the other attorney for the existing order or a pending court proceeding -- if the defendant has one?": existing_order_OP_attorney
     maxlength: 25
     required: False
+    js show if: |
+        val("existing_order['existing_order_divorce']") || val("existing_order['dissolution']") || val("existing_order['existing_order_RFA']") || val("existing_order['criminal_proceeding']") || val("existing_order['parentage_order']") || val("existing_order['guardianship_order']") || val("existing_order['juvenile_order']") || val("existing_order['child_support_order']")
 
 ---
 id: About your home
@@ -1347,18 +1411,18 @@ fields:
     maxlength: 5
   - note: |
       <h2 class="h4">Eye color:</h2>
-  - "Select one.": eyes
-    datatype: checkboxes
-    none of the above: False
-    minlength: 1
-    maxlength: 1
-    choices:   
-      - "Brown": eyes_brown
-      - "Blue": eyes_blue
-      - "Gray": eyes_gray
-      - "Green": eyes_green
-      - "Hazel": eyes_hazel
-      - "Other": eyes_other
+  - "Brown": eyes_brown
+    datatype: yesno
+  - "Blue": eyes_blue
+    datatype: yesno
+  - "Gray": eyes_gray
+    datatype: yesno
+  - "Green": eyes_green
+    datatype: yesno
+  - "Hazel": eyes_hazel
+    datatype: yesno
+  - "Other": eyes_other
+    datatype: yesno
   - note: |
       <h2 class="h4">Glasses and contacts:</h2>
   - "Glasses": lenses_glasses
@@ -1496,6 +1560,7 @@ code: |
 
 #####################################################################
 ######################### REVIEW SCREEN ######################
+---
 id: RFApackage review screen
 event: review_RFApackage
 question: |
@@ -2868,32 +2933,32 @@ attachment:
       - "race_native": ${ race["race_native"] }
       - "race_asian": ${ race["race_asian"] }
       - "race_other": ${ race["race_other"] }
-      - "skin_light": ${ skin["skin_light"] }
-      - "skin_medium": ${ skin["skin_medium"] }
-      - "skin_dark": ${ skin["skin_dark"] }
-      - "skin_other": ${ skin["skin_other"] }
+      - "skin_light": ${ skin_light }
+      - "skin_medium": ${ skin_medium }
+      - "skin_dark": ${ skin_dark }
+      - "skin_other": ${ skin_other }
       - "other_parties1_height_ft": ${ other_parties1_height_ft }
       - "other_parties1_height_in": ${ other_parties1_height_in }
       - "other_parties1_weight_lbs": ${ other_parties1_weight_lbs }
-      - "eyes_brown": ${ eyes["eyes_brown"] }
-      - "eyes_blue": ${ eyes["eyes_blue"] }
-      - "eyes_gray": ${ eyes["eyes_gray"] }
-      - "eyes_green": ${ eyes["eyes_green"] }
-      - "eyes_hazel": ${ eyes["eyes_hazel"] }
-      - "eyes_other": ${ eyes["eyes_other"] }
+      - "eyes_brown": ${ eyes_brown }
+      - "eyes_blue": ${ eyes_blue }
+      - "eyes_gray": ${ eyes_gray }
+      - "eyes_green": ${ eyes_green }
+      - "eyes_hazel": ${ eyes_hazel }
+      - "eyes_other": ${ eyes_other }
       - "lenses_glasses": ${ lenses_glasses }
       - "lenses_contacts": ${ lenses_contacts }
-      - "hair_brown": ${ hair_color["hair_brown"] }
-      - "hair_blond": ${ hair_color["hair_blond"] }
-      - "hair_black": ${ hair_color["hair_black"] }
-      - "hair_red": ${ hair_color["hair_red"] }
-      - "hair_gray": ${ hair_color["hair_gray"] }
-      - "hair_bald": ${ hair_color["hair_bald_color"] }
-      - "hair_bald__1": ${ hair["hair_bald"]  }
-      - "hair_other": ${ hair_color["hair_other"] }
-      - "hair_short": ${ hair["hair_short"]  }
-      - "hair_medium": ${ hair["hair_medium"]  }
-      - "hair_long": ${ hair["hair_long"]  }
+      - "hair_brown": ${ hair_brown }
+      - "hair_blond": ${ hair_blond }
+      - "hair_black": ${ hair_black }
+      - "hair_red": ${ hair_red }
+      - "hair_gray": ${ hair_gray }
+      - "hair_bald": ${ hair_bald_color }
+      - "hair_bald__1": ${ hair_bald }
+      - "hair_other": ${ hair_other }
+      - "hair_short": ${ hair_short }
+      - "hair_medium": ${ hair_medium }
+      - "hair_long": ${ hair_long }
       - "hair_beard": ${ hair_beard }
       - "hair_mustache": ${ hair_mustache }
       - "tattoos": ${ tattoos }
