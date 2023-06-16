@@ -1472,7 +1472,7 @@ question: |
 subquestion: |
   Here is a preview of the form you will sign on the next page.   
   
-  #${ al_court_bundle.as_pdf(key='preview') }
+  ${ al_user_bundle.as_pdf(key='preview') }
 
   Click the image to open it in a new tab. Click the "Edit answers" button
   to edit your answers.
