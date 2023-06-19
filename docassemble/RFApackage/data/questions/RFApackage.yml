@@ -1455,7 +1455,7 @@ subquestion: |
 fields:
   - "Please type your name. This will appear under your signature.": printed_signature
     maxlength: 34
-  - "Date of your signature for these forms": affidavit_signature_date
+  - "Date of your signature for these forms": signature_date
     datatype: date
     required: False
     default: |
@@ -2599,7 +2599,7 @@ attachment:
       - "other_parties1_military_yes": ${ other_parties1_military }
       - "other_parties1_military_no": ${ not other_parties1_military }
       - "printed_signature": ${ printed_signature }
-      - "affidavit_signature_date": ${ format_date(affidavit_signature_date, format='M/d/yyyy') }
+      - "affidavit_signature_date": ${ format_date(signature_date, format='M/d/yyyy') }
 
 ---
 attachment:
@@ -2772,7 +2772,7 @@ attachment:
   skip undefined: True
   pdf template file: 2_RFA-service-info.pdf
   fields:
-      - "date": ${ format_date(date, format='M/d/yyyy') }
+      - "date": ${ format_date(signature_date, format='M/d/yyyy') }
       - "users1_name_last": ${ users[0].name.last }
       - "users1_name_first": ${ users[0].name.first }
       - "users1_name_middle": ${ users[0].name.middle }
