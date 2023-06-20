@@ -762,7 +762,8 @@ fields:
     show if: recent_incident_stalked
   - "Vermont law says it is stalking if has happened two times or more. On what date did they first stalk you?": recent_incident_stalked_date2
     datatype: date
-    - note: |
+    show if: recent_incident_stalked
+  - note: |
       Stalking is complicated. Be sure to speak to a lawyer about it.
     show if: recent_incident_stalked
   - "What was the second date that they stalked you?": recent_incident_stalked_date1
