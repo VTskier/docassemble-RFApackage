@@ -329,6 +329,7 @@ subquestion: |
   <h3 class="h4">Information you will need</h3>
   * To complete this interview, you will need to know the date or dates when the abuse occurred and give a detailed description of the abuse. This includes the most recent incident and the most serious incident. You will need to fully describe the incidents and make it clear how severe or how frequent the abuse has been.
   * You will need to give a safe address and telephone number where the court can reach you. If you don’t have one, ask an advocate from the [Vermont Network.](https://www.vtnetwork.org/get-help/)
+  * The court will need an address for the defendant -- home and/or work. You need to provide at least one of these addresses. The person who is the abuser is called the "defendant."
   * You will see important questions about weapons that the defendant might have access to. If you list what they are and where they are located, the court can order law enforcement to collect them to help keep you safe.
   <h3 class="h4">After answering the questions</h3>
   * At the end you will get a chance to preview your forms and make changes if you need to. 
@@ -694,6 +695,8 @@ sets:
   - other_parties[i].address.state
 question: |
   What is the defendant's address?
+subquestion: |
+  The court will need an address. If you don't know the home address, enter "Unknown". But be sure to enter the defendant's work address later in this interview. You need to provide at least one of these addresses.
 fields:
   - code: |
       other_parties[0].address_fields(default_state=AL_DEFAULT_STATE)  
@@ -1226,6 +1229,8 @@ subquestion: |
   Tell us about the defendant's workplace and work hours. Law enforcement may serve the order there if they cannot find the defendant at home.
   
   If you don't know or the if the defendant is unemployed, just leave these questions blank.
+  
+  If you did not enter a home address for the defendant, you need to enter a work address.
 fields:
   - "Defendant's employer": employer
     maxlength: 36
