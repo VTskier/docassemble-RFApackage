@@ -729,6 +729,7 @@ fields:
     maxlength: 26
   - "In what state was the most recent incident?": recent_incident_state
     code: states_list() 
+    
     default: Vermont
   - "Please describe the most recent incident with as much detail as possible.": recent_incident_description
     input type: area
@@ -934,7 +935,7 @@ code: |
 ---
 id: What you want to ask for in the RFA order
 question: |
-  What you want to ask for in the RFA order ${extra_sheets_attached}
+  What you want to ask for in the RFA order
 subquestion: |
   **Choose all that apply to you.** 
   
@@ -1141,8 +1142,35 @@ fields:
     required: False
     js show if: |
       val("existing_order['existing_order_divorce']") || val("existing_order['dissolution']") || val("existing_order['existing_order_RFA']") || val("existing_order['criminal_proceeding']") || val("existing_order['parentage_order']") || val("existing_order['guardianship_order']") || val("existing_order['juvenile_order']") || val("existing_order['child_support_order']") 
-
 ---
+needs:
+  - existing_order_text
+variable name: existing_order_text
+use objects: True
+data:
+  existing_order_divorce:
+    question: For divorce or separation?
+    document: For divorce or separation?
+  existing_order_RFA:
+    question: For a civil union dissolution?
+    document: For a civil union dissolution?       
+  criminal_proceeding:
+    question: For a criminal matter?  
+    document: For a criminal matter?
+  parentage_order:
+    question: For parentage?  
+    document: For parentage?
+  guardianship_order:
+    question: For guardianship?  
+    document: For guardianship?
+  juvenile_order:
+    question: For a juvenile (DCF) matter?
+    document: For a juvenile (DCF) matter?
+  child_support_order: 
+    question: For child support?
+    document: For child support?
+---
+
 id: About your home
 question: |
   Shelter or a place to stay?
@@ -1154,6 +1182,7 @@ fields:
   - note: What is the address of the home?
     show if: users1_no_shelter
   - "On one line, include: street address, apt./unit number, town and state abbreviation.": residence_shared_address
+    default: ${ users[0].address.address }, ${ users[0].address.city }, ${ users[0].address.state }
     maxlength: 48
     show if: users1_no_shelter
   - note: Rent or own?
@@ -1253,6 +1282,7 @@ fields:
       - "I am the child of a person who currently or has in the past lived with the defendant while having a sexual relationship together, **or** I am filing on behalf of that child.": plaintiffs_child
 
 ---
+
 id: Defendant s work information
 question: |
   Defendant's work information
@@ -1350,7 +1380,7 @@ fields:
     datatype: yesno
   - note: |
       <h2 class="h4">Race:</h2>
-  - "Select one.": race
+  - "": race
     datatype: checkboxes
     none of the above: False
     minlength: 1
@@ -1361,6 +1391,9 @@ fields:
       - "Native American": race_native
       - "Asian": race_asian
       - "Other": race_other
+
+
+      
   - note: |
       <h2 class="h4">Skin color/tone:</h2>
   - "Select one.": skin
@@ -1530,8 +1563,6 @@ code: |
   [user.address.address for user in users.complete_elements()]
   addresses_to_search = [user.address for user in users.complete_elements()]
 ---
-
-
 #####################################################################
 ######################### REVIEW SCREEN ######################
 id: RFApackage review screen
@@ -1561,7 +1592,7 @@ review:
       % endfor
   - Edit: weapons.revisit
     button: |
-      **Weapons**
+      **List of weapons**
       % for item in weapons:
       - ${ item }
       % endfor
@@ -1610,24 +1641,19 @@ review:
       
   - Edit: relationship_question
     button: |
-    
       **What is your relationship to the person who has abused you or is abusing you?:** ${ showifdef('relationship_question') }
       
   - Edit: under_16
     button: |
-      **Are you under age 16?:** ${ word(yesno(under_16)) }
+      **Is this interview right for you**
       
-  - Edit: who_needs_protection
-    button: |
-      **Who needs protection from abuse?:** ${ showifdef('who_needs_protection') }
+      Are you under age 16?: ${ word(yesno(under_16)) }
       
-  - Edit: plaintiff_lives_in_vermont
-    button: |
-      **Do you live in Vermont?:** ${ word(yesno(plaintiff_lives_in_vermont)) }
+      Who needs protection from abuse?: ${ showifdef('who_needs_protection') }
       
-  - Edit: defendant_lives_in_vermont
-    button: |
-      **Does the defendant live in Vermont?:** ${ word(yesno(defendant_lives_in_vermont)) }
+      Do you live in Vermont?: ${ word(yesno(plaintiff_lives_in_vermont)) }
+      
+      Does the defendant live in Vermont?: ${ word(yesno(defendant_lives_in_vermont)) }
       
   - Edit: trial_court_name
     button: |
@@ -1822,23 +1848,15 @@ review:
       
   - Edit: weapons.there_are_any
     button: |
-      **Gather list of weapons**
+      **Weapons**
       
       Does the defendant own or have access to guns/firearms or other deadly weapons?: ${ showifdef('weapons.there_are_any') }
       
-  - Edit: weapons.there_is_another
-    button: |
-      **List of weapons**
-
       Do you know about any other guns/firearms or other deadly weapons?: ${ showifdef('weapons.there_is_another') }
       
-  - Edit: used_firearm
-    button: |
-      **Weapons**
+      Has the defendant used, displayed or threatened to use a gun/firearm against you or against another family member?: ${ word(yesno(used_firearm)) }
       
-      Has the defendant used, displayed or threatened to use a **gun/firearm** against you or against another family member?: ${ word(yesno(used_firearm)) }
-      
-      Has the defendant used, displayed or threatened to use a **gun/firearm or another deadly weapon** against you or another family member?: ${ word(yesno(used_weapon)) }
+      Has the defendant used, displayed or threatened to use a gun/firearm or another deadly weapon against you or another family member?: ${ word(yesno(used_weapon)) }
       
       Describe in detail how they used or threatened to use the weapon(s): ${ showifdef('used_weapon_how') }
       
@@ -1915,7 +1933,24 @@ review:
     button: |
       **Existing orders or court proceedings**
       
-      Select all that apply: ${ showifdef('existing_order') }
+      Select all that apply:
+      
+       - Is there an existing order or a pending court proceeding for divorce or separation?: ${ word(yesno(existing_order["existing_order_divorce"])) } 
+       
+       - Is there an existing order or a pending court proceeding for a civil union dissolution?: ${ word(yesno(existing_order["dissolution"])) }
+       
+       - Is there an existing order or a pending court proceeding for Relief from Abuse?: ${ word(yesno(existing_order["existing_order_RFA"])) }
+       
+       - Is there an existing order or a pending court proceeding for a criminal matter?: ${ word(yesno(existing_order["criminal_proceeding"])) }
+       
+       - Is there an existing order or a pending court proceeding for parentage?: ${ word(yesno(existing_order["parentage_order"])) }
+       
+       - Is there an existing order or a pending court proceeding for guardianship?: ${ word(yesno(existing_order["guardianship_order"])) }
+       
+       - Is there an existing order or a pending court proceeding for a juvenile (DCF) matter?: ${ word(yesno(existing_order["juvenile_order"])) }
+       
+       - Is there an existing order or a pending court proceeding for child support?: ${ word(yesno(existing_order["child_support_order"])) }
+       
       
       In what state(s) is the existing order or a pending court proceeding?: ${ showifdef('existing_order_state') }
       
@@ -1980,8 +2015,18 @@ review:
     button: |
       **More on your relationship to defendant**
       
-      Select any that apply to you: ${ showifdef('relationship_for_LE') 
-      }
+      Select any that apply to you: 
+      
+        -  I am the spouse or ex-spouse (former spouse) of the defendant: ${ word(yesno(relationship_for_LE["spouse_or_ex_spouse"])) } 
+        
+        - The defendant and I have lived together while having a sexual relationship together: ${ word(yesno(relationship_for_LE["lived_together"])) }
+        
+        - The defendant and I have a child or children in common: ${ word(yesno(relationship_for_LE["had_kids_together"])) }
+        
+        - I am the defendant’s child or step-child, **or** I am filing on behalf of that child or step-child: ${ word(yesno(relationship_for_LE["defendants_child"])) }
+        
+        - I am the child of a person who currently or has in the past lived with the defendant while having a sexual relationship together, **or** I am filing on behalf of that child: ${ word(yesno(relationship_for_LE["plaintiffs_child"])) }
+      
       
   - Edit: employer
     button: |
@@ -2076,27 +2121,49 @@ review:
     button: |
       **More about what the defendant looks like**
 
-      Select one.: ${ showifdef('hair') }
+      **Hair length** 
+      
+      Short: ${ word(yesno(hair["hair_short"] )) }
+      
+      Medium: ${ word(yesno(hair["hair_medium"] )) }
+      
+      Long: ${ word(yesno(hair["hair_long"] )) }
+      
+      Bald: ${ word(yesno(hair["hair_bald"] )) }
 
-      Select one.: ${ showifdef('hair_color') }
+      **Hair color** 
+      
+      Brown: ${ word(yesno(hair_color["hair_brown"])) }
+      
+      Blond: ${ word(yesno(hair_color["hair_blond"])) }
+      
+      Black: ${ word(yesno(hair_color["hair_black"])) }
+      
+      Red: ${ word(yesno(hair_color["hair_red"])) }
+      
+      Gray / white: ${ word(yesno(hair_color["hair_gray"])) }
+      
+      Bald: ${ word(yesno(hair_color["hair_bald_color"])) }
 
-      Beard: ${ word(yesno(hair_beard)) }
+      Other: ${ word(yesno(hair_color["hair_other"])) }
+      
+      **Beard**: ${ word(yesno(hair_beard)) }
 
-      Mustache: ${ word(yesno(hair_mustache)) }
+      **Mustache**: ${ word(yesno(hair_mustache)) }
 
-      Tattoos: ${ word(yesno(tattoos)) }
+      **Tattoos**: ${ word(yesno(tattoos)) }
 
       Where are the tattoos? What design(s)?: ${ showifdef('tattoos_location') }
 
-      Scars or marks: ${ word(yesno(scars)) }
+      **Scars or marks**: ${ word(yesno(scars)) }
 
       Where are the scars?: ${ showifdef('scars_location') }
 
-      Body piercing / earrings: ${ word(yesno(piercing)) }
+      **Body piercing / earrings**: ${ word(yesno(piercing)) }
 
       Where are the piercings?: ${ showifdef('piercing_location') }
 
-      Other identifying marks: ${ word(yesno(other_marks)) }
+      **Other identifying marks**: ${ word(yesno(other_marks)) }
 
       What are they and where are they?: ${ showifdef('marks_location') }
       
