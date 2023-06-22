@@ -5,6 +5,7 @@
 ---
 include:
   - docassemble.AssemblyLine:assembly_line.yml
+  - docassemble.ALToolbox:phone-number-validation.yml
 ---
 features:
   css: style.css
@@ -536,6 +537,14 @@ fields:
 code: |
   trial_court_address.county = trial_court_name
 ---
+id: you birthdate question
+question: |
+  When were you born?
+fields:
+  - Birthdate: users[0].birthdate
+    required: False
+    datatype: BirthDate
+---
 id: About you
 question: |
   About you
@@ -549,22 +558,19 @@ sets:
   - users[i].address.zip
   - users[i].address.state
 question: |
-  What is your address?
-subquestion: |
-  Use an address where it is safe for the court to contact you. You can [talk with an advocate](https://vtnetwork.org/) about how to get a safer mailing address. 
+  Person's Address
 fields:
+  - My mailing address is: users1_address_mailing
+    datatype: object_radio
+    choices:
+      - users[0].address
+    object labeler: |
+      lambda y: y.on_one_line()      
+    none of the above: |
+      Somewhere else
+    disable others: True  
   - code: |
-      users[0].address_fields(default_state=AL_DEFAULT_STATE)
-  - note: |
-      If you have a P.O. Box, or your mailing address is different than your street address, enter it below. (Example: P.O. Box 11111, Burlington, VT 05401)
-  - "Mailing address": users1_address_mailing
-    maxlength: 42
-    required: False
-  - note: |
-      <h2 class="h3">Reach Up Benefits</h2>
-  - "Check this box if you get Reach Up benefits from the state": reach_up_users1
-    datatype: yesno    
-continue button field: About_you
+      users[0].mailing_address.address_fields()
 ---
 id: Gather users contact information
 question: |
@@ -575,8 +581,10 @@ subquestion: |
 #  ${ collapse_template(why_contact_info_needed_template) }
 fields:  
   - Phone number: users[0].phone_number
+    datatype: al_international_phone
     required: False
   - Work phone number: users1_work_phone_number
+    datatype: al_international_phone
     required: False
   - Email address: users[0].email    
     datatype: email
@@ -624,7 +632,7 @@ subquestion: |
   Choose the best description of your relationship to the person who is the abuser. That person is called the "defendant."
 fields:
   - note: |
-      Select one.
+      Choose at least one.
   - "Spouse": is_spouse
     datatype: yesno
   - "Ex-spouse (former spouse)": ex_spouse
@@ -646,8 +654,8 @@ fields:
     maxlength: 16
     show if: other_relationship
 validation code: |
-  if [is_spouse, ex_spouse, live_together, sexual_relationship, dating, family_member].count(True) != 1:
-    validation_error("Please select only one option.")
+  if [is_spouse, ex_spouse, live_together, sexual_relationship, dating, family_member].count(True) == 0:
+    validation_error("Please select at least one option.")
 ---
 id: Gather defendant name
 sets:
@@ -704,12 +712,16 @@ question: |
   What are the defendant's phone numbers?
 fields:  
   - Home phone: other_parties[0].phone_number
+    datatype: al_international_phone
     required: False
   - Cell phone: other_parties[0].mobile_number
+    datatype: al_international_phone
     required: False
   - Work phone: other_parties1_work_phone_number
+    datatype: al_international_phone
     required: False
   - Other phone: other_parties1_other_phone_number
+    datatype: al_international_phone
     required: False    
 ---
 id: What happened most recently
@@ -721,7 +733,8 @@ subquestion: |
   See the [VTLawHelp.org legal help website](https://vtlawhelp.org/roadmap/relief-from-abuse/step-3#forms) for tips on what to include in your description. This information will be part of your "Affidavit".
 fields:
   - "What was the date of the most recent incident?": recent_incident_date
-    datatype: date
+    maxlength: 26
+    #datatype: date
   - "What was the time of the most recent incident? You can estimate if you don't know for sure.": recent_incident_time
     required: False
     #datatype: time
@@ -796,7 +809,7 @@ subquestion: |
 fields:
 
   - "When was the most serious incident?": serious_incident_date
-    datatype: date
+    #datatype: date
   - "What was the time of the most serious incident?": serious_incident_time
     required: False
     #datatype: time
@@ -1504,6 +1517,7 @@ fields:
   - "If you get a RFA order, do you wish to be notified after the order is served?": notify_served
     datatype: yesnoradio
   - "What phone number should law enforcement call to notify you?": users1_notify_phone_number
+    datatype: al_international_phone
     maxlength: 45
     show if: notify_served
   - "Will the defendant try to avoid being served this order?": avoid_served
