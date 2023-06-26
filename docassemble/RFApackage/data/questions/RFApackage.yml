@@ -1,5 +1,5 @@
 #######################
-#People can use https://apps-dev.suffolklitlab.org/start/RFA_Demo/ to test my demo -- and I can keep working on this RFApackage. Then I can "update" the RFA "Package". That will update the RFADemo interview. (Go to Package Management in the login dropdown menu. Put this in first field https://github.com/VTskier/docassemble-RFApackage and then hit Update.)
+#People can use https://apps.vtcourtforms.org/run/RFApackage/RFApackage/#/1 to test my intervew and submit feedback -- and I can keep working on this RFApackage in the Suffolk playground. Then I can "update" the RFA "Package". That will update the demo interview. (Go to Package Management in the login dropdown menu. Put this in first field https://github.com/VTskier/docassemble-RFApackage and then hit Update.)
 #######################
 
 ---
@@ -210,8 +210,8 @@ sections:
   - weapons: Weapons
   - order: What you want in the RFA order
   - service: Info for law enforcement to serve the order
-  - signature: Signature
   - review_RFApackage: Edit your answers
+  - signature: Signature
   - get_docs: Get your documents
 #progressive: False
 ##################
@@ -696,7 +696,7 @@ sets:
 question: |
   What is the defendant's address?
 subquestion: |
-  The court will need an address. If you don't know the home address, enter "Unknown". But be sure to enter the defendant's work address later in this interview. You need to provide at least one of these addresses.
+  The court will need an address. If you don't know any part of their home address, enter "Unknown". But be sure to enter the defendant's work address later in this interview. You need to provide at least one of these addresses.
 fields:
   - code: |
       other_parties[0].address_fields(default_state=AL_DEFAULT_STATE)  
@@ -1459,21 +1459,27 @@ fields:
     input type: area
     show if: danger_for_officer
 ---
-id: Signing some but not all of your forms
+id: Signing your forms
 question: |
-  Signing some -- but not all -- of your forms
+  Attestation and signature
 subquestion: |
-  The Affidavit form requires the signature of a "Notary" or you can do that signature over the phone with the court. For that reason, we wait to sign the Affidavit form. We will give you instructions on the next steps after you finish this interview and see your forms.
+  You must agree to this in order to sign your documents.
 fields:
+  - "I declare that my statements are true and accurate to the best of my knowledge and belief. I understand that if my statements are false, I will be subject to the penalty of perjury or to other sanctions in the discretion of the court.": attestation
+    datatype: yesno
   - "Please type your name. This will appear under your signature.": printed_signature
     maxlength: 34
+    show if: attestation
   - "Date of your signature for these forms": date
     datatype: date
     required: False
+    show if: attestation
     default: |
       ${ today() }
   -  note: |
-      You can change this date later or leave it blank for now if you want.
+       You can change this date later or leave it blank for now if you want.
+     show if: attestation
+      
       
 
   
@@ -1486,10 +1492,10 @@ subquestion: |
   
   ${ al_user_bundle.as_pdf(key='preview') }
 
-  Click the image to open it in a new tab. Click the "Edit answers" button
+  Click the image to open it in a new tab. Click the "Edit your answers" button
   to edit your answers.
 
-  ${ action_button_html(url_action('review_RFApackage'), label='Edit answers', color='info') }
+  ${ action_button_html(url_action('review_RFApackage'), label='Edit your answers', color='info') }
   
   Remember to come back to this window to continue and sign your form.
 continue button field: RFApackage_preview_question    
