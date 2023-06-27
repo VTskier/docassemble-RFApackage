@@ -5,7 +5,7 @@
 include:
   - docassemble.AssemblyLine:assembly_line.yml
   - docassemble.ALToolbox:phone-number-validation.yml
-
+  - docassemble.ALToolbox:display_template.yml
 ---
 features:
   css: style.css
@@ -589,7 +589,7 @@ question: |
   When were you born?
 fields:
   - Birthdate: users[0].birthdate
-    required: False
+    required: True
     datatype: BirthDate
 ---
 id: About you
@@ -734,14 +734,25 @@ id: About the defendant
 question: |
   About the defendant
 fields:
-  - "Check this box if the defendant gets Reach Up benefits": reach_up_OP
+  - "Defendant gets Reach Up benefits": reach_up_OP
     datatype: yesno
-  - "Check this box if defendant is a current member of the military": other_parties1_military
+  - "Defendant is a current member of the military": other_parties1_military
     datatype: yesno
-  - "Check this box if the defendant is incarcerated (in jail) and has been convicted of one of the crimes specified in 15 V.S.A. 1103 (c)(1)(B)? See the list of crimes*, below.": incarcerated
-    datatype: yesno
-  - note: |
-      *****  Those crimes are: murder, attempted murder, kidnapping, domestic assault, aggravated domestic assault, sexual assault, aggravated sexual assault, stalking, aggravated stalking, lewd or lascivious conduct with a child, use of a child in a sexual performance, or consenting to a sexual performance.
+  - "Defendant is incarcerated (in jail) and has been convicted of one of the crimes specified in 15 V.S.A. 1103 (c)(1)(B)?                                                                  ${ display_template(list_of_crimes, scrollable=True, collapse=True) }.": incarcerated
+    datatype: yesno 
+---
+template: list_of_crimes
+subject: See the list of crimes
+content: |
+  Those crimes are: murder, attempted murder, kidnapping, domestic assault, aggravated domestic assault, sexual assault, aggravated sexual assault, stalking, aggravated stalking, lewd or lascivious conduct with a child, use of a child in a sexual performance, or consenting to a sexual performance.
+---
+id: birthdate question
+question: |
+  When was ${ other_parties[0].name } born
+fields:
+  - Birthdate: other_parties[0].birthdate
+    required: False
+    datatype: BirthDate
 ---
 id: Gather defendants address
 sets:
@@ -800,12 +811,13 @@ fields:
     datatype: yesnoradio
   - Your children were the target of the recent abuse: recent_incident_children
     datatype: yesnoradio
-  - "What are the names of the children who were the target of the recent abuse? List their names with commas in between.": recent_incident_children_names
+  - What are the names of the children who were the target of the recent abuse? List their names with commas in between: recent_incident_children_names
     datatype: object_checkboxes
+    show if: recent_incident_children
     choices:
       - children.complete_elements()
-    none of the above: Someone I haven't named yet
-    show if: recent_incident_children
+    none of the above: |
+      none of the above
   - note: |
       ---
     show if: recent_incident_children
@@ -1244,28 +1256,46 @@ fields:
     default: ${ users[0].address.address }, ${ users[0].address.city }, ${ users[0].address.state }
     maxlength: 48
     show if: users1_no_shelter
-  - note: Rent or own?
+  - "Rent or own?": rent_or_own
+    datatype: radio
     show if: users1_no_shelter
-  - "The home is rented.": residence_rented
-    datatype: yesnomaybe
+    choices: 
+      - "The home is rented": residence_rented
+      - "The home is owned": residence_owned
+      - "I don't know"
+  
+  - "In whose name?": whose_name
+    datatype: radio
     show if: users1_no_shelter
-  - "The home is owned.": residence_owned
-    datatype: yesnomaybe
-    show if: users1_no_shelter
-  - note: In whose name?
-    show if: users1_no_shelter
-  - "It is rented or owned in both of our names.": residence_of_both
-    datatype: yesnomaybe
-    show if: users1_no_shelter
-  - "It is rented or owned in my name.": residence_of_users1
-    datatype: yesnomaybe
-    show if: users1_no_shelter
-  - "It is rented or owned in the defendant's name.": residence_of_OP
-    datatype: yesnomaybe
-    show if: users1_no_shelter
-  - "It is rented or owned by someone else.": residence_of_other
-    datatype: yesnomaybe
-    show if: users1_no_shelter
+    choices: 
+      - "It is rented or owned by ${ users[0] } and ${ other_parties[0] }": residence_of_both
+      - "It is rented or owned by ${ users[0] }": residence_of_users1
+      - "It is rented or owned by ${ other_parties[0] }": residence_of_OP
+      - "It is rented or owned by someone else": residence_of_other
+      - "I don't know"
+      
+ # - note: Rent or own?
+ #   show if: users1_no_shelter
+ # - "The home is rented.": residence_rented
+ #   datatype: yesnomaybe
+ #   show if: users1_no_shelter
+ # - "The home is owned.": residence_owned
+ #   datatype: yesnomaybe
+ #   show if: users1_no_shelter
+ # - note: In whose name?
+ #   show if: users1_no_shelter
+ # - "It is rented or owned in both of our names.": residence_of_both
+ #   datatype: yesnomaybe
+ #   show if: users1_no_shelter
+ # - "It is rented or owned in my name.": residence_of_users1
+ #   datatype: yesnomaybe
+ #   show if: users1_no_shelter
+ # - "It is rented or owned in the defendant's name.": residence_of_OP
+ #   datatype: yesnomaybe
+ #   show if: users1_no_shelter
+ # - "It is rented or owned by someone else.": residence_of_other
+ #   datatype: yesnomaybe
+ #   show if: users1_no_shelter
 ---
 id: Details for law enforcement
 question: |
@@ -1440,11 +1470,10 @@ fields:
     datatype: yesno
   - note: |
       <h2 class="h4">Race:</h2>
-  - "": race
+  - "Choose at least one": race
     datatype: checkboxes
     none of the above: False
     minlength: 1
-    maxlength: 1
     choices:        
       - "White": race_white
       - "African-American": race_black
@@ -1629,18 +1658,48 @@ question: |
 subquestion: |
   Edit your answers here and when you are done, scroll to the bottom and select "Resume."
 review:
-  - Edit: users.revisit
+  - Edit: 
+    - users.revisit
+    - users[0].address.address
     button: |
-      **Users**
+      **Users:**
+      
+      Plantiff:
+      
+      % if users.there_are_any:
       % for item in users:
-      - ${ item }
+      
+         - ${ item },
+             ${ item.address }
+         
       % endfor
-  - Edit: other_parties.revisit
+      % endif
+      
+  - Edit: 
+    - other_parties.revisit
+    - other_parties[0].address.address
     button: |
-      **Other Parties**
+      **Information about the other party:**
+      
+      Defendant:
       % for item in other_parties:
+      
       - ${ item }
+      
       % endfor
+      
+      % if other_parties1_aliases != '':
+      List any other names the defendant uses (aliases): ${ showifdef('other_parties1_aliases') }
+      % endif
+      
+      Defendant's address:
+      
+      % for item in other_parties:
+      
+      - ${ item.address }
+      
+      % endfor
+      
   - Edit: children.revisit
     button: |
       **Children**
@@ -1651,50 +1710,23 @@ review:
     button: |
       **List of weapons**
       % for item in weapons:
-      - ${ item }
-      % endfor
-  - Edit: RFAcomplaint.revisit
-    button: |
-      **Rfacomplaint**
-      % for item in RFAcomplaint:
-      - ${ item }
-      % endfor
-  - Edit: RFAaffidavit.revisit
-    button: |
-      **Rfaaffidavit**
-      % for item in RFAaffidavit:
-      - ${ item }
-      % endfor
-  - Edit: RFAconfidentialcontactinfo.revisit
-    button: |
-      **Rfaconfidentialcontactinfo**
-      % for item in RFAconfidentialcontactinfo:
-      - ${ item }
-      % endfor
-  - Edit: RFAserviceinfo.revisit
-    button: |
-      **Rfaserviceinfo**
-      % for item in RFAserviceinfo:
-      - ${ item }
-      % endfor
-  - Edit: RFApackage_Post_interview_instructions.revisit
-    button: |
-      **Rfapackage Post Interview Instructions**
-      % for item in RFApackage_Post_interview_instructions:
-      - ${ item }
-      % endfor
-  - Edit: al_user_bundle.revisit
-    button: |
-      **Al User Bundle**
-      % for item in al_user_bundle:
-      - ${ item }
-      % endfor
       
+      - ${ item }
+      
+      % endfor
+    
   - Edit: relationship_question
     button: |
-      **What is your relationship to the person who has abused you or is abusing you?:** ${ showifdef('relationship_question') }
+      **What is your relationship to the person who has abused you or is abusing you?:** 
       
-  - Edit: under_16
+      - ${ showifdef('relationship_question') }
+      
+  - Edit: 
+    - under_16
+    - who_needs_protection
+    - plaintiff_lives_in_vermont
+    - defendant_lives_in_vermont
+    
     button: |
       **Is this interview right for you**
       
@@ -1709,85 +1741,80 @@ review:
   - Edit: trial_court_name
     button: |
       **You want to file in Family Court of this county:** ${ trial_court_name }
-  - Edit: users[0].address.address
+  - Edit: reach_up_users1
     button: |
-      **What is your address?**
       
-      Address: ${ showifdef('users[0].address.address') }
-      
-      Apartment or Unit: ${ showifdef('users[0].address.unit') }
-      
-      City: ${ showifdef('users[0].address.city') }
-      
-      State: ${ showifdef('users[0].address.state') }
-      
-      Zip: ${ showifdef('users[0].address.zip') }
-      
-      Country: ${ showifdef('users[0].address.country') }
-      
+      % if users1_address_mailing != '':
       Mailing address: ${ showifdef('users1_address_mailing') }
+      % endif
       
-      Check this box if you get Reach Up benefits from the state: ${ word(yesno(reach_up_users1)) }
+      Do you get Reach Up benefits from the state? : ${ word(yesno(reach_up_users1)) }
+
       
-  - Edit: users[0].phone_number
+  - Edit: 
+    - users[0].phone_number
+    - share_contact
     button: |
-      **What is your contact information?**
+      **Contact information**
       
+      What is your contact information:
+      
+      % if users[0].phone_number != '':
       Phone number: ${ showifdef('users[0].phone_number') }
+      % endif
       
+      % if users1_work_phone_number != '':
       Work phone number: ${ showifdef('users1_work_phone_number') }
+      % endif
       
+      % if users[0].email != '':
       Email address: ${ showifdef('users[0].email') }
-  - Edit: share_contact
-    button: |
-      **Sharing your contact information**
+      % endif
+     
+      Sharing your contact information:
       
       I consent to the release of my address and contact information: ${ word(yesno(share_contact)) }
       
-  - Edit: other_relationship
+  - Edit: 
+    - is_spouse
+    - ex_spouse
+    - live_together
+    - sexual_relationship
+    - dating
+    - family_member
+    - family_member_description
+    - other_relationship
+    - other_relationship_description
+    
     button: |
       **Relationship to defendant**
       
       Spouse: ${ word(yesno(is_spouse)) }
+
+      Ex-spouse (former spouse): ${ word(yesno(ex_spouse)) } 
+
+      Someone you have been living with or sharing occupancy: ${ yesno(live_together) }
       
-      Ex-spouse (former spouse): ${ word(yesno(ex_spouse)) }
-      
-      Someone you have been living with or sharing occupancy: ${ word(yesno(live_together)) }
-      
-      Someone with whom you have had a sexual relationship: ${ word(yesno(sexual_relationship)) }
+      Someone with whom you have had a sexual relationship: ${ yesno(sexual_relationship) }
       
       Someone you have dated: ${ word(yesno(dating)) }
       
       A member of your family: ${ word(yesno(family_member)) }
       
+      % if family_member:
       In a word or two, what is your relationship to this family member: ${ showifdef('family_member_description') }
+      % endif
       
       A different relationship to you: ${ word(yesno(other_relationship)) }
       
-      In a word or two, what is that other relationship?: ${ showifdef('other_relationship_description') }
+      % if other_relationship:
+      In a word or two, what is that other relationship?: ${ other_relationship_description }
+      % endif
       
-  - Edit: other_parties[0].name.first
-    button: |
-      **Name of defendant**
-      
-      First: ${ showifdef('other_parties[0].name.first') }
-      
-      Middle: ${ showifdef('other_parties[0].name.middle') }
-      
-      Last: ${ showifdef('other_parties[0].name.last') }
-      
-      Jr.: ${ word(yesno(suffix_jr)) }
-      
-      Sr.: ${ word(yesno(suffix_sr)) }
-      
-      I: ${ word(yesno(suffix_first)) }
-      
-      II: ${ word(yesno(suffix_second)) }
-      
-      III: ${ word(yesno(suffix_third)) }
-      
-      List any other names the defendant uses (aliases): ${ showifdef('other_parties1_aliases') }
-  - Edit: reach_up_OP
+  - Edit: 
+    - reach_up_OP
+    - other_parties1_military
+    - incarcerated
     button: |
       **About the defendant**
       
@@ -1796,80 +1823,95 @@ review:
       Check this box if defendant is a current member of the military: ${ word(yesno(other_parties1_military)) }
       
       Check this box if the defendant is incarcerated (in jail) and has been convicted of one of the crimes specified in 15 V.S.A. 1103 (c)(1)(B)? See the list of crimes*, below: ${ word(yesno(incarcerated)) }
-      
-  - Edit: other_parties[0].address.address
-    button: |
-      **What is the defendant's address?**
-      
-      Address: ${ showifdef('other_parties[0].address.address') }
-      
-      Apartment or Unit: ${ showifdef('other_parties[0].address.unit') }
-      
-      City: ${ showifdef('other_parties[0].address.city') }
-      
-      State: ${ showifdef('other_parties[0].address.state') }
-      
-      Zip: ${ showifdef('other_parties[0].address.zip') }
-      
-      Country: ${ showifdef('other_parties[0].address.country') }
+
       
   - Edit: other_parties[0].phone_number
     button: |
       **What are the defendant's phone numbers?**
       
+      % if other_parties[0].phone_number != '':
       Home phone: ${ showifdef('other_parties[0].phone_number') }
+      % endif
       
+      % if other_parties[0].mobile_number != '':
       Cell phone: ${ showifdef('other_parties[0].mobile_number') }
+      % endif
       
+      % if other_parties1_work_phone_number != '':
       Work phone: ${ showifdef('other_parties1_work_phone_number') }
+      % endif
       
+      % if other_parties1_other_phone_number != '':
       Other phone: ${ showifdef('other_parties1_other_phone_number') }  
+      % endif
       
   - Edit: recent_incident_date
     button: |
       **What happened -- most recently**
       
-      What was the date of the most recent incident?: ${ showifdef('recent_incident_date') }
+      What was the date of the most recent incident?: **${ recent_incident_date }**
       
-      What was the time of the most recent incident? You can estimate if you don't know for sure: ${ showifdef('recent_incident_time') }
+      % if recent_incident_time:
+      What was the time of the most recent incident? You can estimate if you don't know for sure: **${ recent_incident_time }**
+      % endif
+
+      In what town was the most recent incident?: **${ showifdef('recent_incident_town') }**
       
-      In what town was the most recent incident?: ${ showifdef('recent_incident_town') }
+      Please describe the most recent incident with as much detail as possible: **${ showifdef('recent_incident_description') }**
       
-      Please describe the most recent incident with as much detail as possible: ${ showifdef('recent_incident_description') }
+      You were the target of the recent abuse: **${ yesno(recent_incident_users1) }**
       
-      You were the target of the recent abuse: ${ word(yesno(recent_incident_users1)) }
+      Your children were the target of the recent abuse: **${ yesno(recent_incident_children) }**
+      % if recent_incident_children:
+      What are the names of the children who were the target of the recent abuse? List their names with commas in between: **${ showifdef('recent_incident_children_names') }**
+      % endif
       
-      Your children were the target of the recent abuse: ${ word(yesno(recent_incident_children)) }
+      The defendant caused or attempted to cause physical harm: **${ yesno(recent_incident_harm) }**
       
-      What are the names of the children who were the target of the recent abuse? List their names with commas in between: ${ showifdef('recent_incident_children_names') }
+      The defendant placed you and/or them in fear of imminent serious physical harm: **${ yesno(recent_incident_fear) }**
       
-      The defendant caused or attempted to cause physical harm: ${ word(yesno(recent_incident_harm)) }
+      The defendant abused the child/children -- meaning they physically injured or otherwise treated the child(ren) in a manner which placed child(ren's) life, health, development or welfare in jeopardy: **${ yesno(recent_incident_abused) }**
+
+      The defendant stalked you and/or the child/children. Stalking is defined in Vermont law here: [12 V.S.A 5131(6)](https://legislature.vermont.gov/statutes/section/12/178/05131): **${ yesno(recent_incident_stalked) }**
       
-      The defendant placed you and/or them in fear of imminent serious physical harm: ${ word(yesno(recent_incident_fear)) }
+      % if recent_incident_stalked:
+      The defendant stalked you: **${ yesno(recent_incident_stalked_users1) }**
       
-      The defendant abused the child/children -- meaning they physically injured or otherwise treated the child(ren) in a manner which placed child(ren's) life, health, development or welfare in jeopardy: ${ word(yesno(recent_incident_abused)) }
+      The defendant stalked the child/children: **${ yesno(recent_incident_stalked_children) }**
       
-      The defendant stalked you and/or the child/children. Stalking is defined in Vermont law here: [12 V.S.A 5131(6)](https://legislature.vermont.gov/statutes/section/12/178/05131): ${ word(yesno(recent_incident_stalked)) }
+      Vermont law says it is stalking if has happened two times or more. On what date did they first stalk you?: **${ showifdef('recent_incident_stalked_date2') }**
       
-      The defendant stalked you: ${ word(yesno(recent_incident_stalked_users1)) }
-      The defendant stalked the child/children: ${ word(yesno(recent_incident_stalked_children)) }
+      What was the second date that they stalked you?: **${ showifdef('recent_incident_stalked_date1') }**
       
-      Vermont law says it is stalking if has happened two times or more. On what date did they first stalk you?: ${ showifdef('recent_incident_stalked_date2') }
+      % endif
       
-      What was the second date that they stalked you?: ${ showifdef('recent_incident_stalked_date1') }
+      The defendant sexually assaulted you and/or the child/children. Sexual assault is defined in Vermont law here: [15 V.S.A 5131(5)](https://legislature.vermont.gov/statutes/section/12/178/05131): **${ yesno(recent_incident_assault) }**
       
-      The defendant sexually assaulted you and/or the child/children. Sexual assault is defined in Vermont law here: [15 V.S.A 5131(5)](https://legislature.vermont.gov/statutes/section/12/178/05131): ${ word(yesno(recent_incident_assault)) }
+      % if recent_incident_assault:
+      The defendant sexually assault you: **${ yesno(recent_incident_assault_users1) }**
       
-      The defendant sexually assault you: ${ word(yesno(recent_incident_assault_users1)) }
+      The defendant sexually assault the child/children: **${ yesno(recent_incident_assault_children) }**
       
-      The defendant sexually assault the child/children: ${ word(yesno(recent_incident_assault_children)) }
-      
-  - Edit: recent_incident_most_serious
+      % endif
+
+
+  - Edit: 
+    - recent_incident_most_serious
+    - other_incident
     button: |
-      **What happened**
+      **More about what happened**
       
-      Was the recent incident you described also the **most serious** incident that has happened?: ${ word(yesno(recent_incident_most_serious)) }
+      Was the recent incident you described also the **most serious** incident that has happened?: ${ yesno(recent_incident_most_serious) }
       
+      **Other incidents**
+      
+      Were there other past incidents of serious violence or threats that you want to share with the judge?: ${ yesno(other_incident) }
+      
+      % if other_incident:
+      Please describe the any other incident(s) with as much detail as possible: ${ showifdef('other_incident_description') }
+      % endif
+      
+##make sure this only pops up if recent_incident_most_serious is true
   - Edit: serious_incident_date
     button: |
       **What happened -- most serious**
@@ -1882,31 +1924,33 @@ review:
       
       Please describe the most serious incident with as much detail as possible: ${ showifdef('serious_incident_description') }
       
-  - Edit: other_incident
-    button: |
-      **What happened -- other incidents**
       
-      Were there other past incidents of serious violence or threats that you want to share with the judge?: ${ word(yesno(other_incident)) }
-      
-      Please describe the any other incident(s) with as much detail as possible: ${ showifdef('other_incident_description') }
-      
-  - Edit: danger_more_abuse
+  - Edit: 
+    - danger_more_abuse
+    - request_all_emergency
     button: |
       **Danger of more abuse**
       
       Is there immediate danger of more abuse from the defendant?: ${ word(yesno(danger_more_abuse)) }
       
+      % if danger_more_abuse:
       Select all that apply: ${ showifdef('danger_more_abuse_who') }
       
       Include any information not already described before. Be as specific as possible: ${ showifdef('danger_more_abuse_why') }
+      % endif
+      
       
   - Edit: weapons.there_are_any
     button: |
       **Weapons**
       
+      % if weapons.there_are_any == True:
       Does the defendant own or have access to guns/firearms or other deadly weapons?: ${ showifdef('weapons.there_are_any') }
+      % endif
       
+      % if weapons.there_is_another == True:
       Do you know about any other guns/firearms or other deadly weapons?: ${ showifdef('weapons.there_is_another') }
+      % endif
       
       Has the defendant used, displayed or threatened to use a gun/firearm against you or against another family member?: ${ word(yesno(used_firearm)) }
       
@@ -1916,77 +1960,104 @@ review:
       
       Does the defendant own or have access to guns/firearms or other deadly weapons?: ${ showifdef('weapons.there_are_any') }
       
-  - Edit: request_not_abuse
+  - Edit: 
+    - request_not_abuse
+    - request_all_emergency
     button: |
       **What you want to ask for in the RFA order**
       
-      Order the defendant to not abuse me or my children, and not interfere with our personal liberty: ${ word(yesno(request_not_abuse)) }
+      % if request_not_abuse:
+      Order the defendant to not abuse me or my children, and not interfere with our personal liberty: ${ yesno(request_not_abuse) }
+      % endif
       
-      I want the order to protect me from this: ${ word(yesno(request_not_abuse_users1)) }
+      % if request_not_abuse:
+      I want the order to protect me from this: ${ yesno(request_not_abuse_users1) }
       
-      I want the order to protect my child/children from this: ${ word(yesno(request_not_abuse_children)) }
+      I want the order to protect my child/children from this: ${ yesno(request_not_abuse_children) }
+      % endif
       
-      Order the defendant to not stalk or sexually assault me or my child/children: ${ word(yesno(request_no_stalking_assault)) }
+      % if request_no_stalking_assault:
+      Order the defendant to not stalk or sexually assault me or my child/children: ${ yesno(request_no_stalking_assault) }
+      % endif
       
-      I want the order to stop stalking: ${ word(yesno(request_no_stalking)) }
+      % if request_no_stalking_assault:
+      I want the order to stop stalking: ${ yesno(request_no_stalking) }
       
-      I want the order to stop sexual assault: ${ word(yesno(request_no_assault)) }
+      I want the order to stop sexual assault: ${ yesno(request_no_assault) }
       
-      I want the order to protect me from this: ${ word(yesno(request_no_assault_users1)) }
+      I want the order to protect me from this: ${ yesno(request_no_assault_users1) }
       
-      I want the order to protect my child/children from this: ${ word(yesno(request_no_assault_children)) }
+      I want the order to protect my child/children from this: ${ yesno(request_no_assault_children) }
+      % endif
       
-      Order the defendant to immediately leave the residence, and to order sole possession to me: ${ word(yesno(request_leave)) }
+      % if request_leave:
+      Order the defendant to immediately leave the residence, and to order sole possession to me: ${ yesno(request_leave) }
+      % endif
       
-      Order the defendant not to possess or purchase guns/firearms for the duration of the order: ${ word(yesno(request_no_firearms)) }
+      % if request_no_firearms:
+      Order the defendant not to possess or purchase guns/firearms for the duration of the order: ${ yesno(request_no_firearms) }
+      % endif
+           
+      % if request_surrender_firearms:
+      Order the defendant to surrender immediately to law enforcement all guns/firearms that they own, possess or control: ${ yesno(request_surrender_firearms) }
+      % endif
       
-      Order the defendant to surrender immediately to law enforcement all guns/firearms that they own, possess or control: ${ word(yesno(request_surrender_firearms)) }
+      % if request_living_expenses:
+      Order the defendant to pay my temporary living expenses: ${ yesno(request_living_expenses) }
+      % endif
       
-      Order the defendant to pay my temporary living expenses: ${ word(yesno(request_living_expenses)) }
+      % if request_child_support:
+      Order the defendant to pay temporary child support: ${ yesno(request_child_support) }
+      % endif
       
-      Order the defendant to pay temporary child support: ${ word(yesno(request_child_support)) }
+      % if request_no_pet_harm:
+      Order the defendant to stop cruelly treating pets: ${ yesno(request_no_pet_harm) }
       
-      Order the defendant to stop cruelly treating pets: ${ word(yesno(request_no_pet_harm)) }
+      I want the order to protect the pets owned by me or the defendant: ${ yesno(request_no_pet_users1) }
       
-      I want the order to protect the pets owned by me or the defendant: ${ word(yesno(request_no_pet_users1)) }
+      I want the order to protect the pets owned by my child/children: ${ yesno(request_no_pet_children) }
       
-      I want the order to protect the pets owned by my child/children: ${ word(yesno(request_no_pet_children)) }
+      Order me to get temporary possession and control of the pet(s): ${ yesno(request_control_of_pet) }
+      % endif
       
-      Order me to get temporary possession and control of the pet(s): ${ word(yesno(request_control_of_pet)) }
+      % if request_stay_away:
+      Order the defendant to stay a certain distance away: ${ yesno(request_stay_away) }
+
+      How many feet away?: ${ request_stay_away_feet }
       
-      Order the defendant to stay a certain distance away: ${ word(yesno(request_stay_away)) }
+      I want the order to protect me from this: ${ yesno(request_stay_away_users1) }
+
+      I want the order to protect my child/children from this: ${ yesno(request_stay_away_children) }
+      % endif
       
-      How many feet away?: ${ showifdef('request_stay_away_feet') }
+      % if request_no_contact:
+      Order the defendant to not contact me or my child/children in any way: ${ yesno(request_no_contact) }
       
-      I want the order to protect me from this: ${ word(yesno(request_stay_away_users1)) }
+      I want the order to protect me from this: ${ request_no_contact_users1 }
       
-      I want the order to protect my child/children from this: ${ word(yesno(request_stay_away_children)) }
+      I want the order to protect my child/children from this: ${ yesno(request_no_contact_children) }
+      % endif
       
-      Order the defendant to not contact me or my child/children in any way: ${ word(yesno(request_no_contact)) }
+      % if request_temp_PRR:
+      Award temporary Parental Rights and Responsibilities (custody) of our child/children to me or someone else. (The child(ren) of you and the defendant.): ${ yesno(request_temp_PRR) }
+      % endif
       
-      I want the order to protect me from this: ${ word(yesno(request_no_contact_users1)) }
+      % if other_request:
+      I want to ask for something else. (You can write what you want on an upcoming screen.): ${ yesno(other_request) }
+      % endif
       
-      I want the order to protect my child/children from this: ${ word(yesno(request_no_contact_children)) }
-      
-      Award temporary Parental Rights and Responsibilities (custody) of our child/children to me or someone else. (The child(ren) of you and the defendant.): ${ word(yesno(request_temp_PRR)) }
-      
-      I want to ask for something else. (You can write what you want on an upcoming screen.): ${ word(yesno(other_request)) }
+      % if request_all_emergency:
+      I request on an emergency basis the same relief as requested above, to the extent available: ${ yesno(request_all_emergency) } 
+      % endif
+     
   - Edit: request_other_description
     button: |
       **What else do you want to ask for in the RFA order**
       Explain what else you'd like the RFA order to do: ${ showifdef('request_other_description') }
       
-  - Edit: request_all_emergency
-    button: |
-      **Asking for your order to go into effect right away**
-      
-      I request on an emergency basis the same relief as requested above, to the extent available: ${ word(yesno(request_all_emergency)) }
-      
   - Edit: existing_order
     button: |
       **Existing orders or court proceedings**
-      
-      Select all that apply:
       
        - Is there an existing order or a pending court proceeding for divorce or separation?: ${ word(yesno(existing_order["existing_order_divorce"])) } 
        
@@ -2004,14 +2075,21 @@ review:
        
        - Is there an existing order or a pending court proceeding for child support?: ${ word(yesno(existing_order["child_support_order"])) }
        
-      
+      % if existing_order_state != '':
       In what state(s) is the existing order or a pending court proceeding?: ${ showifdef('existing_order_state') }
+      % endif
       
+      % if existing_order_county != '':
       In what county/counties is the existing order or a pending court proceeding?: ${ showifdef('existing_order_county') }
+      % endif
       
+      % if existing_order_users_attorney != '':
       What is the name of your attorney for the existing order or a pending court proceeding -- if you have one?: ${ showifdef('existing_order_users_attorney') }
+      % endif
       
+      % if existing_order_OP_attorney != '':
       What is the name of the other attorney for the existing order or a pending court proceeding -- if the defendant has one?: ${ showifdef('existing_order_OP_attorney') }
+      % endif
       
   - Edit: users1_no_shelter
     button: |
@@ -2055,14 +2133,25 @@ review:
     button: |
       **The defendant's vehicle (their car or truck)**
       
-      What brand car or truck do they drive? (Ford, Honda, etc.): ${ showifdef('vehicle_make') }
+      % if vehicle_make != '':
+      What brand car or truck do they drive? (Ford, Honda, etc.): ${ yesno('vehicle_make') }
+      % endif
+      
+      % if vehicle_model != '':
       What model car or truck? (F-150, Civic): ${ showifdef('vehicle_model') }
+      % endif
       
+      % if vehicle_color != '':
       Color of car or truck: ${ showifdef('vehicle_color') }
+      % endif
       
+      % if vehicle_plate != '':
       Vehicle plate number: ${ showifdef('vehicle_plate') }
+      % endif
       
+      % if vehicle_year != '':
       Vehicle year: ${ showifdef('vehicle_year') }
+      % endif
       
   - Edit: relationship_for_LE
     button: |
@@ -2085,46 +2174,72 @@ review:
     button: |
       **Defendant's work information**
       
+      % if employer != '':
       Defendant's employer: ${ showifdef('employer') }
+      % endif
       
+      % if employers_street_address != '':
       Their employers street address: ${ showifdef('employers_street_address') }
+      % endif
       
-      Employers city and state: ${ showifdef('employers_city_state') 
-      }
+      % if employers_city_state != '':
+      Employers city and state: ${ showifdef('employers_city_state') }
+      % endif
       
-      Work hours on Mondays: ${ showifdef('work_mondays') 
-      }
+      % if work_mondays != '':
+      Work hours on Mondays: ${ showifdef('work_mondays') }
+      % endif
       
-      Work hours on Tuesdays: ${ showifdef('work_tues') 
-      }
+      % if work_tues != '':
+      Work hours on Tuesdays: ${ showifdef('work_tues') }
+      % endif
       
-      Work hours on Wednesdays: ${ showifdef('work_weds') 
-      }
+      % if work_weds != '':
+      Work hours on Wednesdays: ${ showifdef('work_weds') }
+      % endif
       
-      Work hours on Thursdays: ${ showifdef('work_thurs') 
-      }
+      % if work_thurs != '':
+      Work hours on Thursdays: ${ showifdef('work_thurs') }
+      % endif
+      
+      % if work_fri != '':
       Work hours on Fridays: ${ showifdef('work_fri') }
+      % endif
       
-      Work hours on Saturdays: ${ showifdef('work_sat') 
-      }
+      % if work_sat != '':
+      Work hours on Saturdays: ${ showifdef('work_sat') }
+      % endif
       
+      % if work_sun != '':
       Work hours on Sundays: ${ showifdef('work_sun') }
+      % endif
       
   - Edit: other_location_state
     button: |
       **Other places the defendant might be**
       
-      The house or building number on the street (Example: Enter '10' if it's 10 Main Street.): ${ showifdef('house2') }
+      % if house2 != '':
+      The house or building number on the street (Example: Enter '10' if it's 10 Main Street.): ${ house2 }
+      % endif
       
+      % if other_location_street_address != '':
       Street or Town Road (Example: Enter 'Main Street'): ${ showifdef('other_location_street_address') }
+      % endif
       
+      % if other_location_city != '':
       Town / city: ${ showifdef('other_location_city') }
+      % endif
       
+      % if other_location_state != '':
       State: ${ showifdef('other_location_state') }
+      % endif
       
+      % if other_location_phone != '':
       Phone number at that location: ${ showifdef('other_location_phone') }
-      
-      I have another place to list: ${ word(yesno(other_location2)) }
+      % endif
+
+      % if other_location2 == True:
+      I have another place to list: ${ yesno(other_location2) }
       
       The house or building number on the street (Example: Enter '10' if it's 10 Main Street.): ${ showifdef('house3') }
       
@@ -2135,18 +2250,22 @@ review:
       State: ${ showifdef('other_location2_state') }
       
       Phone number at that location: ${ showifdef('other_location2_phone') }
-      
-  - Edit: skin
+      % endif
+
+  - Edit: sex_female
     button: |
       **What the defendant looks like**
       
-      Female: ${ word(yesno(sex_female)) }
+      % if sex_female == True:
+      Female: ${ yesno(sex_female) }
       
-      Male: ${ word(yesno(sex_male)) }
+      % else:
+      Male: ${ yesno(sex_male) }
+      % endif
       
-      Select one: ${ showifdef('race') }
+      Race: ${ showifdef('race') }
       
-      Select one: ${ showifdef('skin') }
+      Skin tone/color: ${ showifdef('skin') }
       
       Height -- feet: ${ showifdef('other_parties1_height_ft') }
       
@@ -2154,21 +2273,21 @@ review:
       
       Weight -- in pounds: ${ showifdef('other_parties1_weight_lbs') }
       
-      Brown: ${ word(yesno(eyes_brown)) }
+      Brown: ${ yesno(eyes_brown) }
       
-      Blue: ${ word(yesno(eyes_blue)) }
+      Blue: ${ yesno(eyes_blue) }
       
-      Gray: ${ word(yesno(eyes_gray)) }
+      Gray: ${ yesno(eyes_gray) }
       
-      Green: ${ word(yesno(eyes_green)) }
+      Green: ${ yesno(eyes_green) }
       
-      Hazel: ${ word(yesno(eyes_hazel)) }
+      Hazel: ${ yesno(eyes_hazel) }
       
-      Other: ${ word(yesno(eyes_other)) }
+      Other: ${ yesno(eyes_other) }
       
-      Glasses: ${ word(yesno(lenses_glasses)) }
+      Glasses: ${ yesno(lenses_glasses) }
       
-      Contacts: ${ word(yesno(lenses_contacts)) }
+      Contacts: ${ yesno(lenses_contacts) }
       
   - Edit: hair_color
     button: |
@@ -2176,48 +2295,61 @@ review:
       
       **Hair length** 
       
-      Short: ${ word(yesno(hair["hair_short"] )) }
+      Short: ${ yesno(hair["hair_short"] ) }
       
-      Medium: ${ word(yesno(hair["hair_medium"] )) }
+      Medium: ${ yesno(hair["hair_medium"] ) }
       
-      Long: ${ word(yesno(hair["hair_long"] )) }
+      Long: ${ yesno(hair["hair_long"] ) }
       
-      Bald: ${ word(yesno(hair["hair_bald"] )) }
+      Bald: ${ yesno(hair["hair_bald"] ) }
+      
       **Hair color** 
       
-      Brown: ${ word(yesno(hair_color["hair_brown"])) }
+      Brown: ${ yesno(hair_color["hair_brown"]) }
       
-      Blond: ${ word(yesno(hair_color["hair_blond"])) }
+      Blond: ${ yesno(hair_color["hair_blond"]) }
       
-      Black: ${ word(yesno(hair_color["hair_black"])) }
+      Black: ${ yesno(hair_color["hair_black"]) }
       
-      Red: ${ word(yesno(hair_color["hair_red"])) }
+      Red: ${ yesno(hair_color["hair_red"]) }
       
-      Gray / white: ${ word(yesno(hair_color["hair_gray"])) }
+      Gray / white: ${ yesno(hair_color["hair_gray"]) }
       
-      Bald: ${ word(yesno(hair_color["hair_bald_color"])) }
+      Bald: ${ yesno(hair_color["hair_bald_color"]) }
       
-      Other: ${ word(yesno(hair_color["hair_other"])) }
+      Other: ${ yesno(hair_color["hair_other"]) }
       
-      **Beard**: ${ word(yesno(hair_beard)) }
+      % if hair_beard:
+      **Beard**: ${ yesno(hair_beard) }
+      % endif
       
-      **Mustache**: ${ word(yesno(hair_mustache)) }
+      % if hair_mustache:
+      **Mustache**: ${ yesno(hair_mustache) }
+      % endif
       
-      **Tattoos**: ${ word(yesno(tattoos)) }
+      % if tattoos: 
+      **Tattoos**: ${ yesno(tattoos) }
       
       Where are the tattoos? What design(s)?: ${ showifdef('tattoos_location') }
+      % endif
       
+      % if scars:
       **Scars or marks**: ${ word(yesno(scars)) }
       
       Where are the scars?: ${ showifdef('scars_location') }
+      % endif
       
+      % if piercing:
       **Body piercing / earrings**: ${ word(yesno(piercing)) }
       
       Where are the piercings?: ${ showifdef('piercing_location') }
+      % endif
       
+      % if other_marks:
       **Other identifying marks**: ${ word(yesno(other_marks)) }
       
       What are they and where are they?: ${ showifdef('marks_location') }
+      % endif
       
   - Edit: notify_served
     button: |
@@ -2235,7 +2367,9 @@ review:
       
       Will the officer who serves this order be in any danger?: ${ word(yesno(danger_for_officer)) }
       
+      % if danger_for_officer:
       Why will the officer be in danger?: ${ showifdef('danger_for_officer_why') }
+      % endif
       
   - Edit: printed_signature
     button: |
