@@ -71,7 +71,6 @@ question: |
 subquestion: |
   ${ action_button_html(url_action('review_RFApackage'), label='Edit answers', color='info') }
   
-  
   Remember to come back to this window to continue.
 continue button field: RFApackage_preview_question
 ---
@@ -250,6 +249,7 @@ code: |
   printed_signature
   users[0].signature
   nav.set_section('get_docs')
+  RFApackage_download
   interview_order_RFApackage = True
   
 ---
@@ -618,7 +618,7 @@ fields:
       <h2 class="h3">Reach Up Benefits</h2>
   - "Check this box if you get Reach Up benefits from the state": reach_up_users1
     datatype: yesno    
-continue button field: About_you
+continue button field: About_you  
 ---
 id: Gather users contact information
 question: |
@@ -798,30 +798,32 @@ fields:
     maxlength: 26
   - "In what state was the most recent incident?": recent_incident_state
     code: states_list() 
-    
     default: Vermont
   - "Please describe the most recent incident with as much detail as possible.": recent_incident_description
     input type: area
     rows: 10
   - You were the target of the recent abuse: recent_incident_users1
-    datatype: yesnoradio
+    datatype: yesnoradio  
   - Your children were the target of the recent abuse: recent_incident_children
-    datatype: yesnoradio
-#  - label: |
-  - "What are the names of the children who were the target of the recent abuse? List their names with commas in between": recent_incident_children_names
-    datatype: checkboxes
+    datatype: yesnoradio   
+  - Which of your children were the target of the recent abuse?: recent_incident_children_names 
+    datatype: object_checkboxes
+    required: False
     none of the above: False
     choices:
-      - ${ children.complete_elements() }
-      - None of the above: none_of_the_above
+      - children 
+    show if: recent_incident_children    
+  - There are other children that were not mentioned: has_recent_incident_other_children
+    datatype: yesnoradio
+    required: False
     show if: recent_incident_children
-  - "List the names": another_field
-    maxlength: 63
-    js show if: |
-      val("recent_incident_children_names['none_of_the_above']")
+  - List their names with commas in between: recent_incident_other_children
+    datatype: area
+    show if: has_recent_incident_other_children
   - note: |
       ---
     show if: recent_incident_children
+    
   - note: |
       Check all that apply to this incident. Select at least one statement.
   - "The defendant caused or attempted to cause physical harm": recent_incident_harm
@@ -988,15 +990,15 @@ fields:
       - No: False
       - I don't know: None 
      
-  - "Check this box if you have more weapons to list. You can enter them here and it will be attached as an extra sheet": extra_sheet_weapons
+  - "Check this box if you have more than 8 weapons to list. You can enter them here and it will be attached as an extra sheet": extra_sheet_weapons
     datatype: yesno
-#    show if: weapon8
   - Other weapons: weapons_overflow
     input type: area
-    rows: 4
+    rows: 8
     show if: extra_sheet_weapons
 continue button field: weapons_info
 ---
+mandatory: True
 code: |
   if extra_sheet_weapons: 
     extra_sheets_attached = 1
@@ -1212,8 +1214,6 @@ fields:
     js show if: |
       val("existing_order['existing_order_divorce']") || val("existing_order['dissolution']") || val("existing_order['existing_order_RFA']") || val("existing_order['criminal_proceeding']") || val("existing_order['parentage_order']") || val("existing_order['guardianship_order']") || val("existing_order['juvenile_order']") || val("existing_order['child_support_order']") 
 ---
-#needs:
- # - existing_order_text
 variable name: existing_order_text
 use objects: True
 data:
@@ -1241,9 +1241,9 @@ data:
 ---
 id: About your home
 question: |
-  Shelter or a place to stay?
+  Shelter or a place to stay?  
 subquestion: |
-  Have you been or will you be forced from your home -- and be without shelter -- unless the defendant is ordered to leave your home?
+  Have you been or will you be forced from your home -- and be without shelter -- unless the defendant is ordered to leave your home?In other words, do you need the defendant to be removed from your home in order to be safe?
 fields:
   - no label: users1_no_shelter
     datatype: yesnoradio
@@ -1253,44 +1253,23 @@ fields:
     default: ${ users[0].address.address }, ${ users[0].address.city }, ${ users[0].address.state }
     maxlength: 48
     show if: users1_no_shelter
-  - "Rent or own?": rent_or_own
-    datatype: radio
+  - Rent or own?: rent_or_own
+    input type: radio
+    show if: users1_no_shelter
     choices: 
-      - "The home is rented": residence_rented
-      - "The home is owned": residence_owned
-      - "I don't know"
+      - The home is rented
+      - The home is owned
+      - I don't know
   
   - In whose name?: whose_name
     datatype: radio
+    show if: users1_no_shelter
     choices: 
-      - It is rented or owned by ${ users[0] } and ${ other_parties[0] }: residence_of_both
-      - It is rented or owned by ${ users[0] }: residence_of_users1
-      - It is rented or owned by ${ other_parties[0] }: residence_of_OP
-      - It is rented or owned by someone else: residence_of_other
-#      - I don't know
-      
- # - note: Rent or own?
- #   show if: users1_no_shelter
- # - "The home is rented.": residence_rented
- #   datatype: yesnomaybe
- #   show if: users1_no_shelter
- # - "The home is owned.": residence_owned
- #   datatype: yesnomaybe
- #   show if: users1_no_shelter
- # - note: In whose name?
- #   show if: users1_no_shelter
- # - "It is rented or owned in both of our names.": residence_of_both
- #   datatype: yesnomaybe
- #   show if: users1_no_shelter
- # - "It is rented or owned in my name.": residence_of_users1
- #   datatype: yesnomaybe
- #   show if: users1_no_shelter
- # - "It is rented or owned in the defendant's name.": residence_of_OP
- #   datatype: yesnomaybe
- #   show if: users1_no_shelter
- # - "It is rented or owned by someone else.": residence_of_other
- #   datatype: yesnomaybe
- #   show if: users1_no_shelter
+      - "It is rented or owned by ${ users[0] } and ${ other_parties[0] }"
+      - "It is rented or owned by ${ users[0] }"
+      - "It is rented or owned by ${ other_parties[0] }"
+      - "It is rented or owned by someone else"
+      - "I don't know"
 ---
 id: Details for law enforcement
 question: |
@@ -1314,7 +1293,12 @@ fields:
   - "Town / city": other_parties1_city
     maxlength: 23
   - "State": other_parties1_state
+    required: False
     code: states_list()
+  - "If you live outside of the United States enter the state/province of the country you live in": other_parties1_other
+    show if:
+      variable: other_parties1_state
+      is: null
   - "If you don't have a street address, describe the location of the home.": location_of_home
     input type: area
     required: False
@@ -1466,11 +1450,11 @@ fields:
     none of the above: False
     minlength: 1
     choices:        
-      - ${ race_text["race_white"] }: race_white
-      - ${ race_text["race_black"] }: race_black
-      - ${ race_text["race_native"] }: race_native
-      - ${ race_text["race_asian"] }: race_asian
-      - ${ race_text["race_other"] }: race_other
+      - White: race_white
+      - Black: race_black
+      - Native American: race_native
+      - Asian: race_asian
+      - Other: race_other
       
   - note: |
       <h2 class="h4">Skin color/tone:</h2>
@@ -1640,10 +1624,12 @@ question: |
 subquestion: |
   Here is a preview of the form you will sign on the next page.   
   
-  #${ al_court_bundle.as_pdf(key='preview') }
-  Click the image to open it in a new tab. Click the "Edit answers" button
+  ${ al_user_bundle.as_pdf(key='preview') }
+
+  Click the image to open it in a new tab. Click the "Edit your answers" button
   to edit your answers.
-  ${ action_button_html(url_action('review_RFApackage'), label='Edit answers', color='info') }
+
+  ${ action_button_html(url_action('review_RFApackage'), label='Edit your answers', color='info') }
   
   Remember to come back to this window to continue and sign your form.
 continue button field: RFApackage_preview_question    
@@ -1877,8 +1863,13 @@ review:
       You were the target of the recent abuse: **${ yesno(recent_incident_users1) }**
       
       Your children were the target of the recent abuse: **${ yesno(recent_incident_children) }**
-      % if recent_incident_children:
+      
+      % if recent_incident_children_names:
       What are the names of the children who were the target of the recent abuse? List their names with commas in between: **${ showifdef('recent_incident_children_names') }**
+      % endif
+      
+      % if recent_incident_other_children: 
+      Their names: **${ recent_incident_other_children }**
       % endif
       
       The defendant caused or attempted to cause physical harm: **${ yesno(recent_incident_harm) }**
@@ -1940,7 +1931,6 @@ review:
       
   - Edit: 
     - danger_more_abuse
-    - request_all_emergency
     button: |
       **Danger of more abuse**
       
@@ -2120,24 +2110,15 @@ review:
     button: |
       **Shelter or a place to stay?**
       
-      % if users1_no_shelter:
-      Do you need the defendant to be removed from your home in order to be safe? : **${ yesno(users1_no_shelter) }**
+      Have you been or will you be forced from your home — and be without shelter — unless the  defendant is ordered to leave your home?: **${ yesno(users1_no_shelter) }**
       
+      % if users1_no_shelter:
       What is the address of the home? : **${ residence_shared_address }**
       % endif
       
-#      It is rented or owned by someone else: **${ yesno(whose_name["residence_of_other"]) }**
+      **${ showifdef('rent_or_own') }** 
       
-#      It is rented or owned by ${ users[0] } and ${ other_parties[0] } : **${ yesno(whose_name["residence_of_both"]) }**
-      
-#      The home is rented: **${ yesno(rent_or_own["residence_rented"]) }**
-#      
-#      The home is owned: **${ yesno(rent_or_own["residence_owned"]) }** 
-#      
-#      It is rented or owned by ${ users[0] }: **${ yesno(whose_name["residence_of_users1"]) }**
-#      
-#      It is rented or owned by ${ other_parties[0] }: **${ yesno(whose_name["residence_of_OP"]) }**
-#      
+      In whose name is the house rented or owned? : **${ whose_name }**
       
       
   - Edit: house
@@ -2289,44 +2270,160 @@ review:
       Male: ${ word(yesno(sex_male)) }
       % endif
       
-      % if race.any_true():
-      % for item in race.true_values():
-        **${ race_text["item"] }**
-      % endfor
+      Race:
+      
+      % if race["race_white"]:
+        - **White**
+      % endif
+      
+      % if race["race_black"]:
+        - **Black**
+      % endif
+      
+      % if race["race_native"]:
+        - **Native American**
+      % endif
+      
+      % if race["race_asian"]:
+        - **Asian**
+      % endif
+      
+      % if race["race_other"]:
+        - **Other**
+      % endif
+      
+      Skin color/tone:
+
+      % if skin["skin_light"]:
+        - **Light** 
+      % endif
+      
+      % if skin["skin_medium"]:
+        - **Medium** 
+      % endif
+      
+      % if skin["skin_dark"]:
+        - **Dark** 
+      % endif
+      
+      % if skin["skin_other"]:
+        - **Other** 
+      % endif
+     
+           
+      Height: 
+      
+        - **${other_parties1_height_ft}' ${ other_parties1_height_in }"**
+
+      Weight:
+      
+        - **${other_parties1_weight_lbs} lbs** 
+      
+      Eye color:
+      
+      % if eyes["eyes_brown"]:
+        
+        - **Brown**
+      % endif
+        
+      % if eyes["eyes_blue"]:
+      
+        - **Blue**
+      % endif 
+      
+      % if eyes["eyes_gray"]:
+      
+        - **Gray**
+      % endif 
+      
+      % if eyes["eyes_green"]:
+      
+        - **Green**
+      % endif 
+      
+      % if eyes["eyes_hazel"]:
+      
+        - **Hazel**
+      % endif
+      
+      % if eyes["eyes_other"]:
+      
+        - **Other**
+      % endif
+      
+      % if lenses_glasses: 
+      
+        Glasses: **Yes**
+      % endif
+      
+      % if lenses_contacts:
+      
+        Contacts: **Yes**
       % endif
 
-      
   - Edit: hair_color
     button: |
       **More about what the defendant looks like**
       
-      **Hair length** 
+      Hair length: 
       
       % if hair["hair_short"]:
-      Short: ${ yesno(hair["hair_short"] ) }
+      
+        - **Short**
       % endif
       
-      Medium: ${ yesno(hair["hair_medium"] ) }
+      % if hair["hair_medium"]:
       
-      Long: ${ yesno(hair["hair_long"] ) }
+        - **Medium**
+      % endif
       
-      Bald: ${ yesno(hair["hair_bald"] ) }
+      % if hair["hair_long"]:
       
-      **Hair color** 
+        - **Long**
+      % endif
       
-      Brown: ${ yesno(hair_color["hair_brown"]) }
+      % if hair["hair_bald"]:
       
-      Blond: ${ yesno(hair_color["hair_blond"]) }
+        - **Bald**
+      % endif
       
-      Black: ${ yesno(hair_color["hair_black"]) }
       
-      Red: ${ yesno(hair_color["hair_red"]) }
+      Hair color: 
       
-      Gray / white: ${ yesno(hair_color["hair_gray"]) }
+      % if hair_color["hair_brown"]:
       
-      Bald: ${ yesno(hair_color["hair_bald_color"]) }
+        - **Brown**
+      % endif
       
-      Other: ${ yesno(hair_color["hair_other"]) }
+      % if hair_color["hair_blond"]:
+      
+        - **Blond**
+      % endif
+      
+      % if hair_color["hair_black"]:
+      
+        - **Black**
+      % endif
+      
+      % if hair_color["hair_red"]:
+      
+        - **Red**
+      % endif
+      
+      % if hair_color["hair_gray"]:
+      
+        - **Gray / white**
+      % endif
+      
+      % if hair_color["hair_bald_color"]:
+      
+        - **Bald**
+      % endif
+      
+      % if hair_color["hair_other"]:
+      
+        - **Other**
+      % endif
       
       % if hair_beard:
       **Beard**: ${ yesno(hair_beard) }
@@ -2528,6 +2625,8 @@ objects:
   - al_user_bundle: ALDocumentBundle.using(elements=[RFApackage_Post_interview_instructions, RFAaffidavit, RFAconfidentialcontactinfo, RFAcomplaint, RFAserviceinfo], filename="RFApackage", title="Download all forms", enabled=True)
   #- al_court_bundle: ALDocumentBundle.using(elements=[RFAaffidavit, RFAconfidentialcontactinfo, RFAcomplaint, RFAserviceinfo],  filename="RFApackage", title="All forms to deliver to court", enabled=True)
 ---
+
+
 #####################################################################
 ######################### ATTACHMENTS ###########################
 # Each attachment defines a key in an ALDocument. We use `i` as the placeholder here so the same template is 
@@ -2610,6 +2709,7 @@ attachment:
       - "weapon8": ${ weapons[7].description }
       - "weapon8_location": ${ weapons[7].location }
       - "extra_sheets_attached": ${ extra_sheets_attached }
+      - "weapons_overflow": ${RFAaffidavit.safe_value("weapons_overflow")}
       - "used_weapon_yes": ${ used_weapon }
       - "used_weapon_no": ${ not used_weapon }
       - "used_weapon_how": ${ used_weapon_how }
@@ -2749,13 +2849,13 @@ attachment:
       - "incarcerated": ${ incarcerated }
       - "users1_no_shelter": ${ users1_no_shelter }
       - "residence_shared_address": ${ residence_shared_address }
-      - "residence_of_users1": ${ whose_name["residence_of_users1"] }
-      - "residence_owned": ${ rent_or_own["residence_owned"] }
-      - "residence_rented": ${ rent_or_own["residence_rented"] }
-      - "residence_of_OP": ${ whose_name["residence_of_OP"] }     
-      - "residence_of_other": ${ whose_name["residence_of_other"] }
-      - "residence_of_both": ${ whose_name["residence_of_both"] }
-      - "reach_up_users1": ${ whose_name["reach_up_users1"] }
+      - "residence_of_users1": ${ residence_of_users1 }
+      - "residence_owned": ${ residence_owned }
+      - "residence_rented": ${ residence_rented }
+      - "residence_of_OP": ${ residence_of_OP }
+      - "residence_of_other": ${ residence_of_other }
+      - "residence_of_both": ${ residence_of_both }
+      - "reach_up_users1": ${ reach_up_users1 }
       - "reach_up_OP": ${ reach_up_OP }
       - "request_not_abuse_children": ${ request_not_abuse_children }
       - "request_not_abuse_users1": ${ request_not_abuse_users1 }
@@ -2949,6 +3049,7 @@ attachment:
       - "danger_for_officer_why": ${ RFAserviceinfo.safe_value("danger_for_officer_why") }
 ---
 code: |
+  RFAaffidavit.overflow_fields["weapons_overflow"].overflow_trigger = 20
   RFAaffidavit.overflow_fields["recent_incident_description"].overflow_trigger = 1246
   RFAaffidavit.overflow_fields["recent_incident_description"].label = "Please describe the most recent incident with as much detail as possible."
   RFAaffidavit.overflow_fields["serious_incident_description"].overflow_trigger = 870
@@ -2960,6 +3061,7 @@ code: |
   RFAaffidavit.overflow_fields["danger_more_abuse_why"].overflow_trigger = 258
   RFAaffidavit.overflow_fields["danger_more_abuse_why"].label = "Explain why you think there is danger of more abuse. Be as specific as possible."
   RFAaffidavit.overflow_fields.gathered = True
+
 ---
 code:  |
   RFAserviceinfo.overflow_fields["location_of_home"].overflow_trigger = 850
