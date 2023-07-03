@@ -1,5 +1,5 @@
 #######################
-#People can use https://apps.vtcourtforms.org/run/RFApackage/RFApackage/#/1 to test my intervew and submit feedback -- and I can keep working on this RFApackage in the Suffolk playground. Then I can "update" the RFA "Package". That will update the demo interview. (Go to Package Management in the login dropdown menu. Put this in first field https://github.com/VTskier/docassemble-RFApackage and then hit Update.)
+#People can use https://apps.vtcourtforms.org/run/RFApackage/RFApackage/#/1 to test my intervew and submit feedback -- and I can keep working on this RFApackage in the Suffolk playground. Then I can "update" the RFA "Package". That will update the demo interview. (Go to Package Management in the login dropdown menu. Put this in first field https://github.com/VTskier/docassemble-RFApackage and then hit Update. OR scroll down and hit the Update button next to the RFApackage.)
 #######################
 
 ---
@@ -98,18 +98,15 @@ code: |
     
   relationship_question
   if relationship_question == 'Family member':
-    under_16
-    if under_16:
+    if not sixteen_or_older:
       initial_screening_questions_2_exit
 
   if relationship_question == 'Current or former sexual partner':
-    under_16
-    if under_16:
+    if not sixteen_or_older:
       initial_screening_questions_2_exit
       
   if relationship_question == 'Someone who lives with you or used to live with you':
-    under_16
-    if under_16:
+    if not sixteen_or_older:
       initial_screening_questions_2_exit
 
   if relationship_question == 'None of the above':
@@ -124,15 +121,20 @@ code: |
     defendant_lives_in_vermont
     if defendant_lives_in_vermont:
       initial_screening_questions_5_continue
-    if not defendant_lives_in_vermont:
+    if defendant_lives_in_vermont is None:
+      initial_screening_questions_5_important_note
+    else:
       initial_screening_questions_5_exit_b
       
   if not plaintiff_lives_in_vermont:
     defendant_lives_in_vermont
     if defendant_lives_in_vermont:
       initial_screening_questions_5_continue
-    if not defendant_lives_in_vermont:
+    if defendant_lives_in_vermont is None:
+      initial_screening_questions_5_important_note
+    else:
       initial_screening_questions_5_exit_a
+
   
   #main questions
   trial_court_name
@@ -379,7 +381,7 @@ id: initial_screening_questions_2_a
 question: |
   See if this interview is right for your situation
 fields:
-  - "Are you under age 16?": under_16
+  - "Are you 16 or older?": sixteen_or_older
     datatype: yesnoradio
 ---    
 id: initial_screening_questions_2_exit
@@ -441,7 +443,7 @@ question: |
   See if this interview is right for your situation
 fields:
   - "Does the defendant live in Vermont?": defendant_lives_in_vermont
-    datatype: yesnoradio
+    datatype: yesnomaybe
   - note: The "defendant" is the person who is abusing you.
 ---
 id: initial_screening_questions_5_continue
@@ -459,7 +461,9 @@ question: |
 subquestion: |
   <i class="fas fa-hand-paper fa-3x" aria-hidden="true"></i>  **Stop.** **Do not use this interview.**
   
-  In this situation, these may **not** be the right forms to fill out. Consult with a lawyer or legal aid organization in your state or the defendant’s state.
+  In this situation, these may **not** be the right forms to fill out. 
+  
+  Consult with a lawyer or legal aid organization in your state or the defendant’s home state.
 continue button field: initial_screening_questions_5_exit_a
 buttons:
   - Exit: exit
@@ -469,15 +473,29 @@ id: initial_screening_questions_5_exit_b
 question: |
   Stop
 subquestion: |
-  <i class="fas fa-hand-paper fa-3x" aria-hidden="true"></i>  **Stop.** It’s time to stop and ask for advice! If the defendant is not currently a Vermont resident, then there may be a question as to whether Vermont has jurisdiction over the defendant. 
+  <i class="fas fa-hand-paper fa-3x" aria-hidden="true"></i>  **Stop.** It’s time to stop and ask for advice! If the defendant is not currently a Vermont resident, then there may be a question as to whether Vermont courts have jurisdiction over the defendant. 
   
-  Vermont needs to have jurisdiction over the defendant to make the Relief from Abuse order work. Consult with a lawyer, like the lawyers at [Legal Services Vermont and Vermont Legal Aid](https://vtlawhelp.org). 
+  Vermont needs to have jurisdiction over the defendant to make the Relief from Abuse order work. 
   
-  Find out whether you should use these forms or not.
+  Consult with a lawyer, like the lawyers at [Legal Services Vermont and Vermont Legal Aid](https://vtlawhelp.org). Find out whether you should use these forms or not.
 continue button field: initial_screening_questions_5_exit_b
 buttons:
   - Exit: exit
     url: https://vtlawhelp.org
+    
+---
+id: initial_screening_questions_5_important_note
+question: |
+  About the defendant's address
+subquestion: |
+  <i class="fa-solid fa-circle-exclamation fa-3x"></i>  **Important.** The court will need an address of some kind. If you don't know the defendant's home address, you can give their work address. You need to provide at least one of these addresses.
+  
+  If the defendant is not currently a Vermont resident, then there may be a question as to whether Vermont courts have jurisdiction over the defendant. 
+  
+  Vermont needs to have jurisdiction over the defendant to make the Relief from Abuse order work. 
+  
+  Consult with a lawyer, like the lawyers at [Legal Services Vermont and Vermont Legal Aid](https://vtlawhelp.org). Find out whether you should use these forms or not.
+continue button field: initial_screening_questions_5_important_note
 ---
 id: choose a court
 question: |
