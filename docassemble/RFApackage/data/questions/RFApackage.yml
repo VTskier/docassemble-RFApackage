@@ -1469,8 +1469,8 @@ fields:
     datatype: yesno
   - "Please type your name. This will appear under your signature.": printed_signature
     maxlength: 34
+  - "Date of your signature for these forms": signature_date
     show if: attestation
-  - "Date of your signature for these forms": date
     datatype: date
     required: False
     show if: attestation
@@ -2566,39 +2566,17 @@ attachment:
   skip undefined: True
   pdf template file: 3_RFA-affidavit.pdf
   fields:
-      - "docket_number__1": ${ docket_number }
-      - "docket_number__2": ${ docket_number }
       - "docket_number": ${ docket_number }
-      - "trial_court_county__1": ${ trial_court.address.county }
-      - "trial_court_county__2": ${ trial_court.address.county }
       - "trial_court_county": ${ trial_court_name }
-      - "users1_name__1": ${ users[0] }
-      - "users1_name__2": ${ users[0] }
       - "users1_name": ${ users[0] }
-      - "users1_birthdate__1": ${ format_date(users[0].birthdate, format='M/d/yyyy') }
       - "users1_birthdate": ${ format_date(users[0].birthdate, format='M/d/yyyy') }
-      - "users1_birthdate__2": ${ format_date(users[0].birthdate, format='M/d/yyyy') }
       - "other_parties1_name__1": ${ other_parties[0] }
-      - "other_parties1_name__2": ${ other_parties[0] }
       - "other_parties1_name": ${ other_parties[0] }
-      - "other_parties1_birthdate__1": ${ format_date(other_parties[0].birthdate, format='M/d/yyyy') }
       - "other_parties1_birthdate": ${ format_date(other_parties[0].birthdate, format='M/d/yyyy') }
-      - "other_parties1_birthdate__2": ${ format_date(other_parties[0].birthdate, format='M/d/yyyy') }
-      - "other_parties1_address_address__1": ${ other_parties[0].address.line_one() }
       - "other_parties1_address_address": ${ other_parties[0].address.line_one() }
-      - "other_parties1_address_address__2": ${ other_parties[0].address.line_one() }
-      - "other_parties1_address_city__1": ${ other_parties[0].address.city }
       - "other_parties1_address_city": ${ other_parties[0].address.city }
-      - "other_parties1_address_city__2": ${ other_parties[0].address.city }
-      - "other_parties1_address_state__1": ${ other_parties[0].address.state }
       - "other_parties1_address_state": ${ other_parties[0].address.state }
-      - "other_parties1_address_state__2": ${ other_parties[0].address.state }
-      - "other_parties1_address_zip__1": ${ other_parties[0].address.zip }
       - "other_parties1_address_zip": ${ other_parties[0].address.zip }
-      - "other_parties1_weapon_yes": ${ weapons.there_are_any == True}
-      - "other_parties1_weapon_no": ${ weapons.there_are_any == False }
-      - "other_parties1_weapon_DK": ${ weapons.there_are_any == None }
-      - "recent_incident_date__1": ${ format_date(recent_incident_date, format='M/d/yyyy') }
       - "recent_incident_date": ${ format_date(recent_incident_date, format='M/d/yyyy') }
       - "recent_incident_time": ${ recent_incident_time }
       - "recent_incident_town": ${ recent_incident_town }
@@ -2612,6 +2590,9 @@ attachment:
       - "serious_incident_state": ${ serious_incident_state }
       - "serious_incident_description": ${ RFAaffidavit.safe_value("serious_incident_description") }
       - "other_incident_description": ${ RFAaffidavit.safe_value("other_incident_description") }
+      - "other_parties1_weapon_yes": ${ weapons.there_are_any == True}
+      - "other_parties1_weapon_no": ${ weapons.there_are_any == False }
+      - "other_parties1_weapon_DK": ${ weapons.there_are_any == None }
       - "weapon1": ${ weapons[0].description }
       - "weapon1_location": ${ weapons[0].location }
       - "weapon2": ${ weapons[1].description }
@@ -2638,6 +2619,8 @@ attachment:
       - "other_parties1_military_yes": ${ other_parties1_military }
       - "other_parties1_military_no": ${ not other_parties1_military }
       - "printed_signature": ${ printed_signature }
+      - "affidavit_signature_date": ${ format_date(signature_date, format='M/d/yyyy') }
+
 ---
 attachment:
   name: 4 RFA-confidential-contact-info
@@ -2649,28 +2632,19 @@ attachment:
       - "docket_number__1": ${ docket_number }
       - "docket_number__2": ${ docket_number }
       - "docket_number": ${ docket_number }
-      - "trial_court_county__1": ${ trial_court.address.county }
-      - "trial_court_county__2": ${ trial_court.address.county }
       - "trial_court_county": ${ trial_court_name }
-      - "users1_name__1": ${ users[0] }
-      - "users1_name__2": ${ users[0] }
       - "users1_name": ${ users[0] }
-      - "users1_address_address__1": ${ users[0].address.address }
       - "users1_address_address": ${ users[0].address.address }
       - "users1_address_mailing": ${ users1_address_mailing }
-      - "users1_address_city__1": ${ users[0].address.city }
       - "users1_address_city": ${ users[0].address.city }
-      - "users1_address_state__1": ${ users[0].address.state }
       - "users1_address_state": ${ users[0].address.state }
-      - "users1_address_zip__1": ${ users[0].address.zip }
+      - "users1_address_zip": ${ users[0].address.zip }
       - "users1_phone_number": ${ users[0].phone_number }
       - "users1_work_phone_number": ${ users1_work_phone_number }
       - "users1_email": ${ users[0].email }
       - "share_contact_yes": ${ share_contact }
       - "share_contact_no": ${ not share_contact }
-      - "signature_date__1": ${ format_date(signature_date, format='M/d/yyyy') }
       - "signature_date": ${ format_date(signature_date, format='M/d/yyyy') }
-      - "users1_signature__1": ${ users[0].signature_if_final(i) }
       - "users1_signature": ${ users[0].signature_if_final(i) }
 ---
 attachment:
@@ -2680,53 +2654,25 @@ attachment:
   skip undefined: True
   pdf template file: 1_RFA-complaint.pdf
   fields:
-      - "docket_number__1": ${ docket_number }
-      - "docket_number__2": ${ docket_number }
       - "docket_number": ${ docket_number }
-      - "trial_court_county__1": ${ trial_court.address.county }
-      - "trial_court_county__2": ${ trial_court.address.county }
       - "trial_court_county": ${ trial_court_name }
-      - "users1_name__1": ${ users[0] }
-      - "users1_name__2": ${ users[0] }
       - "users1_name": ${ users[0] }
-      - "users1_birthdate__1": ${ users[0].birthdate.format() }
       - "users1_birthdate": ${ format_date(users[0].birthdate, format='M/d/yyyy') }
-      - "users1_birthdate__2": ${ users[0].birthdate.format() }
-      - "other_parties1_name__1": ${ other_parties[0] }
-      - "other_parties1_name__2": ${ other_parties[0] }
       - "other_parties1_name": ${ other_parties[0] }
-      - "other_parties1_birthdate__1": ${ other_parties[0].birthdate.format() }
       - "other_parties1_birthdate": ${ format_date(other_parties[0].birthdate, format='M/d/yyyy') }
-      - "other_parties1_birthdate__2": ${ other_parties[0].birthdate.format() }
-      - "other_parties1_address_address__1": ${ other_parties[0].address.line_one() }
       - "other_parties1_address_address": ${ other_parties[0].address.line_one() }
-      - "other_parties1_address_address__2": ${ other_parties[0].address.line_one() }
-      - "other_parties1_address_city__1": ${ other_parties[0].address.city }
       - "other_parties1_address_city": ${ other_parties[0].address.city }
-      - "other_parties1_address_city__2": ${ other_parties[0].address.city }
-      - "other_parties1_address_state__1": ${ other_parties[0].address.state }
       - "other_parties1_address_state": ${ other_parties[0].address.state }
-      - "other_parties1_address_state__2": ${ other_parties[0].address.state }
-      - "other_parties1_address_zip__1": ${ other_parties[0].address.zip }
       - "other_parties1_address_zip": ${ other_parties[0].address.zip }
-      - "recent_incident_date__1": ${ recent_incident_date.format() }
-      - "recent_incident_date": ${ format_date(recent_incident_date, format='M/d/yyyy') }
-      - "danger_more_abuse": ${ danger_more_abuse }
-      - "users1_address_address__1": ${ users[0].address.address }
-      - "users1_address_address": ${ users[0].address.address }
-      - "users1_address_city__1": ${ users[0].address.city }
-      - "users1_address_city": ${ users[0].address.city }
-      - "users1_address_state__1": ${ users[0].address.state }
-      - "users1_address_state": ${ users[0].address.state }
-      - "family_member_description": ${ family_member_description }
-      - "family_member": ${ family_member }
       - "spouse": ${ is_spouse }
-      - "other_relationship_description": ${ other_relationship_description }
       - "ex_spouse": ${ ex_spouse }
-      - "other_relationship": ${ other_relationship }
       - "live_together": ${ live_together }
       - "sexual_relationship": ${ sexual_relationship }
       - "dating": ${ dating }
+      - "family_member": ${ family_member }
+      - "family_member_description": ${ family_member_description }
+      - "other_relationship": ${ other_relationship }
+      - "other_relationship_description": ${ other_relationship_description }
       - "existing_order_divorce_yes": ${ existing_order["existing_order_divorce"] }
       - "existing_order_divorce_no": ${ not existing_order["existing_order_divorce"] }
       - "dissolution_yes": ${ existing_order["dissolution"] }
@@ -2748,6 +2694,7 @@ attachment:
       - "existing_order_users_attorney": ${ existing_order_users_attorney }
       - "existing_order_OP_attorney": ${ existing_order_OP_attorney }
       - "recent_incident_yes": ${ True }
+      - "recent_incident_date": ${ format_date(recent_incident_date, format='M/d/yyyy') }
       - "recent_incident_users1": ${ recent_incident_users1 }
       - "recent_incident_children": ${ recent_incident_children }
       - "recent_incident_children_names": ${ recent_incident_children_names }
@@ -2760,8 +2707,9 @@ attachment:
       - "recent_incident_stalked_date2": ${ format_date(recent_incident_stalked_date2, format='M/d/yyyy') }
       - "recent_incident_stalked_date1": ${ format_date(recent_incident_stalked_date1, format='M/d/yyyy') }
       - "recent_incident_assault_children": ${ recent_incident_assault_children }
-      - "recent_incident_assault_": ${ recent_incident_assault }
+      - "recent_incident_assault": ${ recent_incident_assault }
       - "recent_incident_assault_users1": ${ recent_incident_assault_users1 }
+      - "danger_more_abuse": ${ danger_more_abuse }
       - "danger_more_abuse_children": ${ danger_more_abuse_who["children"] }
       - "danger_more_abuse_users1": ${ danger_more_abuse_who["users1"] }
       - "used_firearm": ${ used_firearm }
@@ -2834,7 +2782,7 @@ attachment:
       - "request_other_description": ${ request_other_description }
       - "request_other": ${ other_request }
       - "request_all_emergency": ${ request_all_emergency }
-      - "signature_date__2": ${ format_date(signature_date, format='M/d/yyyy') }
+      - "signature_date": ${ format_date(signature_date, format='M/d/yyyy') }
       - "users1_signature": ${ users[0].signature_if_final(i) }
 ---
 attachment:
@@ -2844,25 +2792,11 @@ attachment:
   skip undefined: True
   pdf template file: 2_RFA-service-info.pdf
   fields:
-      - "users1_birthdate__1": ${ format_date(users[0].birthdate, format='M/d/yyyy') }
-      - "users1_birthdate": ${ format_date(users[0].birthdate, format='M/d/yyyy') }
-      - "users1_birthdate__2": ${ format_date(users[0].birthdate, format='M/d/yyyy') }
-      - "other_parties1_birthdate__1": ${ format_date(other_parties[0].birthdate, format='M/d/yyyy') }
-      - "other_parties1_birthdate": ${ format_date(other_parties[0].birthdate, format='M/d/yyyy') }
-      - "other_parties1_birthdate__2": ${ format_date(other_parties[0].birthdate, format='M/d/yyyy') }
-      - "other_parties1_address_address__1": ${ other_parties1_street_only }
-      - "other_parties1_address_address": ${ other_parties1_street_only }
-      - "other_parties1_address_address__2": ${ other_parties1_street_only }
-      - "other_parties1_address_city__1": ${ other_parties[0].address.city }
-      - "other_parties1_address_city": ${ other_parties[0].address.city }
-      - "other_parties1_address_city__2": ${ other_parties[0].address.city }
-      - "other_parties1_address_state__1": ${ other_parties[0].address.state }
-      - "other_parties1_address_state": ${ other_parties[0].address.state }
-      - "other_parties1_address_state__2": ${ other_parties[0].address.state }
-      - "date": ${ format_date(date, format='M/d/yyyy') }
+      - "date": ${ format_date(signature_date, format='M/d/yyyy') }
       - "users1_name_last": ${ users[0].name.last }
       - "users1_name_first": ${ users[0].name.first }
       - "users1_name_middle": ${ users[0].name.middle }
+      - "users1_birthdate": ${ format_date(users[0].birthdate, format='M/d/yyyy') }
       - "users1_notify_phone_number": ${ users1_notify_phone_number }
       - "notify_served_yes": ${ notify_served }
       - "notify_served_no": ${ not notify_served }
@@ -2879,6 +2813,7 @@ attachment:
       - "other_parties1_name_last": ${ other_parties[0].name.last }
       - "other_parties1_name_first": ${ other_parties[0].name.first }
       - "other_parties1_name_middle": ${ other_parties[0].name.middle }
+      - "other_parties1_birthdate": ${ format_date(other_parties[0].birthdate, format='M/d/yyyy') }
       - "other_parties1_age": ${ other_parties[0].age_in_years() }
       - "other_parties1_aliases": ${ other_parties1_aliases }
       - "sex_female": ${ sex_female }
@@ -2928,9 +2863,9 @@ attachment:
       - "other_parties1_mobile_number": ${ other_parties[0].mobile_number }
       - "other_parties1_work_phone_number": ${ other_parties1_work_phone_number }
       - "other_parties1_other_phone_number": ${ other_parties1_other_phone_number }
-      - "house": ${ house }
-      - "house__1": ${ house2 }
-      - "house__2": ${ house3 }
+      - "other_parties1_address_address": ${ other_parties1_street_only }
+      - "other_parties1_address_city": ${ other_parties1_city }
+      - "other_parties1_address_state": ${ other_parties1_state }
       - "location_of_home": ${ RFAserviceinfo.safe_value("location_of_home") }
       - "description_of_home": ${ description_of_home }
       - "best_contact_time": ${ RFAserviceinfo.safe_value("best_contact_time") }
@@ -2944,6 +2879,9 @@ attachment:
       - "work_fri": ${ work_fri }
       - "work_sat": ${ work_sat }
       - "work_sun": ${ work_sun }
+      - "house": ${ house }
+      - "house__1": ${ house2 }
+      - "house__2": ${ house3 }
       - "other_location_street_address": ${ other_location_street_address }
       - "other_location_city": ${ other_location_city }
       - "other_location_state": ${ other_location_state }
@@ -2979,7 +2917,6 @@ code: |
   RFAaffidavit.overflow_fields["danger_more_abuse_why"].overflow_trigger = 258
   RFAaffidavit.overflow_fields["danger_more_abuse_why"].label = "Explain why you think there is danger of more abuse. Be as specific as possible."
   RFAaffidavit.overflow_fields.gathered = True
-
 ---
 code:  |
   RFAserviceinfo.overflow_fields["location_of_home"].overflow_trigger = 850
@@ -2992,4 +2929,3 @@ code:  |
   RFAconfidentialcontactinfo.overflow_fields.gathered = True
   RFAcomplaint.overflow_fields.gathered = True
 ---
-
