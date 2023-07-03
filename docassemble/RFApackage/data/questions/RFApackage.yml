@@ -735,7 +735,7 @@ fields:
     datatype: yesno
   - "Defendant is a current member of the military": other_parties1_military
     datatype: yesno
-  - "Defendant is incarcerated (in jail) and has been convicted of one of the crimes specified in 15 V.S.A. 1103 (c)(1)(B)?                                                                  ${ display_template(list_of_crimes, scrollable=True, collapse=True) }.": incarcerated
+  - "Defendant is incarcerated (in jail) and has been convicted of one of the crimes specified in 15 V.S.A. 1103 (c)(1)(B)? ${ display_template(list_of_crimes, scrollable=True, collapse=True) }": incarcerated
     datatype: yesno 
 ---
 template: list_of_crimes
@@ -803,7 +803,7 @@ fields:
     required: False
   - "Please describe the most recent incident with as much detail as possible.": recent_incident_description
     input type: area
-    rows: 10
+    rows: 20
   - You were the target of the recent abuse: recent_incident_users1
     datatype: yesnoradio  
   - Your children were the target of the recent abuse: recent_incident_children
@@ -892,8 +892,7 @@ fields:
     required: False
   - "Please describe the most serious incident with as much detail as possible.": serious_incident_description
     input type: area
-    rows: 20
-    
+    rows: 20  
 validation code: |
   if (recent_incident_state == "") and (other_recent_incident_state == ""):
     validation_error("Please enter a state in the United States, or an area outside of the United States")
@@ -958,12 +957,6 @@ fields:
     maxlength: 76
   - Where is this weapon located? (kitchen, car, friend's house, etc.): weapons[i].location
     maxlength: 76
-  - "Check this box if you have more than 8 weapons to list. You can enter them here and it will be attached as an extra sheet": extra_sheet_weapons
-    datatype: yesno
-  - Other weapons: weapons_overflow
-    input type: area
-    rows: 8
-    show if: extra_sheet_weapons
 ---
 id: Another weapon
 question: |
@@ -1008,13 +1001,6 @@ fields:
       - I don't know: None 
     
 continue button field: weapons_info
----
-mandatory: True
-code: |
-  if extra_sheet_weapons: 
-    extra_sheets_attached = 1
-  else:
-    extra_sheets_attached = 0
 ---
 id: What you want to ask for in the RFA order
 question: |
@@ -1269,8 +1255,8 @@ fields:
     show if: users1_no_shelter
   - "On one line, include: street address, apt./unit number, town and state abbreviation": A_new_residence_shared_address
     required: False
-    js show if: val('users1_no_shelter') == true 
-
+    js show if: |
+      val('users1_no_shelter') == true
   - Rent or own?: rent_or_own
     datatype: checkboxes
     none of the above: False
@@ -2790,8 +2776,13 @@ attachment:
       - "weapon7_location": ${ weapons[6].location }
       - "weapon8": ${ weapons[7].description }
       - "weapon8_location": ${ weapons[7].location }
-      - "extra_sheets_attached": ${ extra_sheets_attached }
-      - "weapons_overflow": ${RFAaffidavit.safe_value("weapons_overflow")}
+      - "extra_sheets_attached": |
+          % if RFAaffidavit.has_overflow(): 
+            "1"
+          % else:
+            "0"
+          % endif
+      - "weapons_overflow": ${ RFAaffidavit.has_overflow() }
       - "used_weapon_yes": ${ used_weapon }
       - "used_weapon_no": ${ not used_weapon }
       - "used_weapon_how": ${ used_weapon_how }
@@ -3088,7 +3079,8 @@ attachment:
       - "danger_for_officer_why": ${ RFAserviceinfo.safe_value("danger_for_officer_why") }
 ---
 code: |
-  RFAaffidavit.overflow_fields["weapons_overflow"].overflow_trigger = 20
+  RFAaffidavit.overflow_fields['weapons'].label = "Weapons"
+  RFAaffidavit.overflow_fields["weapons"].overflow_trigger = 9
   RFAaffidavit.overflow_fields["recent_incident_description"].overflow_trigger = 1246
   RFAaffidavit.overflow_fields["recent_incident_description"].label = "Please describe the most recent incident with as much detail as possible."
   RFAaffidavit.overflow_fields["serious_incident_description"].overflow_trigger = 870
