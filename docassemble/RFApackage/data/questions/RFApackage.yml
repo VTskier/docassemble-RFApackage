@@ -1,5 +1,5 @@
 #######################
-#People can use https://apps-dev.suffolklitlab.org/start/RFA_Demo/ to test my demo -- and I can keep working on this RFApackage. Then I can "update" the RFA "Package". That will update the RFADemo interview. (Go to Package Management in the login dropdown menu.)
+#People can use https://apps.vtcourtforms.org/run/RFApackage/RFApackage/#/1 to test my intervew and submit feedback -- and I can keep working on this RFApackage in the Suffolk playground. Then I can "update" the RFA "Package". That will update the demo interview. (Go to Package Management in the login dropdown menu. Put this in first field https://github.com/VTskier/docassemble-RFApackage and then hit Update.)
 #######################
 
 ---
@@ -210,8 +210,8 @@ sections:
   - weapons: Weapons
   - order: What you want in the RFA order
   - service: Info for law enforcement to serve the order
-  - signature: Signature
   - review_RFApackage: Edit your answers
+  - signature: Signature
   - get_docs: Get your documents
 #progressive: False
 ##################
@@ -266,11 +266,11 @@ subquestion: |
   
   <i class="fas fa-clock fa-2x"></i> It may take you over 1 hour to complete this interview. Consider creating a free account so you can save your progress. At any time choose "sign up" in the menu above, or "register" below.
   
-  <i class="fas fa-share-nodes fa-2x"></i> Use the Share feature at the bottom of the page to share your progress with a trusted friend or advocate.
+  <i class="fas fa-share-nodes fa-2x"></i> Use the Share feature at the bottom of the page to share your progress with a trusted friend or advocate. Important: The person you share the link with **will be able to see AND edit your answers**.
   
   <i class="fas fa-sign-out-alt fa-2x"></i> After saving or printing your work, log out and close your web browser.
   
-  VTCourtForms interviews were created by Legal Services Vermont with support from the Legal Services Corporation. It is free to use this program. This site is not a lawyer. Visit our [VTLawHelp.org website](https://vtlawhelp.org) if you have legal questions.
+  VTCourtForms interviews were created by Legal Services Vermont with support from the Legal Services Corporation. It is free to use this program. This site is not a lawyer. Visit our legal help website at [VTLawHelp.org](https://vtlawhelp.org/roadmap/relief-from-abuse/step-1) for more information.
   
   [FILE big_logo, 30%, Legal Services Vermont logo]
 
@@ -323,12 +323,13 @@ subquestion: |
   * Make sure you are in a safe place. It takes time to work through this interview. It may take 1 hour or more.
   * If you are in danger right now, dial 911.
   * Use this interview if you are asking for an RFA order for you, **or** both you and your children. (There are different forms for [asking for an RFA only on behalf of a child or children.](https://vtlawhelp.org/roadmap/relief-from-abuse/step-3))
-  * The forms in this interview can only be used in Vermont.
+  * The forms in this interview can only be used in Vermont courts.
   * Consider creating an account and saving your work along the way. You could log in later to review your answers with an advocate. Choose “sign up” in the menu above, or “register” below.
-  * Click "Share" at the bottom of this page to share a link to your progress with someone you trust. Important: The person you share this link with will be able to see and edit your answers.
+  * Click "Share" at the bottom of this page to share a link to your progress with someone you trust. Important: The person you share this link with **will be able to see AND edit your answers**.
   <h3 class="h4">Information you will need</h3>
   * To complete this interview, you will need to know the date or dates when the abuse occurred and give a detailed description of the abuse. This includes the most recent incident and the most serious incident. You will need to fully describe the incidents and make it clear how severe or how frequent the abuse has been.
   * You will need to give a safe address and telephone number where the court can reach you. If you don’t have one, ask an advocate from the [Vermont Network.](https://www.vtnetwork.org/get-help/)
+  * The court will need an address for the defendant -- home and/or work. You need to provide at least one of these addresses. The person who is the abuser is called the "defendant."
   * You will see important questions about weapons that the defendant might have access to. If you list what they are and where they are located, the court can order law enforcement to collect them to help keep you safe.
   <h3 class="h4">After answering the questions</h3>
   * At the end you will get a chance to preview your forms and make changes if you need to. 
@@ -472,7 +473,7 @@ subquestion: |
   
   Vermont needs to have jurisdiction over the defendant to make the Relief from Abuse order work. Consult with a lawyer, like the lawyers at [Legal Services Vermont and Vermont Legal Aid](https://vtlawhelp.org). 
   
-  Find out whether you should use these forms or not. If you get the green light from a lawyer, come back and answer Yes to this question so you can start the guided interview.
+  Find out whether you should use these forms or not.
 continue button field: initial_screening_questions_5_exit_b
 buttons:
   - Exit: exit
@@ -488,7 +489,8 @@ fields:
       It can be:
       
       * the county you live in, or 
-      * the county the other person lives in (the defendant).
+      * the county the other person lives in (the defendant), or
+      * the county that you left to get away from the abuse -- even if you go out of state.
       
       Not sure what county? [Check this list of cities and towns to find the county.](https://en.m.wikipedia.org/wiki/List_of_municipalities_in_Vermont#Cities)
   - County: trial_court_name
@@ -594,7 +596,7 @@ question: |
 subquestion: |
   To keep your contact information confidential, select **No**. Then only the court and law enforcement will see your address and contact information. 
   
-  If you select Yes, other people can get your address and contact information.
+  If you select Yes, other people can get your address and contact information -- including the defendant and the general public.
 fields:
   - "I consent to the release of my address and contact information.": share_contact
     datatype: yesnoradio
@@ -693,6 +695,8 @@ sets:
   - other_parties[i].address.state
 question: |
   What is the defendant's address?
+subquestion: |
+  The court will need an address. If you don't know any part of their home address, enter "Unknown". But be sure to enter the defendant's work address later in this interview. You need to provide at least one of these addresses.
 fields:
   - code: |
       other_parties[0].address_fields(default_state=AL_DEFAULT_STATE)  
@@ -758,6 +762,9 @@ fields:
     show if: recent_incident_stalked
   - "Vermont law says it is stalking if has happened two times or more. On what date did they first stalk you?": recent_incident_stalked_date2
     datatype: date
+    show if: recent_incident_stalked
+  - note: |
+      Stalking is complicated. Be sure to speak to a lawyer about it.
     show if: recent_incident_stalked
   - "What was the second date that they stalked you?": recent_incident_stalked_date1
     datatype: date
@@ -1110,6 +1117,7 @@ question: |
   Shelter or a place to stay?
 subquestion: |
   Have you been or will you be forced from your home -- and be without shelter -- unless the defendant is ordered to leave your home?
+  In other words, do you need the defendant to be removed from your home in order to be safe?
 fields:
   - no label: users1_no_shelter
     datatype: yesnoradio
@@ -1220,6 +1228,10 @@ question: |
   Defendant's work information
 subquestion: |
   Tell us about the defendant's workplace and work hours. Law enforcement may serve the order there if they cannot find the defendant at home.
+  
+  If you don't know or the if the defendant is unemployed, just leave these questions blank.
+  
+  If you did not enter a home address for the defendant, you need to enter a work address.
 fields:
   - "Defendant's employer": employer
     maxlength: 36
@@ -1447,21 +1459,27 @@ fields:
     input type: area
     show if: danger_for_officer
 ---
-id: Signing some but not all of your forms
+id: Signing your forms
 question: |
-  Signing some -- but not all -- of your forms
+  Attestation and signature
 subquestion: |
-  The Affidavit form requires the signature of a "Notary" or you can do that signature over the phone with the court. For that reason, we wait to sign the Affidavit form. We will give you instructions on the next steps after you finish this interview and see your forms.
+  You must agree to this in order to sign your documents.
 fields:
+  - "I declare that my statements are true and accurate to the best of my knowledge and belief. I understand that if my statements are false, I will be subject to the penalty of perjury or to other sanctions in the discretion of the court.": attestation
+    datatype: yesno
   - "Please type your name. This will appear under your signature.": printed_signature
     maxlength: 34
   - "Date of your signature for these forms": signature_date
+    show if: attestation
     datatype: date
     required: False
+    show if: attestation
     default: |
       ${ today() }
   -  note: |
-      You can change this date later or leave it blank for now if you want.
+       You can change this date later or leave it blank for now if you want.
+     show if: attestation
+      
       
 
   
@@ -1474,10 +1492,10 @@ subquestion: |
   
   ${ al_user_bundle.as_pdf(key='preview') }
 
-  Click the image to open it in a new tab. Click the "Edit answers" button
+  Click the image to open it in a new tab. Click the "Edit your answers" button
   to edit your answers.
 
-  ${ action_button_html(url_action('review_RFApackage'), label='Edit answers', color='info') }
+  ${ action_button_html(url_action('review_RFApackage'), label='Edit your answers', color='info') }
   
   Remember to come back to this window to continue and sign your form.
 continue button field: RFApackage_preview_question    
@@ -2496,11 +2514,13 @@ question: |
 subquestion: |
   The interview is done. Your forms are ready to view.
   
-  Select the "Edit your answers" button to fix any mistakes. Then, download your forms and the instructions sheet for the next steps to take. You can email the filled-in PDF forms to yourself or someone else, too.
+  Select the "Edit your answers" button to fix any mistakes. Then, download your forms and the instructions sheet for the next steps to take. 
+  
+  You can email the filled-in PDF forms to yourself or someone else, too. If you email them, check your email's "junk" folder if you don't see the email quickly.
   
   Consider creating a free account so you can save your progress. At any time choose "sign up" in the menu above, or "register" below.
   
-  You can also use the Share feature to share a link to your interview with a trusted person. Important: If you use the Share feature, that person will be able to see and edit your answers online.
+  You can also use the Share feature to share a link to your interview with a trusted person. Important: If you use the Share feature, that person **will be able to see AND edit your answers online.
 
   ${ action_button_html(url_action('review_RFApackage'), label='Edit your answers', color='info') }
   
