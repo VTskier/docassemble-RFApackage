@@ -2741,14 +2741,14 @@ attachment:
       - "other_parties1_address_city": ${ other_parties[0].address.city }
       - "other_parties1_address_state": ${ other_parties[0].address.state }
       - "other_parties1_address_zip": ${ other_parties[0].address.zip }
-      - "recent_incident_date": ${ format_date(recent_incident_date, format='M/d/yyyy') }
+      - "recent_incident_date": ${ recent_incident_date }
       - "recent_incident_time": ${ recent_incident_time }
       - "recent_incident_town": ${ recent_incident_town }
       - "recent_incident_state": ${ recent_incident_state }
       - "recent_incident_description": ${ RFAaffidavit.safe_value("recent_incident_description") }
       - "recent_incident_most_serious_yes": ${ recent_incident_most_serious }
       - "recent_incident_most_serious_no": ${ not recent_incident_most_serious }
-      - "serious_incident_date": ${ format_date(serious_incident_date, format='M/d/yyyy') }
+      - "serious_incident_date": ${ serious_incident_date }
       - "serious_incident_time": ${ serious_incident_time }
       - "serious_incident_town": ${ serious_incident_town }
       - "serious_incident_state": ${ serious_incident_state }
