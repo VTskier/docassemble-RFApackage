@@ -1006,12 +1006,10 @@ id: What you want to ask for in the RFA order
 question: |
   What you want to ask for in the RFA order
 subquestion: |
-  **Choose all that apply to you.** 
-  
   This is a list of things that you can ask the court for. If approved, they will be part of the Relief from Abuse order. 
   
-  You can also ask for other things on an upcoming screen -- things that are specific to your situation.
-  
+  **Choose all that apply to you.** 
+
   I want the court to:
 fields:
   - "Order the defendant to not abuse me or my children, and not interfere with our personal liberty": request_not_abuse
@@ -1175,7 +1173,6 @@ subquestion: |
 fields:  
   - "Select all that apply": existing_order
     datatype: checkboxes
-    none of the above: False
     required: False
     choices:
       - "For divorce or separation?": existing_order_divorce
@@ -1567,7 +1564,7 @@ fields:
       - "Gray / white": hair_gray
       - "Bald": hair_bald_color
       - "Other": hair_other
-  - Enter your hair color: other_hair_field
+  - Other hair color: other_hair_field
     maxlength: 12
     show if: hair_color["hair_other"]
   - note: |
@@ -1686,6 +1683,8 @@ review:
   - Edit: 
     - users.revisit
     - users[0].address.address
+    - reach_up_users1
+    - users1_address_mailing
     button: |
       **Information about you:**
       
@@ -1694,11 +1693,23 @@ review:
       % if users.there_are_any:
       % for item in users:
       
-         - **${ item }**,
-             **${ item.address }**
+         - **${ item }**
          
       % endfor
+      Plantiff's address:
+      % for item in users:
+      
+         - **${ item.address }**
+      
+      % endfor
       % endif
+      
+      % if users1_address_mailing != '':
+      Plantiff's Mailing address
+        - **${ showifdef('users1_address_mailing') }**
+      % endif
+      
+      Reach Up benefits: **${ yesno(reach_up_users1) }**
       
   - Edit: 
     - other_parties.revisit
@@ -1769,16 +1780,6 @@ review:
       **You want to file in Family Court of this county:** 
       
         - **${ trial_court_name }**
-  - Edit: reach_up_users1
-    button: |
-      
-      % if users1_address_mailing != '':
-      Mailing address: ${ showifdef('users1_address_mailing') }
-      % endif
-      
-      Do you get Reach Up benefits from the state? : 
-        
-        - **${ yesno(reach_up_users1) }**
 
       
   - Edit: 
@@ -1976,13 +1977,6 @@ review:
       **Danger of more abuse**
       
       Is there immediate danger of more abuse from the defendant?: **${ yesno(danger_more_abuse) }**
-      
-      % if danger_more_abuse:
-      Select all that apply: **${ showifdef('danger_more_abuse_who') }**
-      
-      Include any information not already described before. Be as specific as possible: **${ showifdef('danger_more_abuse_why') }**
-      % endif
-      
       
   - Edit: 
     - weapons.there_is_another
@@ -2350,7 +2344,7 @@ review:
       **What the defendant looks like**
 
       % if sex_female:
-      Female: ${ yesno(sex_female) } 
+      Female: **${ yesno(sex_female) }**
       % endif
       
       % if sex_male:
@@ -2576,7 +2570,7 @@ review:
 ---
 continue button field: users.revisit
 question: |
-  Edit user(s)
+  Edit Plaintiff
 subquestion: |
   ${ users.table }
   
@@ -2608,7 +2602,7 @@ confirm: True
 ---
 continue button field: other_parties.revisit
 question: |
-  Edit other party / parties
+  Edit Defendant
 subquestion: |
   ${ other_parties.table }
   ${ other_parties.add_action() }
@@ -2641,7 +2635,7 @@ confirm: True
 ---
 continue button field: children.revisit
 question: |
-  Edit children
+  Edit Children
 subquestion: |
   ${ children.table }
   ${ children.add_action() }
@@ -2691,6 +2685,7 @@ subquestion: |
   Consider creating a free account so you can save your progress. At any time choose "sign up" in the menu above, or "register" below.
   
   You can also use the Share feature to share a link to your interview with a trusted person. Important: If you use the Share feature, that person will be able to see and edit your answers online.
+  
   ${ action_button_html(url_action('review_RFApackage'), label='Edit your answers', color='info') }
   
   
@@ -2712,8 +2707,10 @@ objects:
   - al_user_bundle: ALDocumentBundle.using(elements=[RFApackage_Post_interview_instructions, RFAaffidavit, RFAconfidentialcontactinfo, RFAcomplaint, RFAserviceinfo], filename="RFApackage", title="Download all forms", enabled=True)
   #- al_court_bundle: ALDocumentBundle.using(elements=[RFAaffidavit, RFAconfidentialcontactinfo, RFAcomplaint, RFAserviceinfo],  filename="RFApackage", title="All forms to deliver to court", enabled=True)
 ---
-
-
+attachment:
+  variable name: RFAaffidavit.addendum
+  docx template file: RFAaffidavit_addendum.docx
+---
 #####################################################################
 ######################### ATTACHMENTS ###########################
 # Each attachment defines a key in an ALDocument. We use `i` as the placeholder here so the same template is 
