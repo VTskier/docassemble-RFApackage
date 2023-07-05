@@ -1182,14 +1182,15 @@ question: |
 subquestion: |
   Tell law enforcement where the defendant lives at this time. If they live with you, provide that address and information. If you don't know an answer, say I don't know.  
 fields:
-  - "The house or building number on the street (Example: Enter '10' if it's 10 Main Street.)": house
+  - "The house or building number on the street (Example: **Only** enter '10' if it's 10 Main Street.)": house
     maxlength: 10
   - "Name of the street or Town Road number (Example: Enter 'Main Street')": other_parties1_street_only
-    maxlength: 28
+    maxlength: 18
   - "Town / city": other_parties1_city
     maxlength: 23
   - "State": other_parties1_state
     maxlength: 5
+    default: Vermont
   - "If you don't have a street address, describe the location of the home.": location_of_home
     input type: area
     required: False
@@ -1291,11 +1292,11 @@ subquestion: |
 fields:
   - note: |
       <h2 class="h4">Other location:</h2>
-  - "The house or building number on the street (Example: Enter '10' if it's 10 Main Street.)": house2
+  - "The house or building number on the street (Example: **Only** enter '10' if it's 10 Main Street.)": house2
     maxlength: 10
     required: False
   - "Street or Town Road (Example: Enter 'Main Street')": other_location_street_address
-    maxlength: 28
+    maxlength: 26
     required: False
   - "Town / city": other_location_city
     maxlength: 23
@@ -1311,20 +1312,25 @@ fields:
   - note: |
       <h2 class="h4">Another location:</h2>
     show if: other_location2
-  - "The house or building number on the street (Example: Enter '10' if it's 10 Main Street.)": house3
+  - "The house or building number on the street (Example: **Only** enter '10' if it's 10 Main Street.)": house3
     maxlength: 10
+    required: False
     show if: other_location2
   - "Street or Town Road (Example: Enter 'Main Street').": other_location2_street_address
-    maxlength: 27
+    maxlength: 26
+    required: False
     show if: other_location2
   - "Town / city": other_location2_city
     maxlength: 23
+    required: False
     show if: other_location2
   - "State": other_location2_state
     maxlength: 5
+    required: False
     show if: other_location2
   - "Phone number at that location": other_location2_phone
     maxlength: 13
+    required: False
     show if: other_location2
 ---
 id: What the defendant looks like
@@ -2261,7 +2267,7 @@ review:
       ${ other_parties1_other_phone_number }
   - Edit: house
     button: |
-      **Defendant's house or building number on the street (Example: Enter 10 if it's 10 Main Street.)**:
+      **Defendant's house or building number on the street (Example: **Only** enter 10 if it's 10 Main Street.)**:
       ${ house }
   - Edit: location_of_home
     button: |
