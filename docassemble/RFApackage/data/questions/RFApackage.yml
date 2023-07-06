@@ -1,5 +1,6 @@
 #######################
-#People can use https://apps.vtcourtforms.org/run/RFApackage/RFApackage/#/1 to test my intervew and submit feedback -- and I can keep working on this RFApackage in the Suffolk playground. Then I can "update" the RFA "Package". That will update the demo interview. (Go to Package Management in the login dropdown menu. Put this in first field https://github.com/VTskier/docassemble-RFApackage and then hit Update.)
+#People can use https://apps.vtcourtforms.org/run/RFApackage/RFApackage/#/1 to test my intervew and submit feedback -- and I can keep working on this RFApackage in the Suffolk playground. Then I can "update" the RFA "Package". That will update the demo interview. (Go to Package Management in the login dropdown menu. Put this in first field https://github.com/VTskier/docassemble-RFApackage and then hit Update. OR scroll down and hit the Update button next to the RFApackage.)
+#######################
 ---
 include:
   - docassemble.AssemblyLine:assembly_line.yml
@@ -150,17 +151,14 @@ code: |
     
   relationship_question
   if relationship_question == 'Family member':
-    under_16
-    if under_16:
+    if not sixteen_or_older:
       initial_screening_questions_2_exit
   if relationship_question == 'Current or former sexual partner':
-    under_16
-    if under_16:
+    if not sixteen_or_older:
       initial_screening_questions_2_exit
       
   if relationship_question == 'Someone who lives with you or used to live with you':
-    under_16
-    if under_16:
+    if not sixteen_or_older:
       initial_screening_questions_2_exit
   if relationship_question == 'None of the above':
     initial_screening_questions_2_exit_a
@@ -174,15 +172,20 @@ code: |
     defendant_lives_in_vermont
     if defendant_lives_in_vermont:
       initial_screening_questions_5_continue
-    if not defendant_lives_in_vermont:
+    if defendant_lives_in_vermont is None:
+      initial_screening_questions_5_important_note
+    else:
       initial_screening_questions_5_exit_b
       
   if not plaintiff_lives_in_vermont:
     defendant_lives_in_vermont
     if defendant_lives_in_vermont:
       initial_screening_questions_5_continue
-    if not defendant_lives_in_vermont:
+    if defendant_lives_in_vermont is None:
+      initial_screening_questions_5_important_note
+    else:
       initial_screening_questions_5_exit_a
+
   
   #main questions
   trial_court_name
@@ -423,7 +426,7 @@ id: initial_screening_questions_2_a
 question: |
   See if this interview is right for your situation
 fields:
-  - "Are you under age 16?": under_16
+  - "Are you 16 or older?": sixteen_or_older
     datatype: yesnoradio
 ---    
 id: initial_screening_questions_2_exit
@@ -485,7 +488,7 @@ question: |
   See if this interview is right for your situation
 fields:
   - "Does the defendant live in Vermont?": defendant_lives_in_vermont
-    datatype: yesnoradio
+    datatype: yesnomaybe
   - note: The "defendant" is the person who is abusing you.
 ---
 id: initial_screening_questions_5_continue
@@ -503,7 +506,9 @@ question: |
 subquestion: |
   <i class="fas fa-hand-paper fa-3x" aria-hidden="true"></i>  **Stop.** **Do not use this interview.**
   
-  In this situation, these may **not** be the right forms to fill out. Consult with a lawyer or legal aid organization in your state or the defendant’s state.
+  In this situation, these may **not** be the right forms to fill out. 
+  
+  Consult with a lawyer or legal aid organization in your state or the defendant’s home state.
 continue button field: initial_screening_questions_5_exit_a
 buttons:
   - Exit: exit
@@ -513,15 +518,29 @@ id: initial_screening_questions_5_exit_b
 question: |
   Stop
 subquestion: |
-  <i class="fas fa-hand-paper fa-3x" aria-hidden="true"></i>  **Stop.** It’s time to stop and ask for advice! If the defendant is not currently a Vermont resident, then there may be a question as to whether Vermont has jurisdiction over the defendant. 
+  <i class="fas fa-hand-paper fa-3x" aria-hidden="true"></i>  **Stop.** It’s time to stop and ask for advice! If the defendant is not currently a Vermont resident, then there may be a question as to whether Vermont courts have jurisdiction over the defendant. 
   
-  Vermont needs to have jurisdiction over the defendant to make the Relief from Abuse order work. Consult with a lawyer, like the lawyers at [Legal Services Vermont and Vermont Legal Aid](https://vtlawhelp.org). 
+  Vermont needs to have jurisdiction over the defendant to make the Relief from Abuse order work. 
   
-  Find out whether you should use these forms or not. If you get the green light from a lawyer, come back and answer Yes to this question so you can start the guided interview.
+  Ask a lawyer, like the lawyers at [Legal Services Vermont and Vermont Legal Aid](https://vtlawhelp.org). Find out whether you should use these forms or not.
 continue button field: initial_screening_questions_5_exit_b
 buttons:
   - Exit: exit
     url: https://vtlawhelp.org
+    
+---
+id: initial_screening_questions_5_important_note
+question: |
+  About the defendant's address
+subquestion: |
+  <i class="fa-solid fa-circle-exclamation fa-3x"></i>  **Important.** The court will need an address of some kind. If you don't know the defendant's home address, you can give their work address. You need to provide at least one of these addresses.
+  
+  If the defendant is not currently a Vermont resident, then there may be a question as to whether Vermont courts have jurisdiction over the defendant. 
+  
+  Vermont needs to have jurisdiction over the defendant to make the Relief from Abuse order work. 
+  
+  Consult with a lawyer, like the lawyers at [Legal Services Vermont and Vermont Legal Aid](https://vtlawhelp.org). Find out whether you should use these forms or not.
+continue button field: initial_screening_questions_5_important_note
 ---
 id: choose a court
 question: |
@@ -1295,27 +1314,26 @@ question: |
 subquestion: |
   Tell law enforcement where the defendant lives at this time. If they live with you, provide that address and information. If you don't know an answer, say I don't know.  
 fields:
-  - "The house or building number on the street (Example: Enter '10' if it's 10 Main Street.)": house
+  - "The house or building number on the street (Example: **Only** enter '10' if it's 10 Main Street.)": house
     maxlength: 10
   - "Name of the street or Town Road number (Example: Enter 'Main Street')": other_parties1_street_only
-    maxlength: 28
+    maxlength: 18
   - "Town / city": other_parties1_city
     maxlength: 23 
   - "State": other_parties1_state
-    required: False
-    code: states_list()
-  - "If you live outside of the United States enter the state/province of the country you live in": other_parties1_other
-    required: False
+    maxlength: 5
+    default: VT
   - "If you don't have a street address, describe the location of the home.": location_of_home
     input type: area
     required: False
   - "Describe what the defendant's home looks like. If it's an apartment, include the apartment number.": description_of_home
     input type: area
     maxlength: 220
+    required: False
   - "Best days and times to contact the defendant at home.": best_contact_time
     input type: area
     maxlength: 220
-    
+    required: False
 validation code: |
   if (other_parties1_state == "") and (other_parties1_other == ""):
     validation_error("Please enter a state in the United States, or an area outside of the United States")
@@ -1405,11 +1423,11 @@ subquestion: |
 fields:
   - note: |
       <h2 class="h4">Other location:</h2>
-  - "The house or building number on the street (Example: Enter '10' if it's 10 Main Street.)": house2
+  - "The house or building number on the street (Example: **Only** enter '10' if it's 10 Main Street.)": house2
     maxlength: 10
     required: False
   - "Street or Town Road (Example: Enter 'Main Street')": other_location_street_address
-    maxlength: 28
+    maxlength: 26
     required: False
   - "Town / city": other_location_city
     maxlength: 23
@@ -1425,20 +1443,25 @@ fields:
   - note: |
       <h2 class="h4">Another location:</h2>
     show if: other_location2
-  - "The house or building number on the street (Example: Enter '10' if it's 10 Main Street.)": house3
+  - "The house or building number on the street (Example: **Only** enter '10' if it's 10 Main Street.)": house3
     maxlength: 10
+    required: False
     show if: other_location2
   - "Street or Town Road (Example: Enter 'Main Street').": other_location2_street_address
-    maxlength: 27
+    maxlength: 26
+    required: False
     show if: other_location2
   - "Town / city": other_location2_city
     maxlength: 23
+    required: False
     show if: other_location2
   - "State": other_location2_state
     maxlength: 5
+    required: False
     show if: other_location2
   - "Phone number at that location": other_location2_phone
     maxlength: 13
+    required: False
     show if: other_location2
 ---
 id: What the defendant looks like
@@ -2196,7 +2219,7 @@ review:
     button: |
       **The defendant's home address at this time**
       
-      The house or building number on the street (Example: Enter '10' if it's 10 Main Street.): **${ showifdef('house') }**
+      The house or building number on the street (Example: **Only** enter '10' if it's 10 Main Street.): **${ showifdef('house') }**
       
       Name of the street or Town Road number (Example: Enter 'Main Street'): **${ showifdef('other_parties1_street_only') }**
       
