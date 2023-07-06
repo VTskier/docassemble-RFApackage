@@ -1,4 +1,4 @@
-#This is NEW CODE on the main branch that I pulled down on 7.6.23 at 10 a.m. after Mia merged some of our changes. I then made a number of edits to clean up text, max lengths, etc.
+#This is NEW CODE on the main branch that I pulled down on 7.6.23 at 1:30 pm. I've been making edits.
 
 #######################
 #People can use https://apps.vtcourtforms.org/run/RFApackage/RFApackage/#/1 to test my intervew and submit feedback -- and I can keep working on this RFApackage in the Suffolk playground. Then I can "update" the RFA "Package". That will update the demo interview. (Go to Package Management in the login dropdown menu. Put this in first field https://github.com/VTskier/docassemble-RFApackage and then hit Update. OR scroll down and hit the Update button next to the RFApackage.)
@@ -1668,9 +1668,9 @@ subquestion: |
 fields:
   - "I declare that my statements are true and accurate to the best of my knowledge and belief. I understand that if my statements are false, I will be subject to the penalty of perjury or to other sanctions in the discretion of the court.": attestation
     datatype: yesno
-    show if: attestation
   - "Please type your name. This will appear under your signature.": printed_signature
     maxlength: 34
+    show if: attestation
   - "Date of your signature for these forms": signature_date
     show if: attestation
     datatype: date
@@ -2412,7 +2412,7 @@ review:
       % endif
       
       % if race["race_other"]:
-        - **Other**
+        - **Other** -- ${ other_race_field }
       % endif
       
       Skin color/tone:
@@ -2545,7 +2545,7 @@ review:
       
       % if hair_color["hair_other"]:
       
-        - **Other**
+        - **Other** -- ${ other_hair_field }
       % endif
       
       % if hair_beard:
@@ -2605,6 +2605,8 @@ review:
   - Edit: printed_signature
     button: |
       **Attestation and signature**
+      
+      You have agreed to this statement: "I declare that my statements are true and accurate to the best of my knowledge and belief. I understand that if my statements are false, I will be subject to the penalty of perjury or to other sanctions in the discretion of the court."
       
       Please type your name. This will appear under your signature: **${ showifdef('printed_signature') }**
       
@@ -2934,12 +2936,12 @@ attachment:
       - "incarcerated": ${ incarcerated }
       - "users1_no_shelter": ${ users1_no_shelter }
       - "residence_shared_address": ${ residence_shared_address }
-      - "residence_of_users1": ${ residence_of_users1 }
-      - "residence_owned": ${ residence_owned }
-      - "residence_rented": ${ residence_rented }
-      - "residence_of_OP": ${ residence_of_OP }
-      - "residence_of_other": ${ residence_of_other }
-      - "residence_of_both": ${ residence_of_both }
+      - "residence_of_users1": ${ whose_name["residence_of_users1"]  }
+      - "residence_owned": ${ rent_or_own["residence_owned"] }
+      - "residence_rented": ${ rent_or_own["residence_rented"] }
+      - "residence_of_OP": ${ whose_name["residence_of_OP"] }
+      - "residence_of_other": ${ whose_name["residence_of_other"] }
+      - "residence_of_both": ${ whose_name["residence_of_both"] }
       - "reach_up_users1": ${ reach_up_users1 }
       - "reach_up_OP": ${ reach_up_OP }
       - "request_not_abuse_children": ${ request_not_abuse_children }
@@ -3044,6 +3046,7 @@ attachment:
       - "race_native": ${ race["race_native"] }
       - "race_asian": ${ race["race_asian"] }
       - "race_other": ${ race["race_other"] }
+      - "other_race_field": ${ other_race_field }
       - "skin_light": ${ skin["skin_light"] }
       - "skin_medium": ${ skin["skin_medium"] }
       - "skin_dark": ${ skin["skin_dark"] }
@@ -3067,6 +3070,7 @@ attachment:
       - "hair_bald": ${ hair_color["hair_bald_color"] }
       - "hair_bald__1": ${ hair["hair_bald"]  }
       - "hair_other": ${ hair_color["hair_other"] }
+      - "other_hair_field": ${ other_hair_field }
       - "hair_short": ${ hair["hair_short"]  }
       - "hair_medium": ${ hair["hair_medium"]  }
       - "hair_long": ${ hair["hair_long"]  }
