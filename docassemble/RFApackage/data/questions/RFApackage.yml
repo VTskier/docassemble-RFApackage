@@ -1,4 +1,4 @@
-#This is NEW CODE on the main branch that I pulled down on 7.6.23 at 10 a.m. after Mia merged some of our changes. I then made a number of edits to clean up text, max lengths, etc.
+#This is NEW CODE on the main branch that I pulled down on 7.6.23 at 1:30 pm. I've been making edits.
 
 #######################
 #People can use https://apps.vtcourtforms.org/run/RFApackage/RFApackage/#/1 to test my intervew and submit feedback -- and I can keep working on this RFApackage in the Suffolk playground. Then I can "update" the RFA "Package". That will update the demo interview. (Go to Package Management in the login dropdown menu. Put this in first field https://github.com/VTskier/docassemble-RFApackage and then hit Update. OR scroll down and hit the Update button next to the RFApackage.)
@@ -814,10 +814,10 @@ subquestion: |
   See the [VTLawHelp.org legal help website](https://vtlawhelp.org/roadmap/relief-from-abuse/step-3#forms) for tips on what to include in your description. This information will be part of your "Affidavit".
 fields:
   - "When was the most recent incident?": recent_incident_date
-    maxlength: 26
+    maxlength: 14
   - "What was the time of the most recent incident? You can estimate if you don't know for sure.": recent_incident_time
     required: False
-    maxlength: 15
+    maxlength: 16
   - "In what town was the most recent incident?": recent_incident_town
     maxlength: 26
   - "In what state was the most recent incident?": recent_incident_state
@@ -825,7 +825,7 @@ fields:
     required: False
   - "If it happened outside of the United States, enter the province / state here and the country.": other_recent_incident_state
     required: False
-    maxlength: 15
+    maxlength: 12
   - "Please describe the most recent incident with as much detail as possible.": recent_incident_description
     input type: area
     rows: 20
@@ -909,10 +909,10 @@ subquestion: |
   Describe the **most serious** incident of abuse. Again, be as detailed as possible. The judge needs to know exactly what happened.
 fields:
   - "When was the most serious incident?": serious_incident_date
-    maxlength: 26
+    maxlength: 16
   - "What was the time of the most serious incident?": serious_incident_time
     required: False
-    maxlength: 15
+    maxlength: 13
   - "In what town was the most serious incident?": serious_incident_town
     maxlength: 26
   - "In what state was the most serious incident?": serious_incident_state
@@ -920,7 +920,7 @@ fields:
     required: False
   - "If it happened outside of the United States, enter the province / state here and the country.": other_recent_incident_state
     required: False
-    maxlength: 15
+    maxlength: 12
   - "Please describe the most serious incident with as much detail as possible.": serious_incident_description
     input type: area
     rows: 20  
@@ -1283,6 +1283,7 @@ fields:
     show if: users1_no_shelter
   - "On one line, include: street address, apt./unit number, town and state abbreviation": A_new_residence_shared_address
     required: False
+    maxlength: 42
     js show if: |
       val('users1_no_shelter') == true
   - Rent or own?: rent_or_own
@@ -1329,7 +1330,7 @@ fields:
   - "The house or building number on the street (Example: **Only** enter '10' if it's 10 Main Street.)": house
     maxlength: 10
   - "Name of the street or Town Road number (Example: Enter 'Main Street')": other_parties1_street_only
-    maxlength: 18
+    maxlength: 20
   - "Town / city": other_parties1_city
     maxlength: 23 
   - "State": other_parties1_state
@@ -1668,9 +1669,9 @@ subquestion: |
 fields:
   - "I declare that my statements are true and accurate to the best of my knowledge and belief. I understand that if my statements are false, I will be subject to the penalty of perjury or to other sanctions in the discretion of the court.": attestation
     datatype: yesno
-    show if: attestation
   - "Please type your name. This will appear under your signature.": printed_signature
     maxlength: 34
+    show if: attestation
   - "Date of your signature for these forms": signature_date
     show if: attestation
     datatype: date
@@ -2412,7 +2413,7 @@ review:
       % endif
       
       % if race["race_other"]:
-        - **Other**
+        - **Other** -- ${ other_race_field }
       % endif
       
       Skin color/tone:
@@ -2545,7 +2546,7 @@ review:
       
       % if hair_color["hair_other"]:
       
-        - **Other**
+        - **Other** -- ${ other_hair_field }
       % endif
       
       % if hair_beard:
@@ -2606,9 +2607,11 @@ review:
     button: |
       **Attestation and signature**
       
+      You have agreed to this statement: "I declare that my statements are true and accurate to the best of my knowledge and belief. I understand that if my statements are false, I will be subject to the penalty of perjury or to other sanctions in the discretion of the court."
+      
       Please type your name. This will appear under your signature: **${ showifdef('printed_signature') }**
       
-      Date of your signature for these forms: **${ showifdef('date') }**
+      Date of your signature for these forms: **${ showifdef('signature_date') }**
 ---
 continue button field: users.revisit
 question: |
@@ -2835,7 +2838,7 @@ attachment:
       - "other_parties1_military_no": ${ not other_parties1_military }
       - "printed_signature": ${ printed_signature }
       - "affidavit_signature_date": ${ format_date(signature_date, format='M/d/yyyy') }
-
+      - "users1_signature": ${ users[0].signature_if_final(i) }
 ---
 attachment:
   name: 4 RFA-confidential-contact-info
@@ -2934,12 +2937,12 @@ attachment:
       - "incarcerated": ${ incarcerated }
       - "users1_no_shelter": ${ users1_no_shelter }
       - "residence_shared_address": ${ residence_shared_address }
-      - "residence_of_users1": ${ residence_of_users1 }
-      - "residence_owned": ${ residence_owned }
-      - "residence_rented": ${ residence_rented }
-      - "residence_of_OP": ${ residence_of_OP }
-      - "residence_of_other": ${ residence_of_other }
-      - "residence_of_both": ${ residence_of_both }
+      - "residence_of_users1": ${ whose_name["residence_of_users1"]  }
+      - "residence_owned": ${ rent_or_own["residence_owned"] }
+      - "residence_rented": ${ rent_or_own["residence_rented"] }
+      - "residence_of_OP": ${ whose_name["residence_of_OP"] }
+      - "residence_of_other": ${ whose_name["residence_of_other"] }
+      - "residence_of_both": ${ whose_name["residence_of_both"] }
       - "reach_up_users1": ${ reach_up_users1 }
       - "reach_up_OP": ${ reach_up_OP }
       - "request_not_abuse_children": ${ request_not_abuse_children }
@@ -3044,6 +3047,7 @@ attachment:
       - "race_native": ${ race["race_native"] }
       - "race_asian": ${ race["race_asian"] }
       - "race_other": ${ race["race_other"] }
+      - "other_race_field": ${ other_race_field }
       - "skin_light": ${ skin["skin_light"] }
       - "skin_medium": ${ skin["skin_medium"] }
       - "skin_dark": ${ skin["skin_dark"] }
@@ -3067,6 +3071,7 @@ attachment:
       - "hair_bald": ${ hair_color["hair_bald_color"] }
       - "hair_bald__1": ${ hair["hair_bald"]  }
       - "hair_other": ${ hair_color["hair_other"] }
+      - "other_hair_field": ${ other_hair_field }
       - "hair_short": ${ hair["hair_short"]  }
       - "hair_medium": ${ hair["hair_medium"]  }
       - "hair_long": ${ hair["hair_long"]  }
