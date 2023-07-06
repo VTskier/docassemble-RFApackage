@@ -172,7 +172,7 @@ code: |
     defendant_lives_in_vermont
     if defendant_lives_in_vermont:
       initial_screening_questions_5_continue
-    if defendant_lives_in_vermont is None:
+    elif defendant_lives_in_vermont is None:
       initial_screening_questions_5_important_note
     else:
       initial_screening_questions_5_exit_b
@@ -181,7 +181,7 @@ code: |
     defendant_lives_in_vermont
     if defendant_lives_in_vermont:
       initial_screening_questions_5_continue
-    if defendant_lives_in_vermont is None:
+    elif defendant_lives_in_vermont is None:
       initial_screening_questions_5_important_note
     else:
       initial_screening_questions_5_exit_a
