@@ -814,10 +814,10 @@ subquestion: |
   See the [VTLawHelp.org legal help website](https://vtlawhelp.org/roadmap/relief-from-abuse/step-3#forms) for tips on what to include in your description. This information will be part of your "Affidavit".
 fields:
   - "When was the most recent incident?": recent_incident_date
-    maxlength: 26
+    maxlength: 14
   - "What was the time of the most recent incident? You can estimate if you don't know for sure.": recent_incident_time
     required: False
-    maxlength: 15
+    maxlength: 16
   - "In what town was the most recent incident?": recent_incident_town
     maxlength: 26
   - "In what state was the most recent incident?": recent_incident_state
@@ -825,7 +825,7 @@ fields:
     required: False
   - "If it happened outside of the United States, enter the province / state here and the country.": other_recent_incident_state
     required: False
-    maxlength: 15
+    maxlength: 12
   - "Please describe the most recent incident with as much detail as possible.": recent_incident_description
     input type: area
     rows: 20
@@ -909,10 +909,10 @@ subquestion: |
   Describe the **most serious** incident of abuse. Again, be as detailed as possible. The judge needs to know exactly what happened.
 fields:
   - "When was the most serious incident?": serious_incident_date
-    maxlength: 26
+    maxlength: 16
   - "What was the time of the most serious incident?": serious_incident_time
     required: False
-    maxlength: 15
+    maxlength: 13
   - "In what town was the most serious incident?": serious_incident_town
     maxlength: 26
   - "In what state was the most serious incident?": serious_incident_state
@@ -920,7 +920,7 @@ fields:
     required: False
   - "If it happened outside of the United States, enter the province / state here and the country.": other_recent_incident_state
     required: False
-    maxlength: 15
+    maxlength: 12
   - "Please describe the most serious incident with as much detail as possible.": serious_incident_description
     input type: area
     rows: 20  
@@ -1283,6 +1283,7 @@ fields:
     show if: users1_no_shelter
   - "On one line, include: street address, apt./unit number, town and state abbreviation": A_new_residence_shared_address
     required: False
+    maxlength: 42
     js show if: |
       val('users1_no_shelter') == true
   - Rent or own?: rent_or_own
@@ -1329,7 +1330,7 @@ fields:
   - "The house or building number on the street (Example: **Only** enter '10' if it's 10 Main Street.)": house
     maxlength: 10
   - "Name of the street or Town Road number (Example: Enter 'Main Street')": other_parties1_street_only
-    maxlength: 18
+    maxlength: 20
   - "Town / city": other_parties1_city
     maxlength: 23 
   - "State": other_parties1_state
@@ -2610,7 +2611,7 @@ review:
       
       Please type your name. This will appear under your signature: **${ showifdef('printed_signature') }**
       
-      Date of your signature for these forms: **${ showifdef('date') }**
+      Date of your signature for these forms: **${ showifdef('signature_date') }**
 ---
 continue button field: users.revisit
 question: |
@@ -2837,7 +2838,7 @@ attachment:
       - "other_parties1_military_no": ${ not other_parties1_military }
       - "printed_signature": ${ printed_signature }
       - "affidavit_signature_date": ${ format_date(signature_date, format='M/d/yyyy') }
-
+      - "users1_signature": ${ users[0].signature_if_final(i) }
 ---
 attachment:
   name: 4 RFA-confidential-contact-info
