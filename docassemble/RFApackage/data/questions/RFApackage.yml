@@ -1509,7 +1509,7 @@ fields:
       - "Hazel": eyes_hazel
       - "Other": eyes_other
   - note: |
-      <h2 class="h4">Glasses and contacts:</h2>
+      <h2 class="h4">Glasses or contacts:</h2>
   - "Glasses": lenses_glasses
     datatype: yesno
   - "Contacts": lenses_contacts
@@ -2736,7 +2736,10 @@ attachment:
       - "users1_birthdate": ${ format_date(users[0].birthdate, format='M/d/yyyy') }
       - "other_parties1_name__1": ${ other_parties[0] }
       - "other_parties1_name": ${ other_parties[0] }
-      - "other_parties1_birthdate": ${ format_date(other_parties[0].birthdate, format='M/d/yyyy') }
+      - "other_parties1_birthdate": |
+          % if other_parties[0].birthdate: 
+          ${ format_date(other_parties[0].birthdate, format='M/d/yyyy') }
+          % endif
       - "other_parties1_address_address": ${ other_parties[0].address.line_one() }
       - "other_parties1_address_city": ${ other_parties[0].address.city }
       - "other_parties1_address_state": ${ other_parties[0].address.state }
@@ -2775,9 +2778,9 @@ attachment:
       - "weapon8_location": ${ weapons[7].location }
       - "extra_sheets_attached": |
           % if RFAaffidavit.has_overflow(): 
-            "1"
+            1
           % else:
-            "0"
+            0
           % endif
       - "weapons_overflow": ${ RFAaffidavit.has_overflow() }
       - "used_weapon_yes": ${ used_weapon }
@@ -2829,7 +2832,10 @@ attachment:
       - "users1_name": ${ users[0] }
       - "users1_birthdate": ${ format_date(users[0].birthdate, format='M/d/yyyy') }
       - "other_parties1_name": ${ other_parties[0] }
-      - "other_parties1_birthdate": ${ format_date(other_parties[0].birthdate, format='M/d/yyyy') }
+      - "other_parties1_birthdate": |
+          % if other_parties[0].birthdate: 
+          ${ format_date(other_parties[0].birthdate, format='M/d/yyyy') }
+          % endif
       - "other_parties1_address_address": ${ other_parties[0].address.line_one() }
       - "other_parties1_address_city": ${ other_parties[0].address.city }
       - "other_parties1_address_state": ${ other_parties[0].address.state }
@@ -2864,7 +2870,7 @@ attachment:
       - "existing_order_users_attorney": ${ existing_order_users_attorney }
       - "existing_order_OP_attorney": ${ existing_order_OP_attorney }
       - "recent_incident_yes": ${ True }
-      - "recent_incident_date": ${ format_date(recent_incident_date, format='M/d/yyyy') }
+      - "recent_incident_date": ${ recent_incident_date }
       - "recent_incident_users1": ${ recent_incident_users1 }
       - "recent_incident_children": ${ recent_incident_children }
       - "recent_incident_children_names": ${ recent_incident_children_names }
@@ -2983,7 +2989,10 @@ attachment:
       - "other_parties1_name_last": ${ other_parties[0].name.last }
       - "other_parties1_name_first": ${ other_parties[0].name.first }
       - "other_parties1_name_middle": ${ other_parties[0].name.middle }
-      - "other_parties1_birthdate": ${ format_date(other_parties[0].birthdate, format='M/d/yyyy') }
+      - "other_parties1_birthdate": |
+          % if other_parties[0].birthdate: 
+          ${ format_date(other_parties[0].birthdate, format='M/d/yyyy') }
+          % endif
       - "other_parties1_age": ${ other_parties[0].age_in_years() }
       - "other_parties1_aliases": ${ other_parties1_aliases }
       - "sex_female": ${ sex_female }
