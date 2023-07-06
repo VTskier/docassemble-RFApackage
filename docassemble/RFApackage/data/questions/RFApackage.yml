@@ -1,3 +1,5 @@
+#This is NEW CODE on the main branch that I pulled down on 7.6.23 at 10 a.m. after Mia merged some of our changes. I then made a number of edits to clean up text, max lengths, etc.
+
 #######################
 #People can use https://apps.vtcourtforms.org/run/RFApackage/RFApackage/#/1 to test my intervew and submit feedback -- and I can keep working on this RFApackage in the Suffolk playground. Then I can "update" the RFA "Package". That will update the demo interview. (Go to Package Management in the login dropdown menu. Put this in first field https://github.com/VTskier/docassemble-RFApackage and then hit Update. OR scroll down and hit the Update button next to the RFApackage.)
 #######################
@@ -320,7 +322,7 @@ subquestion: |
   
   <i class="fas fa-sign-out-alt fa-2x"></i> After saving or printing your work, log out and close your web browser.
   
-  VTCourtForms interviews were created by Legal Services Vermont with support from the Legal Services Corporation. It is free to use this program. This site is not a lawyer. Visit our [VTLawHelp.org website](https://vtlawhelp.org) if you have legal questions.
+  VTCourtForms interviews were created by Legal Services Vermont with support from the Legal Services Corporation. It is free to use this program. This site is not a lawyer. Visit our [VTLawHelp.org website](https://vtlawhelp.org/roadmap/relief-from-abuse/step-1) for more information about Relief from Abuse orders.
   
   [FILE big_logo, 30%, Legal Services Vermont logo]
 #  Tap the {green words} in any screen for a definition or more information.
@@ -372,12 +374,13 @@ subquestion: |
   * Make sure you are in a safe place. It takes time to work through this interview. It may take 1 hour or more.
   * If you are in danger right now, dial 911.
   * Use this interview if you are asking for an RFA order for you, **or** both you and your children. (There are different forms for [asking for an RFA only on behalf of a child or children.](https://vtlawhelp.org/roadmap/relief-from-abuse/step-3))
-  * The forms in this interview can only be used in Vermont.
+  * The forms in this interview can only be used in Vermont courts.
   * Consider creating an account and saving your work along the way. You could log in later to review your answers with an advocate. Choose “sign up” in the menu above, or “register” below.
-  * Click "Share" at the bottom of this page to share a link to your progress with someone you trust. Important: The person you share this link with will be able to see and edit your answers.
+  * Click "Share" at the bottom of this page to share a link to your progress with someone you trust. Important: The person you share this link with will be able to see AND change your answers.
   <h3 class="h4">Information you will need</h3>
   * To complete this interview, you will need to know the date or dates when the abuse occurred and give a detailed description of the abuse. This includes the most recent incident and the most serious incident. You will need to fully describe the incidents and make it clear how severe or how frequent the abuse has been.
   * You will need to give a safe address and telephone number where the court can reach you. If you don’t have one, ask an advocate from the [Vermont Network.](https://www.vtnetwork.org/get-help/)
+  * You will need either a home address or work address for the "defendant" -- the person who is doing the abuse.
   * You will see important questions about weapons that the defendant might have access to. If you list what they are and where they are located, the court can order law enforcement to collect them to help keep you safe.
   <h3 class="h4">After answering the questions</h3>
   * At the end you will get a chance to preview your forms and make changes if you need to. 
@@ -539,7 +542,7 @@ subquestion: |
   
   Vermont needs to have jurisdiction over the defendant to make the Relief from Abuse order work. 
   
-  Consult with a lawyer, like the lawyers at [Legal Services Vermont and Vermont Legal Aid](https://vtlawhelp.org). Find out whether you should use these forms or not.
+  Ask a lawyer, like the lawyers at [Legal Services Vermont and Vermont Legal Aid](https://vtlawhelp.org). Find out whether you should use these forms or not.
 continue button field: initial_screening_questions_5_important_note
 ---
 id: choose a court
@@ -551,8 +554,9 @@ fields:
       
       It can be:
       
-      * the county you live in, or 
-      * the county the other person lives in (the defendant).
+      * the county you live in, or
+      * the county you left when you were fleeing from abuse (even if you left Vermont), or
+      * the county the other person lives in (the "defendant").
       
       Not sure what county? [Check this list of cities and towns to find the county.](https://en.m.wikipedia.org/wiki/List_of_municipalities_in_Vermont#Cities)
   - County: trial_court_name
@@ -666,7 +670,7 @@ question: |
 subquestion: |
   To keep your contact information confidential, select **No**. Then only the court and law enforcement will see your address and contact information. 
   
-  If you select Yes, other people can get your address and contact information.
+  If you select Yes, other people can get your address and contact information such as the defendant and the general public.
 fields:
   - "I consent to the release of my address and contact information.": share_contact
     datatype: yesnoradio
@@ -754,7 +758,7 @@ fields:
     datatype: yesno
   - "Defendant is a current member of the military": other_parties1_military
     datatype: yesno
-  - "Defendant is incarcerated (in jail) and has been convicted of one of the crimes specified in 15 V.S.A. 1103 (c)(1)(B)? ${ display_template(list_of_crimes, scrollable=True, collapse=True) }": incarcerated
+  - "Defendant is incarcerated (in jail) and has been convicted of one of the crimes specified in this Vermont law: 15 V.S.A. 1103 (c)(1)(B) ${ display_template(list_of_crimes, scrollable=True, collapse=True) }": incarcerated
     datatype: yesno 
 ---
 template: list_of_crimes
@@ -813,13 +817,15 @@ fields:
     maxlength: 26
   - "What was the time of the most recent incident? You can estimate if you don't know for sure.": recent_incident_time
     required: False
+    maxlength: 15
   - "In what town was the most recent incident?": recent_incident_town
     maxlength: 26
   - "In what state was the most recent incident?": recent_incident_state
     code: states_list() 
     required: False
-  - "If you live outside of the United States enter the state/province of the country you live in": other_recent_incident_state
+  - "If it happened outside of the United States, enter the province / state here and the country.": other_recent_incident_state
     required: False
+    maxlength: 15
   - "Please describe the most recent incident with as much detail as possible.": recent_incident_description
     input type: area
     rows: 20
@@ -834,7 +840,7 @@ fields:
     choices:
       - children 
     show if: recent_incident_children    
-  - There are other children that were not mentioned: has_recent_incident_other_children
+  - Other children that were not mentioned?: has_recent_incident_other_children
     datatype: yesnoradio
     required: False
     show if: recent_incident_children
@@ -855,13 +861,16 @@ fields:
     datatype: yesno
   - "The defendant stalked you and/or the child/children. Stalking is defined in Vermont law here: [12 V.S.A 5131(6)](https://legislature.vermont.gov/statutes/section/12/178/05131)": recent_incident_stalked
     datatype: yesno
+  - note: |
+      Stalking is very complicated. Ask a lawyer about this.
+    show if: recent_incident_stalked
   - "The defendant stalked you": recent_incident_stalked_users1
     datatype: yesnoradio
     show if: recent_incident_stalked
   - "The defendant stalked the child/children": recent_incident_stalked_children
     datatype: yesnoradio
     show if: recent_incident_stalked
-  - "Vermont law says it is stalking if has happened two times or more. On what date did they first stalk you?": recent_incident_stalked_date2
+  - "Vermont law says it is stalking if it has happened two times or more. On what date did they first stalk you?": recent_incident_stalked_date2
     datatype: date
     show if: recent_incident_stalked
   - "What was the second date that they stalked you?": recent_incident_stalked_date1
@@ -900,15 +909,18 @@ subquestion: |
   Describe the **most serious** incident of abuse. Again, be as detailed as possible. The judge needs to know exactly what happened.
 fields:
   - "When was the most serious incident?": serious_incident_date
+    maxlength: 26
   - "What was the time of the most serious incident?": serious_incident_time
     required: False
+    maxlength: 15
   - "In what town was the most serious incident?": serious_incident_town
     maxlength: 26
   - "In what state was the most serious incident?": serious_incident_state
     code: states_list() 
     required: False
-  - "If you live outside of the United States enter the state/province of the country you live in": other_recent_incident_state
+  - "If it happened outside of the United States, enter the province / state here and the country.": other_recent_incident_state
     required: False
+    maxlength: 15
   - "Please describe the most serious incident with as much detail as possible.": serious_incident_description
     input type: area
     rows: 20  
@@ -1382,6 +1394,10 @@ question: |
   Defendant's work information
 subquestion: |
   Tell us about the defendant's workplace and work hours. Law enforcement may serve the order there if they cannot find the defendant at home.
+  
+  Fill in what you can. If you don't know or they do not work, leave it blank.
+  
+  However, if you did not enter their home address, it's important to enter a work address so law enforcement can find the defendant.
 fields:
   - "Defendant's employer": employer
     maxlength: 36
@@ -1392,25 +1408,27 @@ fields:
   - "Employers city and state": employers_city_state
     maxlength: 36
     required: False
-  - "Work hours on Mondays": work_mondays
+  - note: |
+      Enter their work hours.
+  - "Mondays:": work_mondays
     maxlength: 11
     required: False
-  - "Work hours on Tuesdays": work_tues
+  - "Tuesdays:": work_tues
     maxlength: 11
     required: False
-  - "Work hours on Wednesdays": work_weds
+  - "Wednesdays:": work_weds
     maxlength: 11
     required: False
-  - "Work hours on Thursdays": work_thurs
+  - "Thursdays:": work_thurs
     maxlength: 11
     required: False
-  - "Work hours on Fridays": work_fri
+  - "Fridays:": work_fri
     maxlength: 11
     required: False
-  - "Work hours on Saturdays": work_sat
+  - "Saturdays:": work_sat
     maxlength: 11
     required: False
-  - "Work hours on Sundays": work_sun
+  - "Sundays:": work_sun
     maxlength: 11
     required: False
 ---
@@ -1650,6 +1668,7 @@ subquestion: |
 fields:
   - "I declare that my statements are true and accurate to the best of my knowledge and belief. I understand that if my statements are false, I will be subject to the penalty of perjury or to other sanctions in the discretion of the court.": attestation
     datatype: yesno
+    show if: attestation
   - "Please type your name. This will appear under your signature.": printed_signature
     maxlength: 34
   - "Date of your signature for these forms": signature_date
@@ -2585,7 +2604,7 @@ review:
       
   - Edit: printed_signature
     button: |
-      **Signing some -- but not all -- of your forms**
+      **Attestation and signature**
       
       Please type your name. This will appear under your signature: **${ showifdef('printed_signature') }**
       
@@ -2707,7 +2726,7 @@ subquestion: |
   
   Consider creating a free account so you can save your progress. At any time choose "sign up" in the menu above, or "register" below.
   
-  You can also use the Share feature to share a link to your interview with a trusted person. Important: If you use the Share feature, that person will be able to see and edit your answers online.
+  You can also use the Share feature to share a link to your interview with a trusted person. Important: If you use the Share feature, that person will be able to see AND change your answers.
   
   ${ action_button_html(url_action('review_RFApackage'), label='Edit your answers', color='info') }
   
